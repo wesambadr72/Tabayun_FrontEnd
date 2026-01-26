@@ -4,17 +4,6 @@
 
 ---
 
-## 📝 معلومات المشروع (Project Information)
-
-- **الجامعة:** جامعة أم القرى (Um Al-Qura University)
-- **الكلية:** كلية الحاسب الآلي ونظم المعلومات - قسم هندسة البرمجيات
-- **المشرف:** د. أحمد الحارثي (Dr. Ahmed Al-Harthy)
-- **حجم الفريق:** 6 طلاب
-- **مدة المشروع:** 12 أسبوعاً
-- **تاريخ البدء:** 22 يناير 2026
-- **تاريخ الانتهاء:** أبريل 2026
-
----
 
 ## 🚀 التقنيات المستخدمة (Technology Stack)
 
@@ -24,18 +13,6 @@
 - **التصميم:** Tailwind CSS + Shadcn/ui
 - **تدويل اللغة (i18n):** English, Arabic, French, Spanish
 - **الاستضافة:** Vercel
-
-### الواجهة الخلفية (Backend)
-- **الإطار البرمجي:** FastAPI (Python 3.11+)
-- **نمط API:** RESTful + Async
-- **التوثيق:** JWT + bcrypt
-- **قاعدة البيانات:** PostgreSQL 17+ مع إضافة pgvector
-
-### الذكاء الاصطناعي (AI & RAG System)
-- **النموذج:** Claude 3.5 Sonnet (Anthropic)
-- **الإطار البرمجي:** LangChain
-- **Embeddings:** OpenAI (text-embedding-3-small)
-- **البحث المتجهي:** PostgreSQL pgvector
 
 ---
 
