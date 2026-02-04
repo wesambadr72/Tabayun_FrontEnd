@@ -1,7 +1,13 @@
-export default function DashboardPage({ params: { locale } }: { params: { locale: string } }) {
+import Navbar from "@/components/Navbar";
+
+export default function DashboardPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Dashboard ({locale})</h1>
-    </div>
+    <>
+      <Navbar />
+      <div className="p-6">
+        <h1 className="text-2xl">Dashboard</h1>
+        <p>Dashboard content here</p>
+      </div>
+    </>
   );
 }
