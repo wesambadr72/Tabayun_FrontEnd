@@ -40,8 +40,8 @@ export default function RegisterPage() {
         {/* الترحيب وشريط التقدم */}
         {step !== 5 && (
           <div className="flex flex-col items-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-2 drop-shadow-lg">{dict.welcome}</h1>
-            <p className="text-white text-sm sm:text-base md:text-xl font-medium mb-8 opacity-90">{dict.needInfo}</p>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-2 drop-shadow-lg font-bold">{dict.welcome}</h1>
+            <p className="text-white text-sm sm:text-base md:text-xl font-medium mb-8 opacity-90 font-regular">{dict.needInfo}</p>
             
             <div className="flex gap-1 md:gap-2 mb-10 md:mb-16 justify-center" dir="ltr">
               {[1, 2, 3, 4].map((i) => (
@@ -51,28 +51,28 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* المحتوى */}
+        {/* محتوى الخطوات */}
         <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
           
           {step === 1 && (
             <div className="w-full flex flex-col items-center">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">{dict.emailQuestion}</h2>
-              <input type="email" placeholder={dict.emailPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none" />
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.emailQuestion}</h2>
+              <input type="email" placeholder={dict.emailPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
             </div>
           )}
 
           {step === 2 && (
             <div className="w-full flex flex-col items-center">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">{dict.nameQuestion}</h2>
-              <input type="text" placeholder={dict.namePlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none" />
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.nameQuestion}</h2>
+              <input type="text" placeholder={dict.namePlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
             </div>
           )}
 
           {step === 3 && (
             <div className="w-full flex flex-col items-center">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">{dict.passwordQuestion}</h2>
-              <input type="password" placeholder={dict.passwordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none" />
-              <p className="text-white/90 text-sm md:text-base leading-relaxed mt-4 text-center max-w-md">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.passwordQuestion}</h2>
+              <input type="password" placeholder={dict.passwordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
+              <p className="text-white/90 text-sm md:text-base leading-relaxed mt-4 text-center max-w-md font-regular">
                 {dict.passwordHint}
               </p>
             </div>
@@ -80,21 +80,25 @@ export default function RegisterPage() {
 
           {step === 4 && (
             <div className="w-full flex flex-col items-center">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">{dict.repeatPasswordQuestion}</h2>
-              <input type="password" placeholder={dict.repeatPasswordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none" />
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.repeatPasswordQuestion}</h2>
+              <input type="password" placeholder={dict.repeatPasswordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
             </div>
           )}
 
+          {/* خطوة اختيار الدولة - الشبكة الجديدة */}
           {step === 5 && (
             <div className="w-full flex flex-col items-center py-6">
-              <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-10 text-center">
+              <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-10 text-center font-bold">
                 {dict.compareQuestion}
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
                 {countries.map((country, index) => (
-                  <button key={index} className="bg-[#3d2e20] hover:bg-[#4d3e30] text-white p-6 rounded-2xl flex flex-col items-center gap-3 transition-transform hover:scale-105 shadow-xl">
-                    <span className="text-3xl">{country.flag}</span>
-                    <span className="text-lg font-bold">{country.name}</span>
+                  <button 
+                    key={index} 
+                    className="bg-[#3d2e20] hover:bg-[#4d3e30] text-white p-6 rounded-2xl flex flex-col items-center gap-3 transition-transform hover:scale-105 shadow-xl border border-white/5"
+                  >
+                    <span className="text-4xl md:text-5xl filter drop-shadow-md">{country.flag}</span>
+                    <span className="text-base md:text-lg font-bold tracking-wide font-bold">{country.name}</span>
                   </button>
                 ))}
               </div>
@@ -102,18 +106,20 @@ export default function RegisterPage() {
           )}
         </div>
 
-        {/* أزرار التحكم */}
+        {/* أزرار التحكم - ثابتة المواقع حسب اللغة */}
         <div className={`w-full max-w-md flex justify-between items-center gap-6 mt-12 md:mt-20 ${dir === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
+          {/* زر الخروج / السابق */}
           <button 
             onClick={() => step === 1 ? window.location.href=`/${locale}/auth/login` : setStep(step - 1)}
-            className="flex-1 bg-white text-[#3d2e20] border-2 border-[#3d2e20] py-3 rounded-full text-xl md:text-2xl font-bold hover:bg-gray-100 transition shadow-lg"
+            className="flex-1 bg-white text-[#3d2e20] border-2 border-[#3d2e20] py-3 rounded-full text-xl md:text-2xl font-bold hover:bg-gray-100 transition shadow-lg font-bold"
           >
             {step === 1 ? dict.exit : dict.back}
           </button>
           
+          {/* زر التالي / تأكيد */}
           <button 
-            onClick={() => step < 5 ? setStep(step + 1) : alert("Done!")}
-            className="flex-1 bg-[#3d2e20] text-white py-3 rounded-full text-xl md:text-2xl font-bold hover:opacity-90 transition shadow-lg"
+            onClick={() => step < 5 ? setStep(step + 1) : alert("Registration Complete!")}
+            className="flex-1 bg-[#3d2e20] text-white py-3 rounded-full text-xl md:text-2xl font-bold hover:opacity-90 transition shadow-lg font-bold"
           >
             {step === 4 ? dict.welcomeBtn : step === 5 ? dict.confirm : dict.next}
           </button>

@@ -30,40 +30,42 @@ export default function LoginPage() {
 
       {/* بطاقة تسجيل الدخول البيضاء */}
       <div className="relative z-20 w-full max-w-md bg-white rounded-[40px] p-10 shadow-2xl flex flex-col items-center">
-        <h2 className="text-4xl font-bold text-[#4a3a2a] mb-10">{dict.title}</h2>
+        <h2 className="text-4xl font-bold text-[#4a3a2a] mb-10 font-bold">{dict.title}</h2>
 
         <div className="w-full space-y-6">
           {/* حقل اسم المستخدم */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">{dict.username}</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2 font-regular">{dict.username}</label>
             <input 
               type="text" 
-              className="w-full border-2 border-[#4a3a2a] rounded-2xl p-3 focus:outline-none text-gray-800"
+              className="w-full border-2 border-[#4a3a2a] rounded-2xl p-3 focus:outline-none text-gray-800 font-regular"
             />
           </div>
 
           {/* حقل كلمة المرور */}
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">{dict.password}</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2 font-regular">{dict.password}</label>
             <input 
               type="password" 
-              className="w-full border-2 border-[#4a3a2a] rounded-2xl p-3 focus:outline-none text-gray-800"
+              className="w-full border-2 border-[#4a3a2a] rounded-2xl p-3 focus:outline-none text-gray-800 font-regular"
             />
             <div className={`text-${dir === 'rtl' ? 'left' : 'right'} mt-2`}>
-              <a href="#" className="text-sm font-bold underline text-gray-800 hover:text-black">{dict.forgotPassword}</a>
+              <a href="#" className="text-sm font-bold underline text-gray-800 hover:text-black font-regular">{dict.forgotPassword}</a>
             </div>
           </div>
 
           {/* أزرار العمليات */}
           <div className="space-y-4 pt-4">
-            {/* زر الدخول */}
-            <button className="w-full bg-[#3d2e20] text-white py-4 rounded-2xl text-xl font-bold hover:opacity-90 transition shadow-md">
-              {dict.enter}
-            </button>
+            {/* زر الدخول - نسوي فالديشن لها مستقبلاً */}
+            <Link href={`/${locale}/dashboard`} className="w-full">
+              <button className="w-full bg-[#3d2e20] text-white py-4 rounded-2xl text-xl font-bold hover:opacity-90 transition shadow-md">
+                {dict.enter}
+              </button>
+            </Link>
 
             {/* زر إنشاء حساب - مربوط بصفحة التسجيل */}
             <Link href={`/${locale}/auth/register`} className="block w-full">
-              <button className="w-full bg-[#e1c6a6] text-[#3d2e20] py-4 rounded-2xl text-xl font-bold hover:opacity-90 transition shadow-md">
+              <button className="w-full bg-[#e1c6a6] text-[#3d2e20] py-4 rounded-2xl text-xl font-bold hover:opacity-90 transition shadow-md font-bold">
                 {dict.createAccount}
               </button>
             </Link>

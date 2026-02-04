@@ -17,6 +17,9 @@ export default function Navbar() {
   // الاتجاه يعتمد على اللغة المختارة
   const dir = locale === 'ar' ? 'rtl' : 'ltr'; 
 
+  // فحص هل نحن في الصفحة الرئيسية (قبل تسجيل الدخول)
+  const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
+
   const [isLangOpen, setIsLangOpen] = useState(false);
 
   const languages = [
@@ -39,20 +42,40 @@ export default function Navbar() {
       <nav className="flex justify-between items-center w-full max-w-6xl bg-white/10 backdrop-blur-md border border-white/20 px-4 md:px-8 py-2 md:py-3 rounded-full shadow-2xl text-white">
         
         {/* القسم الأيمن (في RTL) / الأيسر (في LTR): تباين والروابط */}
-        <div className="flex items-center gap-4 md:gap-8">
-          <span className="text-xl md:text-3xl font-bold tracking-wider">{dict.brand}</span>
-          <div className="flex items-center gap-3 md:gap-6 text-sm md:text-lg font-medium">
-            <Link href={`/${locale}`} className={`hover:opacity-70 transition ${pathname === `/${locale}` ? 'border-b-2 border-white' : ''} pb-0.5`}>
-              {dict.home}
-            </Link>
-            <Link href={`/${locale}/contact`} className={`hover:opacity-70 transition ${pathname === `/${locale}/contact` ? 'border-b-2 border-white' : ''}`}>
+        <div className="flex items-center gap-4 md:gap-12">
+          <span className="text-xl md:text-3xl font-black tracking-wider font-bold">{dict.brand}</span>
+          <div className="flex items-center gap-4 md:gap-8 text-sm md:text-xl font-bold">
+            
+            {/* في الهوم بيج تظهر فقط "تواصل"، وفي غيرها تظهر الروابط كاملة */}
+            {!isHomePage && (
+              <>
+                <Link 
+                  href={`/${locale}/dashboard`} 
+                  className={`hover:opacity-70 transition ${pathname.includes('/dashboard') && !pathname.includes('/categories') ? 'border-b-2 border-white' : ''} pb-0.5 font-bold`}
+                >
+                  {dict.home}
+                </Link>
+                <Link 
+                  href={`/${locale}/categories`} 
+                  className={`hover:opacity-70 transition ${pathname.includes('/categories') ? 'border-b-2 border-white' : ''} font-bold`}
+                >
+                  {dict.browse}
+                </Link>
+              </>
+            )}
+            
+            {/* "تواصل" تظهر دائماً في كل الصفحات */}
+            <Link 
+              href={`/${locale}/contact`} 
+              className={`hover:opacity-70 transition ${pathname === `/${locale}/contact` ? 'border-b-2 border-white' : ''} font-bold`}
+            >
               {dict.contact}
             </Link>
           </div>
         </div>
 
         {/* القسم الأيسر (في RTL) / الأيمن (في LTR): اللغة ثم البروفايل */}
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-6">
           
           {/* 1. زر اللغة */}
           <div className="relative">
@@ -81,7 +104,7 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* 2. أيقونة البروفايل */}
+          {/* 2. أيقونة البروفايل - تظهر دائماً */}
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer">
              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 md:w-6 md:h-6">
                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>

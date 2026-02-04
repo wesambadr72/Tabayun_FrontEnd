@@ -1,8 +1,20 @@
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "../globals.css";
 import { getDirection } from "@/lib/dictionary";
 
 const inter = Inter({ subsets: ["latin"] });
+
+// تعريف الخطوط المخصصة - تم تصحيح المسار هنا
+const handicraftsBold = localFont({
+  src: "../../public/fonts/Handicrafts-Bold.otf",
+  variable: "--font-handicrafts-bold",
+});
+
+const handicraftsRegular = localFont({
+  src: "../../public/fonts/Handicrafts-Regular.otf",
+  variable: "--font-handicrafts-regular",
+});
 
 export default async function LocaleLayout({
   children,
@@ -15,7 +27,7 @@ export default async function LocaleLayout({
   const dir = getDirection(locale);
 
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} className={`${handicraftsBold.variable} ${handicraftsRegular.variable}`}>
       <body className={inter.className}>{children}</body>
     </html>
   );

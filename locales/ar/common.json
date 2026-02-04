@@ -2,7 +2,19 @@
   "navbar": {
     "brand": "تباين",
     "home": "الرئيسية",
-    "contact": "تواصل"
+    "contact": "تواصل",
+    "browse": "تصفح"
+  },
+  "dashboard": {
+    "categories": "الأقسام",
+    "sections": {
+      "traffic": "المرور",
+      "food": "المأكولات",
+      "commerce": "التجارة",
+      "environment": "البيئة",
+      "publicDecency": "الذوق العام",
+      "health": "الصحة"
+    }
   },
   "auth": {
     "login": {

@@ -2,7 +2,19 @@
   "navbar": {
     "brand": "Tabayun",
     "home": "Home",
-    "contact": "Contact"
+    "contact": "Contact",
+    "browse": "Browse"
+  },
+  "dashboard": {
+    "categories": "Categories",
+    "sections": {
+      "traffic": "Traffic",
+      "food": "Food",
+      "commerce": "Commerce",
+      "environment": "Environment",
+      "publicDecency": "Public Decency",
+      "health": "Health"
+    }
   },
   "auth": {
     "login": {
