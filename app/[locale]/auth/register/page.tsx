@@ -17,14 +17,14 @@ export default function RegisterPage() {
   const [step, setStep] = useState(1);
 
   const countries = [
-    { name: locale === "ar" ? "ألمانيا" : "Germany", flag: "🇩🇪" },
-    { name: locale === "ar" ? "المملكة المتحدة" : "United Kingdom", flag: "🇬🇧" },
-    { name: locale === "ar" ? "الولايات المتحدة" : "USA", flag: "🇺🇸" },
-    { name: locale === "ar" ? "إندونيسيا" : "Indonesia", flag: "🇮🇩" },
-    { name: locale === "ar" ? "إسبانيا" : "Spain", flag: "🇪🇸" },
-    { name: locale === "ar" ? "إيطاليا" : "Italy", flag: "🇮🇹" },
-    { name: locale === "ar" ? "الهند" : "India", flag: "🇮🇳" },
-    { name: locale === "ar" ? "الصين" : "China", flag: "🇨🇳" },
+    { name: locale === "ar" ? "ألمانيا" : "Germany", flag: "/image/flags/germany.png" },
+    { name: locale === "ar" ? "المملكة المتحدة" : "United Kingdom", flag: "/image/flags/uk.png" },
+    { name: locale === "ar" ? "الولايات المتحدة" : "USA", flag: "/image/flags/usa.png" },
+    { name: locale === "ar" ? "إندونيسيا" : "Indonesia", flag: "/image/flags/indonesia.png" },
+    { name: locale === "ar" ? "إسبانيا" : "Spain", flag: "/image/flags/spain.png" },
+    { name: locale === "ar" ? "إيطاليا" : "Italy", flag: "/image/flags/italy.png" },
+    { name: locale === "ar" ? "الهند" : "India", flag: "/image/flags/india.png" },
+    { name: locale === "ar" ? "الصين" : "China", flag: "/image/flags/china.png" },
   ];
 
   return (
@@ -95,10 +95,17 @@ export default function RegisterPage() {
                 {countries.map((country, index) => (
                   <button 
                     key={index} 
-                    className="bg-[#3d2e20] hover:bg-[#4d3e30] text-white p-6 rounded-2xl flex flex-col items-center gap-3 transition-transform hover:scale-105 shadow-xl border border-white/5"
+                    className="bg-[#3d2e20] hover:bg-[#4d3e30] text-white p-5 rounded-2xl flex flex-col items-center gap-4 transition-transform hover:scale-105 shadow-xl border border-white/5 h-40 justify-center"
                   >
-                    <span className="text-4xl md:text-5xl filter drop-shadow-md">{country.flag}</span>
-                    <span className="text-base md:text-lg font-bold tracking-wide font-bold">{country.name}</span>
+                    <div className="relative w-16 h-16 overflow-hidden rounded-full border-2 border-white/10 shadow-lg">
+                      <Image 
+                        src={country.flag} 
+                        alt={country.name} 
+                        fill 
+                        className="object-cover scale-110"
+                      />
+                    </div>
+                    <span className="text-xl md:text-2xl font-black tracking-tight font-bold">{country.name}</span>
                   </button>
                 ))}
               </div>

@@ -21,6 +21,7 @@ export default function Navbar() {
   const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
 
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const languages = [
     { name: "العربية", code: "ar" },
@@ -46,7 +47,6 @@ export default function Navbar() {
           <span className="text-xl md:text-3xl font-black tracking-wider font-bold">{dict.brand}</span>
           <div className="flex items-center gap-4 md:gap-8 text-sm md:text-xl font-bold">
             
-            {/* في الهوم بيج تظهر فقط "تواصل"، وفي غيرها تظهر الروابط كاملة */}
             {!isHomePage && (
               <>
                 <Link 
@@ -64,7 +64,6 @@ export default function Navbar() {
               </>
             )}
             
-            {/* "تواصل" تظهر دائماً في كل الصفحات */}
             <Link 
               href={`/${locale}/contact`} 
               className={`hover:opacity-70 transition ${pathname === `/${locale}/contact` ? 'border-b-2 border-white' : ''} font-bold`}
@@ -80,7 +79,10 @@ export default function Navbar() {
           {/* 1. زر اللغة */}
           <div className="relative">
             <button 
-              onClick={() => setIsLangOpen(!isLangOpen)}
+              onClick={() => {
+                setIsLangOpen(!isLangOpen);
+                setIsProfileOpen(false);
+              }}
               className="flex items-center justify-center gap-2 h-8 md:h-10 px-3 md:px-4 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/20 group"
             >
               <svg className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,11 +106,41 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* 2. أيقونة البروفايل - تظهر دائماً */}
-          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer">
-             <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 md:w-6 md:h-6">
-               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-             </svg>
+          {/* 2. أيقونة البروفايل مع القائمة */}
+          <div className="relative">
+            <button 
+              onClick={() => {
+                setIsProfileOpen(!isProfileOpen);
+                setIsLangOpen(false);
+              }}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer"
+            >
+               <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 md:w-6 md:h-6">
+                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+               </svg>
+            </button>
+
+            {isProfileOpen && (
+              <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
+                <Link 
+                  href={`/${locale}/profile`}
+                  onClick={() => setIsProfileOpen(false)}
+                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
+                >
+                  <span>{dict.profile || "الملف الشخصي"}</span>
+                </Link>
+
+                <button 
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    router.push(`/${locale}`);
+                  }}
+                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
+                >
+                  <span>{dict.logout || "تسجيل الخروج"}</span>
+                </button>
+              </div>
+            )}
           </div>
 
         </div>

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import ar from "@/locales/ar/common.json";
 import en from "@/locales/en/common.json";
+import { CATEGORIES_CONFIG } from "@/lib/categories-config";
 
 const dictionaries = { ar, en };
 
@@ -14,14 +15,13 @@ export default function CategoriesPage() {
   const dict = dictionaries[locale as keyof typeof dictionaries] || ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const categories = [
-    { name: dict.dashboard.sections.traffic },
-    { name: dict.dashboard.sections.food },
-    { name: dict.dashboard.sections.commerce },
-    { name: dict.dashboard.sections.environment },
-    { name: dict.dashboard.sections.publicDecency },
-    { name: dict.dashboard.sections.health },
-  ];
+  const categories = CATEGORIES_CONFIG.map(cat => (
+      {
+      name: (dict.dashboard.sections as any)[cat.key], 
+      img: cat.img
+      }
+    )
+  );
 
   return (
     <main className="relative min-h-screen w-full flex flex-col items-center overflow-x-hidden" dir={dir}>
@@ -45,17 +45,29 @@ export default function CategoriesPage() {
         </h2>
 
         {/* شبكة الأقسام بحجم أصغر */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 w-full max-w-5xl px-6 pb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl px-12 md:px-6 pb-20">
           {categories.map((cat, index) => (
             <div 
               key={index} 
-              className="relative h-32 md:h-44 rounded-2xl overflow-hidden group cursor-pointer shadow-xl transition-all hover:-translate-y-1 bg-[#3d2e20]/80 backdrop-blur-md border border-white/10"
+             className="relative h-28 md:h-44 rounded-2xl overflow-hidden group cursor-pointer shadow-xl transition-all hover:-translate-y-1 bg-[#1a120b] border border-white/10 flex items-stretch"
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90" />
-              <div className="absolute inset-0 flex items-center justify-center p-4">
-                <span className="text-xl md:text-3xl font-bold text-white drop-shadow-2xl text-center leading-tight font-bold">
+              {/* 1. حاوية النص - 30% من العرض */}
+              <div className="w-[40%] md:w-[30%] flex items-center justify-center p-2 z-20 bg-[#1a120b]/80 backdrop-blur-md">
+                <span className="text-xl md:text-3xl font-black text-white drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] text-center leading-none font-bold tracking-tighter">
                   {cat.name}
                 </span>
+              </div>
+
+              {/* 2. حاوية الصورة - 70% من العرض */}
+             <div className="relative w-[60%] md:w-[70%] h-full">
+                <Image 
+                  src={cat.img} 
+                  alt={cat.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                {/* التدرج اللوني - يخرج من جهة النص */}
+                <div className={`absolute inset-0 ${dir === 'rtl' ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#1a120b] via-transparent to-transparent z-10`} />
               </div>
             </div>
           ))}

@@ -3,13 +3,15 @@
     "brand": "تباين",
     "home": "الرئيسية",
     "contact": "تواصل",
-    "browse": "تصفح"
+    "browse": "تصفح",
+    "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج"
   },
   "dashboard": {
     "categories": "الأقسام",
     "sections": {
       "traffic": "المرور",
-      "food": "المأكولات",
+      "food": "الطعام",
       "commerce": "التجارة",
       "environment": "البيئة",
       "publicDecency": "الذوق العام",
@@ -25,8 +27,23 @@
       "enter": "دخول",
       "createAccount": "إنشاء حساب",
       "google": "الدخول عبر قوقل",
-      "rights": "جميع الحقوق محفوظة لتباين ©"
-    },
+      "rights": "جميع الحقوق محفوظة لتباين ©",
+    "profile": {
+      "title": "الملف الشخصي",
+      "changePhoto": "تغيير الصورة",
+      "country": "الدولة",
+      "language": "اللغة",
+      "favorites": "المفضلة",
+      "name": "الاسم",
+      "email": "البريد الالكتروني",
+      "logout": "تسجيل الخروج",
+      "germany": "ألمانيا",
+      "arabic": "عربي",
+      "lawsCount": "7 قوانين",
+      "userName": "فيصل",
+      "userEmail": "user@gmail.com"
+    }
+  },
     "register": {
       "welcome": "يا هلا والله !",
       "needInfo": "نحتاج بعض المعلومات لإنشاء حسابك",
