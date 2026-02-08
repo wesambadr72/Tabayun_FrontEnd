@@ -35,7 +35,7 @@ export default function RegisterPage() {
         <Image src="/image/saudi.png" alt="Background" fill className="object-cover" priority />
       </div>
 
-      <div className="relative z-20 w-full max-w-3xl flex flex-col items-center text-center px-4">
+      <div className="relative z-20 w-full max-w-5xl flex flex-col items-center text-center px-4">
         
         {/* الترحيب وشريط التقدم */}
         {step !== 5 && (
@@ -52,24 +52,24 @@ export default function RegisterPage() {
         )}
 
         {/* محتوى الخطوات */}
-        <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
+        <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
           
           {step === 1 && (
-            <div className="w-full flex flex-col items-center">
+            <div className="w-full flex flex-col items-center max-w-2xl">
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.emailQuestion}</h2>
               <input type="email" placeholder={dict.emailPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
             </div>
           )}
 
           {step === 2 && (
-            <div className="w-full flex flex-col items-center">
+            <div className="w-full flex flex-col items-center max-w-2xl">
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.nameQuestion}</h2>
               <input type="text" placeholder={dict.namePlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
             </div>
           )}
 
           {step === 3 && (
-            <div className="w-full flex flex-col items-center">
+            <div className="w-full flex flex-col items-center max-w-2xl">
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.passwordQuestion}</h2>
               <input type="password" placeholder={dict.passwordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
               <p className="text-white/90 text-sm md:text-base leading-relaxed mt-4 text-center max-w-md font-regular">
@@ -79,33 +79,37 @@ export default function RegisterPage() {
           )}
 
           {step === 4 && (
-            <div className="w-full flex flex-col items-center">
+            <div className="w-full flex flex-col items-center max-w-2xl">
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.repeatPasswordQuestion}</h2>
               <input type="password" placeholder={dict.repeatPasswordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
             </div>
           )}
 
-          {/* خطوة اختيار الدولة - الشبكة الجديدة */}
+          {/* خطوة اختيار الدولة - التصميم المطلوب */}
           {step === 5 && (
             <div className="w-full flex flex-col items-center py-6">
               <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-10 text-center font-bold">
                 {dict.compareQuestion}
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                 {countries.map((country, index) => (
                   <button 
                     key={index} 
-                    className="bg-[#3d2e20] hover:bg-[#4d3e30] text-white p-5 rounded-2xl flex flex-col items-center gap-4 transition-transform hover:scale-105 shadow-xl border border-white/5 h-40 justify-center"
+                    className="bg-[#3d2e20] hover:bg-[#4d3e30] text-white p-6 rounded-[32px] flex flex-col items-center gap-6 transition-transform hover:scale-105 shadow-2xl border border-white/5 h-52 justify-center group"
                   >
-                    <div className="relative w-16 h-16 overflow-hidden rounded-full border-2 border-white/10 shadow-lg">
+                    {/* العلم الدائري في الأعلى */}
+                    <div className="relative w-20 h-20 md:w-24 md:h-24 overflow-hidden rounded-full border-4 border-white/10 shadow-lg shrink-0">
                       <Image 
                         src={country.flag} 
                         alt={country.name} 
                         fill 
-                        className="object-cover scale-110"
+                        className="object-cover scale-110 group-hover:scale-125 transition-transform duration-500"
                       />
                     </div>
-                    <span className="text-xl md:text-2xl font-black tracking-tight font-bold">{country.name}</span>
+                    {/* اسم الدولة في سطر واحد */}
+                    <span className="text-xl md:text-2xl font-bold tracking-tight whitespace-nowrap">
+                      {country.name}
+                    </span>
                   </button>
                 ))}
               </div>
