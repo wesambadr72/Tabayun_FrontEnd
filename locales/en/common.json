@@ -27,6 +27,21 @@
       "google": "Sign in with Google",
       "rights": "All rights reserved to Tabayun ©"
     },
+    "profile": {
+      "title": "Profile",
+      "changePhoto": "Change Photo",
+      "country": "Country",
+      "language": "Language",
+      "favorites": "Favorites",
+      "name": "Name",
+      "email": "Email",
+      "logout": "Logout",
+      "germany": "Germany",
+      "arabic": "Arabic",
+      "lawsCount": "7 Laws",
+      "userName": "Faisal",
+      "userEmail": "user@gmail.com"
+    },
     "register": {
       "welcome": "Welcome!",
       "needInfo": "We need some information to create your account",
