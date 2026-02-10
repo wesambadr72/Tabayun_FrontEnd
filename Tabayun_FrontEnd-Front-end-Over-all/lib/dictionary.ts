@@ -1,0 +1,14 @@
+import 'server-only';
+
+const dictionaries = {
+  en: () => import('../locales/en/common.json').then((module) => module.default),
+  ar: () => import('../locales/ar/common.json').then((module) => module.default),
+};
+
+export const getDictionary = async (locale: string) => {
+  return dictionaries[locale as keyof typeof dictionaries]?.() ?? dictionaries.ar();
+};
+
+export const getDirection = (locale: string) => {
+  return locale === 'ar' ? 'rtl' : 'ltr';
+};
