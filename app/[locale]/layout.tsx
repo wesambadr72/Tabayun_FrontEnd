@@ -28,7 +28,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir} className={`${handicraftsBold.variable} ${handicraftsRegular.variable}`}>
-      <body className={inter.className}>{children}</body>
+      <body className="font-regular antialiased text-[#3d2e20]">{children}</body>
     </html>
   );
 }

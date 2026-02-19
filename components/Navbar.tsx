@@ -13,9 +13,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const locale = (params.locale as string) || "ar";
   const dict = (dictionaries[locale as keyof typeof dictionaries] || ar).navbar;
-  
+
   // الاتجاه يعتمد على اللغة المختارة
-  const dir = locale === 'ar' ? 'rtl' : 'ltr'; 
+  const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   // فحص هل نحن في الصفحة الرئيسية (قبل تسجيل الدخول)
   const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
@@ -40,32 +40,32 @@ export default function Navbar() {
 
   return (
     <div className="fixed top-4 md:top-6 left-0 right-0 z-50 flex justify-center px-2 md:px-4" dir={dir}>
-      <nav className="flex justify-between items-center w-full max-w-6xl bg-white/10 backdrop-blur-md border border-white/20 px-4 md:px-8 py-2 md:py-3 rounded-full shadow-2xl text-white">
-        
+      <nav className="flex justify-between items-center w-full max-w-6xl bg-[#3d2e20]/95 backdrop-blur-md border border-white/10 px-4 md:px-8 py-2 md:py-3 rounded-full shadow-2xl text-white">
+
         {/* القسم الأيمن (في RTL) / الأيسر (في LTR): تباين والروابط */}
         <div className="flex items-center gap-4 md:gap-12">
           <span className="text-xl md:text-3xl font-black tracking-wider font-bold">{dict.brand}</span>
           <div className="flex items-center gap-4 md:gap-8 text-sm md:text-xl font-bold">
-            
+
             {!isHomePage && (
               <>
-                <Link 
-                  href={`/${locale}/dashboard`} 
+                <Link
+                  href={`/${locale}/dashboard`}
                   className={`hover:opacity-70 transition ${pathname.includes('/dashboard') && !pathname.includes('/categories') ? 'border-b-2 border-white' : ''} pb-0.5 font-bold`}
                 >
                   {dict.home}
                 </Link>
-                <Link 
-                  href={`/${locale}/categories`} 
+                <Link
+                  href={`/${locale}/categories`}
                   className={`hover:opacity-70 transition ${pathname.includes('/categories') ? 'border-b-2 border-white' : ''} font-bold`}
                 >
                   {dict.browse}
                 </Link>
               </>
             )}
-            
-            <Link 
-              href={`/${locale}/contact`} 
+
+            <Link
+              href={`/${locale}/contact`}
               className={`hover:opacity-70 transition ${pathname === `/${locale}/contact` ? 'border-b-2 border-white' : ''} font-bold`}
             >
               {dict.contact}
@@ -75,10 +75,10 @@ export default function Navbar() {
 
         {/* القسم الأيسر (في RTL) / الأيمن (في LTR): اللغة ثم البروفايل */}
         <div className="flex items-center gap-2 md:gap-6">
-          
+
           {/* 1. زر اللغة */}
           <div className="relative">
-            <button 
+            <button
               onClick={() => {
                 setIsLangOpen(!isLangOpen);
                 setIsProfileOpen(false);
@@ -108,21 +108,21 @@ export default function Navbar() {
 
           {/* 2. أيقونة البروفايل مع القائمة */}
           <div className="relative">
-            <button 
+            <button
               onClick={() => {
                 setIsProfileOpen(!isProfileOpen);
                 setIsLangOpen(false);
               }}
               className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer"
             >
-               <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 md:w-6 md:h-6">
-                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-               </svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 md:w-6 md:h-6">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
             </button>
 
             {isProfileOpen && (
               <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
-                <Link 
+                <Link
                   href={`/${locale}/profile`}
                   onClick={() => setIsProfileOpen(false)}
                   className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
@@ -130,7 +130,7 @@ export default function Navbar() {
                   <span>{dict.profile || "الملف الشخصي"}</span>
                 </Link>
 
-                <button 
+                <button
                   onClick={() => {
                     setIsProfileOpen(false);
                     router.push(`/${locale}`);

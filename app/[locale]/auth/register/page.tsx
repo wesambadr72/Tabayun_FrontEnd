@@ -2,19 +2,37 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ar from "../../../../locales/ar/common.json";
 import en from "../../../../locales/en/common.json";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Lock, Check } from "lucide-react";
 
 const dictionaries = { ar, en };
 
 export default function RegisterPage() {
   const params = useParams();
+  const router = useRouter();
   const locale = (params.locale as string) || "ar";
   const dict = (dictionaries[locale as keyof typeof dictionaries] || ar).auth.register;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   const [step, setStep] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Custom input state
+  const [formData, setFormData] = useState({
+    email: "",
+    name: "",
+    password: "",
+    repeatPassword: "",
+    country: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const countries = [
     { name: locale === "ar" ? "ألمانيا" : "Germany", flag: "/image/flags/germany.png" },
@@ -27,116 +45,202 @@ export default function RegisterPage() {
     { name: locale === "ar" ? "الصين" : "China", flag: "/image/flags/china.png" },
   ];
 
+  const handleNext = () => {
+    if (step < 5) setStep(step + 1);
+    else {
+      // Submit logic would go here
+      alert("Registration Complete!");
+    }
+  };
+
+  const handleBack = () => {
+    if (step === 1) {
+      router.push(`/${locale}/auth/login`);
+    } else {
+      setStep(step - 1);
+    }
+  };
+
   return (
-    <main className="relative min-h-screen w-full flex flex-col items-center justify-center p-4" dir={dir}>
-      {/* الخلفية */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <Image src="/image/saudi.png" alt="Background" fill className="object-cover" priority />
+    <main className="flex min-h-screen flex-col items-center justify-between bg-[#f5f1eb]" dir={dir}>
+      {/* Navbar Wrapper */}
+      <div className="fixed top-0 w-full z-50 flex justify-center py-4 bg-transparent pointer-events-none">
+        <div className="pointer-events-auto w-full max-w-6xl px-4">
+          <Navbar />
+        </div>
       </div>
 
-      <div className="relative z-20 w-full max-w-5xl flex flex-col items-center text-center px-4">
-        
-        {/* الترحيب وشريط التقدم */}
+      {/* Main Content */}
+      <div className="w-full mt-32 mb-10 flex-grow flex flex-col items-center justify-center px-4 md:px-6 relative">
+
+        {/* Background Elements - Subtle */}
+        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-[#3d2e20]/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-[#d4c5b5]/40 rounded-full blur-[100px] pointer-events-none" />
+
+        {/* Progress Dots */}
         {step !== 5 && (
-          <div className="flex flex-col items-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-2 drop-shadow-lg font-bold">{dict.welcome}</h1>
-            <p className="text-white text-sm sm:text-base md:text-xl font-medium mb-8 opacity-90 font-regular">{dict.needInfo}</p>
-            
-            <div className="flex gap-1 md:gap-2 mb-10 md:mb-16 justify-center" dir="ltr">
+          <div className="relative z-10 flex justify-center mb-12">
+            <div className="flex gap-3" dir="ltr">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className={`h-2 md:h-3 w-12 sm:w-16 md:w-20 rounded-full border border-white/30 transition-all duration-500 ${i <= step ? 'bg-[#3d2e20]' : 'bg-white/20'}`} />
+                <div
+                  key={i}
+                  className={`h-2.5 rounded-full transition-all duration-500 ease-out shadow-sm ${i === step ? 'w-12 bg-[#3d2e20]' :
+                      i < step ? 'w-4 bg-[#3d2e20]/60' : 'w-2.5 bg-[#3d2e20]/20'
+                    }`}
+                />
               ))}
             </div>
           </div>
         )}
 
-        {/* محتوى الخطوات */}
-        <div className="w-full max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
-          
+        <div className="relative z-10 w-full max-w-2xl flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
+
+          {/* Headers */}
+          {step !== 5 && (
+            <div className="space-y-4 mb-10">
+              <h1 className="text-4xl md:text-6xl font-black text-[#3d2e20] tracking-tight">{dict.welcome}</h1>
+              <p className="text-[#3d2e20]/70 text-lg md:text-2xl font-medium">{dict.needInfo}</p>
+            </div>
+          )}
+
+          {/* Step 1: Email */}
           {step === 1 && (
-            <div className="w-full flex flex-col items-center max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.emailQuestion}</h2>
-              <input type="email" placeholder={dict.emailPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
+            <div className="w-full space-y-8">
+              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.emailQuestion}</h2>
+              <div className="relative group">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder={dict.emailPlaceholder}
+                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
+                />
+                <Mail className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
+              </div>
             </div>
           )}
 
+          {/* Step 2: Name */}
           {step === 2 && (
-            <div className="w-full flex flex-col items-center max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.nameQuestion}</h2>
-              <input type="text" placeholder={dict.namePlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
+            <div className="w-full space-y-8">
+              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.nameQuestion}</h2>
+              <div className="relative group">
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder={dict.namePlaceholder}
+                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
+                />
+                <User className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
+              </div>
             </div>
           )}
 
+          {/* Step 3: Password */}
           {step === 3 && (
-            <div className="w-full flex flex-col items-center max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.passwordQuestion}</h2>
-              <input type="password" placeholder={dict.passwordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
-              <p className="text-white/90 text-sm md:text-base leading-relaxed mt-4 text-center max-w-md font-regular">
+            <div className="w-full space-y-8">
+              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.passwordQuestion}</h2>
+              <div className="relative group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder={dict.passwordPlaceholder}
+                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
+                />
+                <Lock className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
+                <button
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute top-1/2 -translate-y-1/2 right-6 rtl:right-auto rtl:left-6 text-[#3d2e20]/40 hover:text-[#3d2e20] transition p-2"
+                >
+                  {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
+                </button>
+              </div>
+              <p className="text-[#3d2e20]/60 text-base font-medium leading-relaxed max-w-lg mx-auto bg-white/50 p-6 rounded-2xl border border-[#3d2e20]/5 shadow-sm">
                 {dict.passwordHint}
               </p>
             </div>
           )}
 
+          {/* Step 4: Repeat Password */}
           {step === 4 && (
-            <div className="w-full flex flex-col items-center max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 font-bold">{dict.repeatPasswordQuestion}</h2>
-              <input type="password" placeholder={dict.repeatPasswordPlaceholder} className="w-full max-w-md bg-white border-2 border-[#3d2e20] rounded-2xl py-4 px-6 text-xl text-center shadow-xl focus:outline-none font-regular" />
+            <div className="w-full space-y-8">
+              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.repeatPasswordQuestion}</h2>
+              <div className="relative group">
+                <input
+                  type="password"
+                  name="repeatPassword"
+                  value={formData.repeatPassword}
+                  onChange={handleChange}
+                  placeholder={dict.repeatPasswordPlaceholder}
+                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
+                />
+                <Lock className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
+              </div>
             </div>
           )}
 
-          {/* خطوة اختيار الدولة - التصميم المطلوب */}
+          {/* Step 5: Country Selection */}
           {step === 5 && (
-            <div className="w-full flex flex-col items-center py-6">
-              <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-10 text-center font-bold">
+            <div className="w-full max-w-4xl animate-in zoom-in-95 duration-500">
+              <h2 className="text-3xl md:text-5xl font-black mb-16 text-center leading-tight text-[#3d2e20]">
                 {dict.compareQuestion}
               </h2>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-                {countries.map((country, index) => (
-                  <button 
-                    key={index} 
-                    className="bg-[#3d2e20] hover:bg-[#4d3e30] text-white p-6 rounded-[32px] flex flex-col items-center gap-6 transition-transform hover:scale-105 shadow-2xl border border-white/5 h-52 justify-center group"
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+                {countries.map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setFormData({ ...formData, country: item.name })}
+                    className={`group relative flex flex-col items-center justify-center p-6 md:p-8 rounded-[2rem] border-2 transition-all duration-300 ${formData.country === item.name ? 'bg-[#3d2e20] text-white border-[#3d2e20] scale-105 shadow-2xl' : 'bg-white border-transparent shadow-lg text-[#3d2e20] hover:border-[#3d2e20]/20 hover:shadow-xl hover:-translate-y-1'}`}
                   >
-                    {/* العلم الدائري في الأعلى */}
-                    <div className="relative w-20 h-20 md:w-24 md:h-24 overflow-hidden rounded-full border-4 border-white/10 shadow-lg shrink-0">
-                      <Image 
-                        src={country.flag} 
-                        alt={country.name} 
-                        fill 
-                        className="object-cover scale-110 group-hover:scale-125 transition-transform duration-500"
+                    <div className={`relative w-20 h-20 md:w-24 md:h-24 mb-6 rounded-full overflow-hidden shadow-lg border-4 transition-transform duration-500 group-hover:scale-110 ${formData.country === item.name ? 'border-white/20' : 'border-[#3d2e20]/10'}`}>
+                      <Image
+                        src={item.flag}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
                       />
                     </div>
-                    {/* اسم الدولة في سطر واحد */}
-                    <span className="text-xl md:text-2xl font-bold tracking-tight whitespace-nowrap">
-                      {country.name}
-                    </span>
+                    <span className="font-bold text-lg md:text-xl tracking-wide">{item.name}</span>
+
+                    {formData.country === item.name && (
+                      <div className="absolute top-4 right-4 bg-white text-[#3d2e20] rounded-full p-1.5 shadow-md animate-in fade-in zoom-in">
+                        <Check className="w-4 h-4" />
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
             </div>
           )}
-        </div>
 
-        {/* أزرار التحكم - ثابتة المواقع حسب اللغة */}
-        <div className={`w-full max-w-md flex justify-between items-center gap-6 mt-12 md:mt-20 ${dir === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-          {/* زر الخروج / السابق */}
-          <button 
-            onClick={() => step === 1 ? window.location.href=`/${locale}/auth/login` : setStep(step - 1)}
-            className="flex-1 bg-white text-[#3d2e20] border-2 border-[#3d2e20] py-3 rounded-full text-xl md:text-2xl font-bold hover:bg-gray-100 transition shadow-lg font-bold"
-          >
-            {step === 1 ? dict.exit : dict.back}
-          </button>
-          
-          {/* زر التالي / تأكيد */}
-          <button 
-            onClick={() => step < 5 ? setStep(step + 1) : alert("Registration Complete!")}
-            className="flex-1 bg-[#3d2e20] text-white py-3 rounded-full text-xl md:text-2xl font-bold hover:opacity-90 transition shadow-lg font-bold"
-          >
-            {step === 4 ? dict.welcomeBtn : step === 5 ? dict.confirm : dict.next}
-          </button>
-        </div>
+          {/* Actions */}
+          <div className="w-full max-w-lg mt-16 flex items-center gap-6">
+            <button
+              onClick={handleBack}
+              className="flex-1 py-4 px-8 rounded-full border-2 border-[#3d2e20]/20 hover:bg-[#3d2e20]/5 text-[#3d2e20] font-bold transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 text-lg"
+            >
+              {locale === "ar" ? <ArrowRight className="w-6 h-6" /> : <ArrowLeft className="w-6 h-6" />}
+              <span>{step === 1 ? dict.exit : dict.back}</span>
+            </button>
 
+            <button
+              onClick={handleNext}
+              className="flex-[2] py-4 px-8 rounded-full bg-[#3d2e20] text-white font-bold shadow-xl shadow-[#3d2e20]/20 hover:shadow-2xl hover:bg-[#2a1f15] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 text-lg"
+            >
+              <span>{step === 4 ? dict.welcomeBtn : step === 5 ? dict.confirm : dict.next}</span>
+              {locale === "ar" ? <ArrowLeft className="w-6 h-6" /> : <ArrowRight className="w-6 h-6" />}
+            </button>
+          </div>
+
+        </div>
       </div>
+
+      <Footer />
     </main>
   );
 }
