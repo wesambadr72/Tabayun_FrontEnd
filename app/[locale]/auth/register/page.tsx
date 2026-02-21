@@ -7,7 +7,7 @@ import ar from "../../../../locales/ar/common.json";
 import en from "../../../../locales/en/common.json";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Lock, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Lock, Check, Sparkles, Globe } from "lucide-react";
 
 const dictionaries = { ar, en };
 
@@ -48,8 +48,8 @@ export default function RegisterPage() {
   const handleNext = () => {
     if (step < 5) setStep(step + 1);
     else {
-      // Submit logic would go here
-      alert("Registration Complete!");
+      alert(locale === 'ar' ? "تم التسجيل بنجاح!" : "Registration Complete!");
+      router.push(`/${locale}/dashboard`);
     }
   };
 
@@ -62,182 +62,197 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-[#f5f1eb]" dir={dir}>
-      {/* Navbar Wrapper */}
-      <div className="fixed top-0 w-full z-50 flex justify-center py-4 bg-transparent pointer-events-none">
-        <div className="pointer-events-auto w-full max-w-6xl px-4">
-          <Navbar />
-        </div>
-      </div>
+    <main className="flex min-h-screen flex-col items-center bg-[#f5f1eb] overflow-x-hidden" dir={dir}>
+      <Navbar />
 
-      {/* Main Content */}
-      <div className="w-full mt-32 mb-10 flex-grow flex flex-col items-center justify-center px-4 md:px-6 relative">
+      {/* Main Container */}
+      <div className="w-full max-w-5xl mt-32 md:mt-44 mb-20 px-4 md:px-8 flex flex-col items-center relative">
 
-        {/* Background Elements - Subtle */}
-        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-[#3d2e20]/5 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-[#d4c5b5]/40 rounded-full blur-[100px] pointer-events-none" />
+        {/* Background Decorative Blobs */}
+        <div className="absolute top-0 -right-20 w-96 h-96 bg-[#3d2e20]/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 -left-20 w-96 h-96 bg-[#d4c5b5]/40 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* Progress Dots */}
+        {/* Step Counter Badge */}
         {step !== 5 && (
-          <div className="relative z-10 flex justify-center mb-12">
-            <div className="flex gap-3" dir="ltr">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className={`h-2.5 rounded-full transition-all duration-500 ease-out shadow-sm ${i === step ? 'w-12 bg-[#3d2e20]' :
-                      i < step ? 'w-4 bg-[#3d2e20]/60' : 'w-2.5 bg-[#3d2e20]/20'
-                    }`}
-                />
-              ))}
+          <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="px-6 py-2 bg-white border border-[#3d2e20]/10 rounded-full shadow-sm flex items-center gap-3">
+              <span className="text-xs font-black text-[#3d2e20]/40 uppercase tracking-widest leading-none">
+                {locale === 'ar' ? 'المرحلة' : 'Step'}
+              </span>
+              <div className="flex gap-1.5" dir="ltr">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === step ? 'w-4 bg-[#3d2e20]' : 'bg-[#3d2e20]/20'}`} />
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        <div className="relative z-10 w-full max-w-2xl flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <div className="w-full max-w-3xl bg-white rounded-[3rem] shadow-2xl shadow-[#3d2e20]/10 border border-[#3d2e20]/5 p-8 md:p-16 relative overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700">
 
-          {/* Headers */}
-          {step !== 5 && (
-            <div className="space-y-4 mb-10">
-              <h1 className="text-4xl md:text-6xl font-black text-[#3d2e20] tracking-tight">{dict.welcome}</h1>
-              <p className="text-[#3d2e20]/70 text-lg md:text-2xl font-medium">{dict.needInfo}</p>
-            </div>
-          )}
-
-          {/* Step 1: Email */}
-          {step === 1 && (
-            <div className="w-full space-y-8">
-              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.emailQuestion}</h2>
-              <div className="relative group">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder={dict.emailPlaceholder}
-                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
-                />
-                <Mail className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
+          {/* Inner Content Headers */}
+          <div className="text-center mb-12 space-y-4">
+            {step === 5 ? (
+              <div className="w-20 h-20 bg-[#3d2e20]/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <Globe className="w-10 h-10 text-[#3d2e20]" />
               </div>
-            </div>
-          )}
-
-          {/* Step 2: Name */}
-          {step === 2 && (
-            <div className="w-full space-y-8">
-              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.nameQuestion}</h2>
-              <div className="relative group">
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder={dict.namePlaceholder}
-                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
-                />
-                <User className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
+            ) : (
+              <div className="w-16 h-16 bg-[#3d2e20]/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="w-8 h-8 text-[#3d2e20]" />
               </div>
-            </div>
-          )}
+            )}
+            <h1 className="text-3xl md:text-5xl font-black text-[#3d2e20] leading-tight">
+              {step === 5 ? dict.compareQuestion : dict.welcome}
+            </h1>
+            <p className="text-[#3d2e20]/60 text-lg md:text-xl font-medium">
+              {step === 5 ? (locale === 'ar' ? "أين ولدت أو تقيم حالياً؟" : "Where calculation were you born or reside?") : dict.needInfo}
+            </p>
+          </div>
 
-          {/* Step 3: Password */}
-          {step === 3 && (
-            <div className="w-full space-y-8">
-              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.passwordQuestion}</h2>
-              <div className="relative group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder={dict.passwordPlaceholder}
-                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
-                />
-                <Lock className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
-                <button
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute top-1/2 -translate-y-1/2 right-6 rtl:right-auto rtl:left-6 text-[#3d2e20]/40 hover:text-[#3d2e20] transition p-2"
-                >
-                  {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
-                </button>
+          {/* Steps Rendering */}
+          <div className="space-y-8 min-h-[140px] flex flex-col justify-center">
+            {/* Step 1: Email */}
+            {step === 1 && (
+              <div className="space-y-4 animate-in fade-in zoom-in-95 duration-500">
+                <label className="text-sm font-black text-[#3d2e20]/40 uppercase tracking-widest px-2">{dict.emailQuestion}</label>
+                <div className="relative group">
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder={dict.emailPlaceholder}
+                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                    autoFocus
+                  />
+                  <Mail className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                </div>
               </div>
-              <p className="text-[#3d2e20]/60 text-base font-medium leading-relaxed max-w-lg mx-auto bg-white/50 p-6 rounded-2xl border border-[#3d2e20]/5 shadow-sm">
-                {dict.passwordHint}
-              </p>
-            </div>
-          )}
+            )}
 
-          {/* Step 4: Repeat Password */}
-          {step === 4 && (
-            <div className="w-full space-y-8">
-              <h2 className="text-3xl font-bold text-[#3d2e20]">{dict.repeatPasswordQuestion}</h2>
-              <div className="relative group">
-                <input
-                  type="password"
-                  name="repeatPassword"
-                  value={formData.repeatPassword}
-                  onChange={handleChange}
-                  placeholder={dict.repeatPasswordPlaceholder}
-                  className="w-full bg-white border-2 border-transparent focus:border-[#3d2e20]/20 shadow-xl shadow-[#3d2e20]/5 rounded-[2rem] px-8 py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/30 text-[#3d2e20] text-center font-bold"
-                />
-                <Lock className="w-8 h-8 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 transition-colors group-focus-within:text-[#3d2e20]" />
+            {/* Step 2: Name */}
+            {step === 2 && (
+              <div className="space-y-4 animate-in fade-in zoom-in-95 duration-500">
+                <label className="text-sm font-black text-[#3d2e20]/40 uppercase tracking-widest px-2">{dict.nameQuestion}</label>
+                <div className="relative group">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder={dict.namePlaceholder}
+                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                    autoFocus
+                  />
+                  <User className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Step 5: Country Selection */}
-          {step === 5 && (
-            <div className="w-full max-w-4xl animate-in zoom-in-95 duration-500">
-              <h2 className="text-3xl md:text-5xl font-black mb-16 text-center leading-tight text-[#3d2e20]">
-                {dict.compareQuestion}
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {/* Step 3: Password */}
+            {step === 3 && (
+              <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+                <div className="space-y-4">
+                  <label className="text-sm font-black text-[#3d2e20]/40 uppercase tracking-widest px-2">{dict.passwordQuestion}</label>
+                  <div className="relative group">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder={dict.passwordPlaceholder}
+                      className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                      autoFocus
+                    />
+                    <Lock className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                    <button
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute top-1/2 -translate-y-1/2 right-6 rtl:right-auto rtl:left-6 text-[#3d2e20]/40 hover:text-[#3d2e20] transition p-2"
+                    >
+                      {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-[#f5f1eb]/50 p-5 rounded-2xl border border-[#3d2e20]/5">
+                  <p className="text-[#3d2e20]/60 text-sm font-medium leading-relaxed">
+                    {dict.passwordHint}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Repeat Password */}
+            {step === 4 && (
+              <div className="space-y-4 animate-in fade-in zoom-in-95 duration-500">
+                <label className="text-sm font-black text-[#3d2e20]/40 uppercase tracking-widest px-2">{dict.repeatPasswordQuestion}</label>
+                <div className="relative group">
+                  <input
+                    type="password"
+                    name="repeatPassword"
+                    value={formData.repeatPassword}
+                    onChange={handleChange}
+                    placeholder={dict.repeatPasswordPlaceholder}
+                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                    autoFocus
+                  />
+                  <Lock className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Country Selection Overlay */}
+            {step === 5 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-in fade-in zoom-in-95 duration-700">
                 {countries.map((item, index) => (
                   <button
                     key={index}
                     onClick={() => setFormData({ ...formData, country: item.name })}
-                    className={`group relative flex flex-col items-center justify-center p-6 md:p-8 rounded-[2rem] border-2 transition-all duration-300 ${formData.country === item.name ? 'bg-[#3d2e20] text-white border-[#3d2e20] scale-105 shadow-2xl' : 'bg-white border-transparent shadow-lg text-[#3d2e20] hover:border-[#3d2e20]/20 hover:shadow-xl hover:-translate-y-1'}`}
+                    className={`group flex flex-col items-center p-5 rounded-[2rem] border-2 transition-all duration-300 ${formData.country === item.name ? 'bg-[#3d2e20] text-white border-[#3d2e20] shadow-xl scale-105' : 'bg-[#f5f1eb]/50 border-transparent text-[#3d2e20] hover:border-[#3d2e20]/20 hover:bg-white'}`}
                   >
-                    <div className={`relative w-20 h-20 md:w-24 md:h-24 mb-6 rounded-full overflow-hidden shadow-lg border-4 transition-transform duration-500 group-hover:scale-110 ${formData.country === item.name ? 'border-white/20' : 'border-[#3d2e20]/10'}`}>
-                      <Image
-                        src={item.flag}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                      />
+                    <div className={`relative w-16 h-16 md:w-20 md:h-20 mb-4 rounded-full overflow-hidden shadow-md border-2 transition-transform duration-500 group-hover:scale-110 ${formData.country === item.name ? 'border-white/20' : 'border-[#3d2e20]/10'}`}>
+                      <Image src={item.flag} alt={item.name} fill className="object-cover" />
                     </div>
-                    <span className="font-bold text-lg md:text-xl tracking-wide">{item.name}</span>
-
+                    <span className="font-bold text-sm md:text-base">{item.name}</span>
                     {formData.country === item.name && (
-                      <div className="absolute top-4 right-4 bg-white text-[#3d2e20] rounded-full p-1.5 shadow-md animate-in fade-in zoom-in">
-                        <Check className="w-4 h-4" />
+                      <div className="absolute top-3 right-3 bg-white text-[#3d2e20] rounded-full p-1 shadow-md">
+                        <Check className="w-3 h-3" />
                       </div>
                     )}
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Actions */}
-          <div className="w-full max-w-lg mt-16 flex items-center gap-6">
+          {/* Actions Bar */}
+          <div className="flex items-center gap-4 md:gap-6 mt-16 pt-10 border-t border-[#3d2e20]/5">
             <button
               onClick={handleBack}
-              className="flex-1 py-4 px-8 rounded-full border-2 border-[#3d2e20]/20 hover:bg-[#3d2e20]/5 text-[#3d2e20] font-bold transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 text-lg"
+              className="flex-1 py-4 px-6 md:px-10 bg-[#f5f1eb] text-[#3d2e20] rounded-full font-black text-lg hover:bg-white hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-3"
             >
-              {locale === "ar" ? <ArrowRight className="w-6 h-6" /> : <ArrowLeft className="w-6 h-6" />}
-              <span>{step === 1 ? dict.exit : dict.back}</span>
+              {locale === "ar" ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+              <span>{step === 1 ? (locale === 'ar' ? 'عودة' : 'Exit') : dict.back}</span>
             </button>
 
             <button
               onClick={handleNext}
-              className="flex-[2] py-4 px-8 rounded-full bg-[#3d2e20] text-white font-bold shadow-xl shadow-[#3d2e20]/20 hover:shadow-2xl hover:bg-[#2a1f15] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 text-lg"
+              className="flex-[2] py-4 px-6 md:px-10 bg-[#3d2e20] text-white rounded-full font-black text-lg shadow-xl shadow-[#3d2e20]/20 hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
             >
               <span>{step === 4 ? dict.welcomeBtn : step === 5 ? dict.confirm : dict.next}</span>
-              {locale === "ar" ? <ArrowLeft className="w-6 h-6" /> : <ArrowRight className="w-6 h-6" />}
+              {locale === "ar" ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
             </button>
           </div>
 
         </div>
+
+        {/* Bottom Link */}
+        <div className="mt-12 text-center animate-in fade-in duration-1000 delay-500">
+          <span className="text-[#3d2e20]/40 font-bold">{locale === 'ar' ? "لديك حساب بالفعل؟" : "Already have an account?"}</span>
+          <Link href={`/${locale}/auth/login`} className="ml-2 rtl:mr-2 text-[#3d2e20] font-black hover:underline underline-offset-4">
+            {locale === 'ar' ? "سجل دخولك هنا" : "Log in here"}
+          </Link>
+        </div>
+
       </div>
 
       <Footer />

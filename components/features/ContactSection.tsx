@@ -16,7 +16,7 @@ export default function ContactSection() {
     return (
         <section className="w-full py-24 bg-transparent" dir={dir}>
             <div className="container mx-auto px-4 md:px-8 max-w-5xl">
-                <div className="relative bg-[#3d2e20] text-white rounded-[3rem] p-12 md:p-24 overflow-hidden shadow-[0_40px_100px_-20px_rgba(61,46,32,0.3)]">
+                <div className="relative bg-[#3d2e20] text-white rounded-[3rem] p-12 md:p-24 overflow-hidden shadow-[0_40px_100px_-20px_rgba(61,46,32,0.3)] animate-in fade-in zoom-in duration-1000 ease-out fill-mode-backwards">
 
                     {/* Artistic blobs */}
                     <div className="absolute top-0 right-0 w-96 h-96 bg-[#523e2b] rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 opacity-60" />

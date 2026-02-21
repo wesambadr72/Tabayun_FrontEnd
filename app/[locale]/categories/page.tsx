@@ -1,95 +1,105 @@
 "use client";
 import React from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import ar from "@/locales/ar/common.json";
-import en from "@/locales/en/common.json";
+import Footer from "@/components/Footer";
 import { CATEGORIES_CONFIG } from "@/lib/categories-config";
-import { Car, Utensils, Store, Leaf, ShieldCheck, Stethoscope } from "lucide-react";
+import {
+  Car,
+  Utensils,
+  ShieldCheck,
+  FileCheck,
+  Briefcase,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
 
-const dictionaries = { ar, en };
+const dictionaries = {
+  ar: require("@/locales/ar/common.json"),
+  en: require("@/locales/en/common.json")
+};
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   traffic: Car,
-  food: Utensils,
-  commerce: Store,
-  environment: Leaf,
+  residency: FileCheck,
   publicDecency: ShieldCheck,
-  health: Stethoscope,
+  labor: Briefcase,
+  food: Utensils,
 };
 
 export default function CategoriesPage() {
   const params = useParams();
+  const router = useRouter();
   const locale = (params.locale as string) || "ar";
-  const dict = dictionaries[locale as keyof typeof dictionaries] || ar;
+  const dict = dictionaries[locale as keyof typeof dictionaries] || dictionaries.ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   const categories = CATEGORIES_CONFIG.map(cat => ({
     name: (dict.dashboard.sections as any)[cat.key],
     description: (dict.dashboard as any).descriptions?.[cat.key],
-    icon: CATEGORY_ICONS[cat.key] || Store, // Default icon
+    icon: CATEGORY_ICONS[cat.key] || Briefcase,
     key: cat.key
   }));
 
   return (
-    <main className="relative min-h-screen w-full flex flex-col items-center overflow-x-hidden bg-[#f5f1eb]" dir={dir}>
+    <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>
       <Navbar />
 
-      <div className="relative z-20 w-full flex flex-col items-center pt-40 md:pt-48 pb-20 px-4">
-        {/* Header Section */}
-        <div className="text-center mb-16 space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <h1 className="text-4xl md:text-6xl text-[#3d2e20] font-bold tracking-tight">
+      {/* Clean Header */}
+      <div className="w-full pt-32 md:pt-44 pb-12 px-6">
+        <div className="max-w-4xl mx-auto text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <h1 className="text-3xl md:text-6xl font-black text-[#3d2e20]">
             {dict.dashboard.categories || (locale === "ar" ? "تصفح الأقسام" : "Browse Categories")}
           </h1>
-          <p className="text-[#3d2e20]/70 text-lg md:text-xl max-w-2xl mx-auto font-regular leading-relaxed">
+          <p className="text-[#3d2e20]/60 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
             {locale === "ar"
-              ? "استعرض جميع الأنظمة واللوائح المصنفة حسب المجال"
-              : "Browse all regulations and laws categorized by field"}
+              ? "استعرض جميع الأنظمة واللوائح المصنفة حسب المجال لتجد ما تبحث عنه بكل سهولة."
+              : "Browse all regulations and laws categorized by field to find what you're looking for easily."}
           </p>
         </div>
+      </div>
 
-        {/* Categories Grid - Adjusted Spacing and Size */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl px-8 md:px-12 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-150 fill-mode-backwards">
+      {/* Grid Section */}
+      <div className="flex-grow w-full max-w-6xl mx-auto px-6 pb-24">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 fill-mode-backwards">
           {categories.map((cat, index) => (
             <button
               key={index}
-              className="group relative flex flex-col items-center justify-center p-6 bg-white border border-[#3d2e20]/10 rounded-2xl hover:border-[#3d2e20]/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden h-64"
+              onClick={() => router.push(`/${locale}/laws?category=${cat.key}`)}
+              className="group bg-white p-8 rounded-[2rem] border border-[#3d2e20]/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#f5f1eb] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              <div className="relative p-5 rounded-2xl bg-[#f5f1eb] text-[#3d2e20] mb-5 group-hover:bg-[#3d2e20] group-hover:text-white transition-all duration-300 group-hover:scale-110 shadow-sm">
-                <cat.icon className="w-8 h-8 md:w-10 md:h-10" strokeWidth={1.5} />
+              <div className="w-16 h-16 bg-[#f5f1eb] text-[#3d2e20] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#3d2e20] group-hover:text-white transition-colors duration-300">
+                <cat.icon className="w-8 h-8" strokeWidth={1.5} />
               </div>
 
-              <span className="relative text-xl font-bold text-[#3d2e20] text-center group-hover:text-[#3d2e20] transition-colors mb-2">
+              <h3 className="text-xl md:text-2xl font-black text-[#3d2e20] mb-3">
                 {cat.name}
-              </span>
+              </h3>
 
-              {/* Description */}
-              <span className="relative text-sm text-[#3d2e20]/60 text-center font-regular leading-relaxed px-2 line-clamp-2 group-hover:text-[#3d2e20]/80 transition-colors">
+              <p className="text-[#3d2e20]/60 text-sm md:text-base font-medium leading-relaxed mb-6 flex-grow">
                 {cat.description}
-              </span>
+              </p>
 
-              {/* Optional: Add a subtle arrow or indicator on hover */}
-              <div className="absolute bottom-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                <span className="text-[#3d2e20]/50 text-xs font-bold">
-                  {locale === "ar" ? "عرض التفاصيل" : "View Details"}
-                </span>
+              <div className="flex items-center gap-2 text-[#3d2e20] font-black text-sm">
+                <span>{locale === 'ar' ? 'عرض التفاصيل' : 'View Details'}</span>
+                {dir === 'rtl' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </div>
             </button>
           ))}
         </div>
       </div>
 
+      <Footer />
+
       {/* Chatbot Icon */}
-      <div className={`fixed bottom-8 ${dir === 'rtl' ? 'left-8' : 'right-8'} z-30 animate-in fade-in zoom-in duration-500 delay-500`}>
-        <button className="bg-[#3d2e20] hover:bg-[#523e2b] text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center group relative border border-white/10">
+      <div className={`fixed bottom-8 ${dir === 'rtl' ? 'left-8' : 'right-8'} z-40 animate-in fade-in zoom-in duration-500 delay-500`}>
+        <button
+          onClick={() => router.push(`/${locale}/chat`)}
+          className="bg-[#3d2e20] hover:bg-[#523e2b] text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-105 active:scale-95 group relative border border-white/10"
+        >
           <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
-          <span className={`absolute bottom-full mb-3 ${dir === 'rtl' ? 'left-0' : 'right-0'} w-max px-3 py-1.5 rounded-lg bg-[#3d2e20] text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg`}>
-            {locale === "ar" ? "المساعد" : "Assistant"}
-          </span>
         </button>
       </div>
     </main>

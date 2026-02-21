@@ -5,9 +5,8 @@ export interface CategoryConfig {
 
 export const CATEGORIES_CONFIG: CategoryConfig[] = [
   { key: "traffic", img: "/image/categories/traffic.png" },
-  { key: "food", img: "/image/categories/food.png" },
-  { key: "commerce", img: "/image/categories/commerce.png" },
-  { key: "environment", img: "/image/categories/environment.png" },
+  { key: "residency", img: "/image/categories/residency.png" },
   { key: "publicDecency", img: "/image/categories/publicDecency.png" },
-  { key: "health", img: "/image/categories/health.png" },
+  { key: "labor", img: "/image/categories/labor.png" },
+  { key: "food", img: "/image/categories/food.png" },
 ];

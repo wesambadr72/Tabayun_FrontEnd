@@ -1,11 +1,161 @@
-export default function LawDetailPage({ 
-  params: { locale, id } 
-}: { 
-  params: { locale: string; id: string } 
-}) {
+"use client";
+import React from "react";
+import { useParams, useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import { MOCK_LAWS_COLLECTION } from "@/lib/mock-data";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Scale, Info, CheckCircle2, AlertCircle, Quote } from "lucide-react";
+import ar from "@/locales/ar/common.json";
+import en from "@/locales/en/common.json";
+
+const dictionaries = { ar, en };
+
+export default function LawDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const locale = (params.locale as string) || "ar";
+  const id = params.id as string;
+  const dict = dictionaries[locale as keyof typeof dictionaries] || ar;
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
+  const law = MOCK_LAWS_COLLECTION.find((l) => l.id === id);
+
+  if (!law) {
+    return (
+      <main className="min-h-screen bg-[#f5f1eb] flex flex-col items-center justify-center p-4">
+        <Navbar />
+        <h1 className="text-2xl font-bold text-[#3d2e20]">
+          {locale === "ar" ? "القانون غير موجود" : "Law not found"}
+        </h1>
+        <button
+          onClick={() => router.back()}
+          className="mt-4 px-6 py-2 bg-[#3d2e20] text-white rounded-full font-bold"
+        >
+          {locale === "ar" ? "العودة" : "Go Back"}
+        </button>
+      </main>
+    );
+  }
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Law Detail ({id}) in {locale}</h1>
-    </div>
+    <main className="relative min-h-screen w-full flex flex-col items-center overflow-x-hidden bg-[#f5f1eb]" dir={dir}>
+      <Navbar />
+
+      <div className="relative z-20 w-full flex flex-col items-center pt-32 md:pt-40 pb-20 px-4">
+
+        {/* Breadcrumb & Simple Header */}
+        <div className="w-full max-w-5xl px-4 md:px-8 mb-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-[#3d2e20]/40 hover:text-[#3d2e20] transition-colors font-bold group mb-6"
+          >
+            {locale === "ar" ? <ChevronRight className="w-4 h-4 group-hover:translate-x-1" /> : <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1" />}
+            {locale === "ar" ? "العودة للقائمة" : "Back to List"}
+          </button>
+
+          <div className="space-y-4">
+            <h1 className="text-3xl md:text-5xl font-black text-[#3d2e20] leading-tight">
+              {locale === "ar" ? law.title_ar : law.title_en}
+            </h1>
+            <div className="h-1 w-20 bg-[#3d2e20] rounded-full" />
+          </div>
+        </div>
+
+        {/* Improved Comparison Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl px-4 md:px-8 mb-12 relative animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-backwards">
+
+          {/* Country Card 1: Germany */}
+          <div className="relative group bg-white rounded-3xl p-8 md:p-10 border border-[#3d2e20]/5 shadow-sm hover:shadow-xl transition-all duration-500">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl shadow-sm">🇩🇪</span>
+                <span className="text-sm font-black text-[#3d2e20]/40 uppercase tracking-widest">
+                  {locale === "ar" ? "ألمانيا" : "Germany"}
+                </span>
+              </div>
+              <div className="p-2 rounded-full bg-[#f5f1eb] text-[#3d2e20]/20">
+                <Info className="w-5 h-5" />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-2xl font-black text-[#3d2e20]">
+                {locale === "ar" ? law.title_ar : law.title_en}
+              </h3>
+              <p className="text-[#3d2e20]/60 text-lg leading-relaxed font-medium">
+                {locale === "ar" ? law.desc_ar : law.desc_en}
+              </p>
+            </div>
+          </div>
+
+          {/* Country Card 2: Saudi Arabia */}
+          <div className="relative group bg-[#3d2e20] text-white rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden transition-all duration-500">
+            {/* Subtle Gradient Overly */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50" />
+
+            <div className="relative z-10 flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl shadow-sm">🇸🇦</span>
+                <span className="text-sm font-black text-white/40 uppercase tracking-widest">
+                  {locale === "ar" ? "المملكة العربية السعودية" : "Saudi Arabia"}
+                </span>
+              </div>
+              <div className="p-2 rounded-full bg-white/10 text-white/40">
+                <CheckCircle2 className="w-5 h-5 text-green-400" />
+              </div>
+            </div>
+
+            <div className="relative z-10 space-y-4">
+              <h3 className="text-2xl font-black">
+                {locale === "ar" ? law.saudi_title_ar : law.saudi_title_en}
+              </h3>
+              <p className="text-white/80 text-lg leading-relaxed font-medium">
+                {locale === "ar" ? law.saudi_desc_ar : law.saudi_desc_en}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Difference Brief - More Clean & Modern */}
+        <div className="w-full max-w-5xl px-4 md:px-8 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300 fill-mode-backwards">
+          <div className="bg-white border-2 border-[#3d2e20] rounded-[2.5rem] p-8 md:p-14 relative overflow-hidden">
+            {/* Decorative Icon */}
+            <div className="absolute top-0 right-0 p-8 opacity-[0.03] scale-[4] rotate-12">
+              <Scale className="text-[#3d2e20]" />
+            </div>
+
+            <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
+              <div className="flex-shrink-0 w-16 h-16 bg-[#3d2e20] rounded-2xl flex items-center justify-center text-white shadow-xl">
+                <AlertCircle className="w-8 h-8" />
+              </div>
+
+              <div className="space-y-6 text-center md:text-start">
+                <h2 className="text-2xl md:text-3xl font-black text-[#3d2e20]">
+                  {locale === "ar" ? "ما هو التباين؟" : "What is the difference?"}
+                </h2>
+
+                <div className="relative">
+                  <Quote className="absolute -top-4 -right-6 w-12 h-12 text-[#3d2e20]/5 rtl:block hidden" />
+                  <Quote className="absolute -top-4 -left-6 w-12 h-12 text-[#3d2e20]/5 ltr:block hidden" />
+                  <p className="text-[#3d2e20] text-xl md:text-2xl leading-relaxed font-bold italic">
+                    {locale === "ar" ? law.difference_ar : law.difference_en}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="mt-16">
+          <button
+            onClick={() => router.push(`/${locale}/chat`)}
+            className="px-12 py-5 bg-[#3d2e20] text-white rounded-full font-black text-lg shadow-[0_20px_50px_-15px_rgba(61,46,32,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-4 group"
+          >
+            <span>{locale === "ar" ? "استفسر أكثر من المساعد الذكي" : "Ask for more details"}</span>
+            {dir === "rtl" ? <ArrowLeft className="w-6 h-6 group-hover:-translate-x-2 transition-transform" /> : <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />}
+          </button>
+        </div>
+      </div>
+    </main>
   );
 }

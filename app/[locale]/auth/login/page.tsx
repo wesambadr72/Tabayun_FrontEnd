@@ -27,7 +27,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-[#f5f1eb]" dir={dir}>
+    <main className="flex min-h-screen flex-col items-center justify-between bg-[#f5f1eb] overflow-x-hidden" dir={dir}>
       {/* Navbar Wrapper */}
       <div className="fixed top-0 w-full z-50 flex justify-center py-4 bg-transparent pointer-events-none">
         <div className="pointer-events-auto w-full max-w-6xl px-4">
@@ -36,11 +36,11 @@ export default function LoginPage() {
       </div>
 
       {/* Main Content */}
-      <div className="w-full mt-32 mb-10 flex-grow flex flex-col items-center justify-center px-4 md:px-6 relative">
+      <div className="w-full mt-32 mb-10 flex-grow flex flex-col items-center justify-center px-4 md:px-6 relative overflow-hidden">
 
         {/* Background Elements - Subtle */}
-        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-[#3d2e20]/5 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-[#d4c5b5]/40 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-[#3d2e20]/5 rounded-full blur-[100px] pointer-events-none hidden md:block" />
+        <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-[#d4c5b5]/40 rounded-full blur-[100px] pointer-events-none hidden md:block" />
 
         <div className="relative z-10 w-full max-w-lg flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
 

@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import ar from "../../locales/ar/common.json";
 import en from "../../locales/en/common.json";
-import { useParams } from "next/navigation";
 
 const dictionaries = { ar, en };
 
@@ -14,47 +14,46 @@ export default function AboutSection() {
     const dir = locale === "ar" ? "rtl" : "ltr";
 
     return (
-        <section id="about-section" className="w-full py-24 bg-transparent" dir={dir}>
-            <div className="container mx-auto px-4 md:px-8">
-                <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
+        <section id="about-section" className="w-full py-20 bg-white" dir={dir}>
+            <div className="container mx-auto px-6 md:px-12 max-w-6xl">
+                <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
 
-                    {/* Image - Simple & Clean */}
-                    <div className="flex-1 w-full max-w-lg">
-                        <div className="relative aspect-square md:aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl">
-                            <Image
-                                src="/image/saudi.png" // Placeholder - should be a relevant image
-                                alt="About Tabayun"
-                                fill
-                                className="object-cover"
-                            />
-                            {/* Subtle Overlay */}
-                            <div className="absolute inset-0 bg-black/10" />
-                        </div>
-                    </div>
-
-                    {/* Content - Typography Focused */}
-                    <div className="flex-1 space-y-8 text-center md:text-start">
-                        <div className="space-y-4">
-                            <h2 className="text-4xl md:text-6xl font-black text-[#3d2e20] leading-tight">
-                                {locale === "ar" ? "وضوح.. وموثوقية" : "Clarity & Trust"}
-                            </h2>
-                            <div className="h-2 w-24 bg-[#3d2e20] rounded-full mx-auto md:mx-0 opacity-20" />
-                        </div>
-
-                        <p className="text-xl text-[#3d2e20]/80 leading-relaxed font-medium">
+                    {/* Content Column */}
+                    <div className="flex-1 space-y-6 text-center md:text-start animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <h2 className="text-3xl md:text-5xl font-bold text-[#3d2e20] leading-tight">
+                            {locale === "ar" ? "وضوح وموثوقية في كل معلومة" : "Clarity and Trust in Every Detail"}
+                        </h2>
+                        <div className="h-1.5 w-16 bg-[#3d2e20] rounded-full mx-auto md:mx-0 opacity-20" />
+                        <p className="text-lg md:text-xl text-[#3d2e20]/70 leading-relaxed font-medium">
                             {dict.about.description}
                         </p>
 
                         <div className="flex flex-wrap justify-center md:justify-start gap-8 pt-4">
                             <div>
-                                <h3 className="text-4xl font-black text-[#3d2e20]">100+</h3>
-                                <p className="text-sm font-bold text-[#3d2e20]/50 mt-1">{locale === "ar" ? "قانون ونظام" : "Laws & Regulations"}</p>
+                                <h3 className="text-3xl font-bold text-[#3d2e20]">100+</h3>
+                                <p className="text-sm font-semibold text-[#3d2e20]/40 uppercase tracking-widest mt-1">
+                                    {locale === "ar" ? "قانون ونظام" : "Laws & Regulations"}
+                                </p>
                             </div>
-                            <div className="w-px h-16 bg-[#3d2e20]/10" />
+                            <div className="hidden sm:block w-px h-12 bg-[#3d2e20]/10" />
                             <div>
-                                <h3 className="text-4xl font-black text-[#3d2e20]">24/7</h3>
-                                <p className="text-sm font-bold text-[#3d2e20]/50 mt-1">{locale === "ar" ? "مساعد ذكي" : "AI Assistant"}</p>
+                                <h3 className="text-3xl font-bold text-[#3d2e20]">24/7</h3>
+                                <p className="text-sm font-semibold text-[#3d2e20]/40 uppercase tracking-widest mt-1">
+                                    {locale === "ar" ? "دعم ذكي" : "AI Support"}
+                                </p>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Image Column */}
+                    <div className="flex-1 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 fill-mode-backwards">
+                        <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-xl border border-[#3d2e20]/5">
+                            <Image
+                                src="/image/saudi.png"
+                                alt="Tabayun"
+                                fill
+                                className="object-cover"
+                            />
                         </div>
                     </div>
 

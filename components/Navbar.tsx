@@ -4,6 +4,7 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import ar from "../locales/ar/common.json";
 import en from "../locales/en/common.json";
+import { Menu, X, Globe, User as UserIcon, LogOut, ChevronRight, ChevronLeft, MessageSquare } from "lucide-react";
 
 const dictionaries = { ar, en };
 
@@ -17,11 +18,17 @@ export default function Navbar() {
   // الاتجاه يعتمد على اللغة المختارة
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
+  // فحص هل نحن في صفحات تسجيل الدخول أو التسجيل
+  const isAuthPage = pathname.includes('/auth/');
+
   // فحص هل نحن في الصفحة الرئيسية (قبل تسجيل الدخول)
   const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
 
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  if (isAuthPage) return null;
 
   const languages = [
     { name: "العربية", code: "ar" },
@@ -36,17 +43,21 @@ export default function Navbar() {
     const newPath = segments.join('/');
     router.push(newPath);
     setIsLangOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <div className="fixed top-4 md:top-6 left-0 right-0 z-50 flex justify-center px-2 md:px-4" dir={dir}>
-      <nav className="flex justify-between items-center w-full max-w-6xl bg-[#3d2e20]/95 backdrop-blur-md border border-white/10 px-4 md:px-8 py-2 md:py-3 rounded-full shadow-2xl text-white">
+    <div className="fixed top-4 md:top-6 left-0 right-0 z-50 flex justify-center px-4" dir={dir}>
+      <nav className="flex justify-between items-center w-full max-w-6xl bg-[#3d2e20]/95 md:backdrop-blur-md border border-white/10 px-4 md:px-8 py-2 md:py-3 rounded-full shadow-2xl text-white transition-all duration-300">
 
-        {/* القسم الأيمن (في RTL) / الأيسر (في LTR): تباين والروابط */}
+        {/* القسم الأيمن (في RTL) / الأيسر (في LTR): اللوجو والروابط (للديسكتاب) */}
         <div className="flex items-center gap-4 md:gap-12">
-          <span className="text-xl md:text-3xl font-black tracking-wider font-bold">{dict.brand}</span>
-          <div className="flex items-center gap-4 md:gap-8 text-sm md:text-xl font-bold">
+          <Link href={`/${locale}`} className="text-2xl md:text-3xl font-black tracking-wider hover:scale-105 transition-transform uppercase">
+            {dict.brand}
+          </Link>
 
+          {/* روابط الديسكتاب فقط */}
+          <div className="hidden md:flex items-center gap-8 text-xl font-bold">
             {!isHomePage && (
               <>
                 <Link
@@ -65,6 +76,13 @@ export default function Navbar() {
             )}
 
             <Link
+              href={`/${locale}/chat`}
+              className={`hover:opacity-70 transition ${pathname.includes('/chat') ? 'border-b-2 border-white' : ''} font-bold`}
+            >
+              {(dict as any).assistant}
+            </Link>
+
+            <Link
               href={`/${locale}/contact`}
               className={`hover:opacity-70 transition ${pathname === `/${locale}/contact` ? 'border-b-2 border-white' : ''} font-bold`}
             >
@@ -73,78 +91,191 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* القسم الأيسر (في RTL) / الأيمن (في LTR): اللغة ثم البروفايل */}
+        {/* القسم الأيسر للديسكتاب والهمبرغر للموبايل */}
         <div className="flex items-center gap-2 md:gap-6">
 
-          {/* 1. زر اللغة */}
-          <div className="relative">
-            <button
-              onClick={() => {
-                setIsLangOpen(!isLangOpen);
-                setIsProfileOpen(false);
-              }}
-              className="flex items-center justify-center gap-2 h-8 md:h-10 px-3 md:px-4 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/20 group"
-            >
-              <svg className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9-3-9m-9 9h18"></path>
-              </svg>
-              <span className="text-xs md:text-sm font-bold">{currentLangName}</span>
-            </button>
+          {/* أزرار الديسكتاب فقط */}
+          <div className="hidden md:flex items-center gap-6">
+            {/* 1. زر اللغة */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setIsLangOpen(!isLangOpen);
+                  setIsProfileOpen(false);
+                }}
+                className="flex items-center justify-center gap-2 h-10 px-4 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/20 group"
+              >
+                <Globe className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                <span className="text-sm font-bold">{currentLangName}</span>
+              </button>
 
-            {isLangOpen && (
-              <div className={`absolute top-full mt-3 ${dir === 'rtl' ? 'left-0' : 'right-0'} w-32 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2`}>
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => handleLangChange(lang.code)}
-                    className={`w-full text-center px-4 py-3 text-xs md:text-sm transition-colors border-b border-white/5 last:border-0 hover:bg-white/10 ${locale === lang.code ? 'text-white font-bold' : 'text-white/60'}`}
+              {isLangOpen && (
+                <div className={`absolute top-full mt-3 ${dir === 'rtl' ? 'left-0' : 'right-0'} w-32 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2`}>
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => handleLangChange(lang.code)}
+                      className={`w-full text-center px-4 py-3 text-sm transition-colors border-b border-white/5 last:border-0 hover:bg-white/10 ${locale === lang.code ? 'text-white font-bold' : 'text-white/60'}`}
+                    >
+                      {lang.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 2. أيقونة البروفايل */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setIsProfileOpen(!isProfileOpen);
+                  setIsLangOpen(false);
+                }}
+                className="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer"
+              >
+                <UserIcon className="w-6 h-6" />
+              </button>
+
+              {isProfileOpen && (
+                <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
+                  <Link
+                    href={`/${locale}/profile`}
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
                   >
-                    {lang.name}
+                    <UserIcon className="w-4 h-4" />
+                    <span>{dict.profile || "الملف الشخصي"}</span>
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      router.push(`/${locale}`);
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>{dict.logout || "تسجيل الخروج"}</span>
                   </button>
-                ))}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* 2. أيقونة البروفايل مع القائمة */}
-          <div className="relative">
+          {/* زر القائمة الجانبية للموبايل فقط */}
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-full bg-white/10 border border-white/20 active:scale-90 transition-transform"
+          >
+            <Menu className="w-8 h-8 text-white" />
+          </button>
+        </div>
+
+      </nav>
+
+      {/* القائمة الجانبية للموبايل (Mobile Sidebar Overlay) */}
+      <div
+        className={`fixed inset-0 z-50 md:hidden transition-all duration-500 bg-black/60 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        <div
+          className={`absolute top-0 ${dir === 'rtl' ? 'left-0' : 'right-0'} w-[80%] max-w-[300px] h-full bg-[#1a1510] shadow-2xl transition-transform duration-500 flex flex-col p-6 ${isMobileMenuOpen ? 'translate-x-0' : (dir === 'rtl' ? '-translate-x-full' : 'translate-x-full')}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header of Sidebar */}
+          <div className="flex items-center justify-between mb-10">
+            <span className="text-2xl font-black text-white">{dict.brand}</span>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-full bg-white/5 border border-white/10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="flex flex-col gap-4 mb-auto text-white">
+            {!isHomePage && (
+              <>
+                <Link
+                  href={`/${locale}/dashboard`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname.includes('/dashboard') && !pathname.includes('/categories') ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
+                >
+                  <span className="text-lg font-bold">{dict.home}</span>
+                  {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                </Link>
+                <Link
+                  href={`/${locale}/categories`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname.includes('/categories') ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
+                >
+                  <span className="text-lg font-bold">{dict.browse}</span>
+                  {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                </Link>
+              </>
+            )}
+
+            <Link
+              href={`/${locale}/chat`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname.includes('/chat') ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
+            >
+              <span className="text-lg font-bold flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                {(dict as any).assistant}
+              </span>
+              {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </Link>
+
+            <Link
+              href={`/${locale}/contact`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname === `/${locale}/contact` ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
+            >
+              <span className="text-lg font-bold">{dict.contact}</span>
+              {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </Link>
+          </div>
+
+          {/* Bottom Actions (Language & Profile) */}
+          <div className="mt-auto space-y-4 pt-6 border-t border-white/10">
+            {/* Language Selection */}
+            <div className="grid grid-cols-2 gap-2">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLangChange(lang.code)}
+                  className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${locale === lang.code ? 'bg-white text-[#3d2e20]' : 'bg-white/5 text-white/40 border border-white/10'}`}
+                >
+                  {lang.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Profile & Logout */}
+            <Link
+              href={`/${locale}/profile`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold"
+            >
+              <UserIcon className="w-5 h-5" />
+              <span>{dict.profile || "الملف الشخصي"}</span>
+            </Link>
+
             <button
               onClick={() => {
-                setIsProfileOpen(!isProfileOpen);
-                setIsLangOpen(false);
+                setIsMobileMenuOpen(false);
+                router.push(`/${locale}`);
               }}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer"
+              className="flex items-center gap-3 w-full p-4 rounded-xl bg-red-400/10 text-red-400 font-bold"
             >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 md:w-6 md:h-6">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
+              <LogOut className="w-5 h-5" />
+              <span>{dict.logout || "تسجيل الخروج"}</span>
             </button>
-
-            {isProfileOpen && (
-              <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
-                <Link
-                  href={`/${locale}/profile`}
-                  onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
-                >
-                  <span>{dict.profile || "الملف الشخصي"}</span>
-                </Link>
-
-                <button
-                  onClick={() => {
-                    setIsProfileOpen(false);
-                    router.push(`/${locale}`);
-                  }}
-                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
-                >
-                  <span>{dict.logout || "تسجيل الخروج"}</span>
-                </button>
-              </div>
-            )}
           </div>
-
         </div>
-      </nav>
+      </div>
     </div>
   );
 }

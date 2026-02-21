@@ -21,29 +21,26 @@ export default function FeaturesSection() {
     ];
 
     return (
-        <section className="w-full py-24 bg-[#3d2e20] text-white" dir={dir}>
-            <div className="container mx-auto px-4 md:px-8">
+        <section className="w-full py-20 bg-[#f5f1eb]" dir={dir}>
+            <div className="container mx-auto px-6 md:px-12 max-w-6xl">
 
-                <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-                    <h2 className="text-4xl md:text-6xl font-black">{dict.features.title}</h2>
-                    <p className="text-white/60 text-xl font-medium">
-                        {locale === "ar" ? "نقدم لك تجربة قانونية فريدة ومبسطة" : "Simplified Legal Experience"}
+                <div className="text-center max-w-2xl mx-auto mb-16 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <h2 className="text-3xl md:text-5xl font-bold text-[#3d2e20]">{dict.features.title}</h2>
+                    <p className="text-[#3d2e20]/60 text-lg md:text-xl font-medium">
+                        {locale === "ar" ? "تجربة قانونية مبسطة وحديثة" : "A Simplified and Modern Legal Experience"}
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 fill-mode-backwards">
                     {features.map((feature, index) => (
-                        <div key={index} className="flex flex-col items-start space-y-4 group">
-                            <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-[#3d2e20] transition-all duration-300">
-                                <feature.icon className="w-8 h-8" strokeWidth={1.5} />
+                        <div key={index} className="flex flex-col items-center text-center p-8 bg-white rounded-3xl border border-[#3d2e20]/5 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="w-14 h-14 rounded-2xl bg-[#f5f1eb] text-[#3d2e20] flex items-center justify-center mb-6">
+                                <feature.icon className="w-7 h-7" strokeWidth={1.5} />
                             </div>
-
-                            <div className="space-y-2">
-                                <h3 className="text-2xl font-bold">{feature.title}</h3>
-                                <p className="text-white/60 leading-relaxed font-medium">
-                                    {feature.desc}
-                                </p>
-                            </div>
+                            <h3 className="text-xl font-bold text-[#3d2e20] mb-3">{feature.title}</h3>
+                            <p className="text-[#3d2e20]/60 text-sm leading-relaxed font-medium">
+                                {feature.desc}
+                            </p>
                         </div>
                     ))}
                 </div>

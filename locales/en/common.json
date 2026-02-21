@@ -3,25 +3,26 @@
     "brand": "Tabayun",
     "home": "Home",
     "contact": "Contact",
-    "browse": "Browse"
+    "assistant": "AI Assistant",
+    "browse": "Browse",
+    "profile": "Profile",
+    "logout": "Logout"
   },
   "dashboard": {
     "categories": "Categories",
     "sections": {
       "traffic": "Traffic",
-      "food": "Food",
-      "commerce": "Commerce",
-      "environment": "Environment",
-      "publicDecency": "Public Decency",
-      "health": "Health"
+      "residency": "Residency & Visas",
+      "publicDecency": "Public Decorum",
+      "labor": "Labor & Contracts",
+      "food": "Food"
     },
     "descriptions": {
       "traffic": "Traffic laws and violations",
-      "food": "Restaurant regulations and food safety",
-      "commerce": "Commercial laws and rights",
-      "environment": "Environmental protection laws",
-      "publicDecency": "Public decency regulations",
-      "health": "Health and safety regulations"
+      "residency": "Residency regulations and visa requirements",
+      "publicDecency": "Public decorum and behavior regulations",
+      "labor": "Labor laws and employment contracts",
+      "food": "Food and beverage safety regulations"
     }
   },
   "auth": {
