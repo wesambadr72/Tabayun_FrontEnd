@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import { Send, User, Bot, Sparkles, ArrowLeft, ArrowRight } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { Send, User, Bot, Sparkles, X, ArrowLeft, ArrowRight } from "lucide-react";
 import ar from "@/locales/ar/common.json";
 import en from "@/locales/en/common.json";
 
@@ -17,6 +16,7 @@ interface Message {
 
 export default function ChatPage() {
   const params = useParams();
+  const router = useRouter();
   const locale = (params.locale as string) || "ar";
   const dict = dictionaries[locale as keyof typeof dictionaries] || ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
@@ -70,16 +70,24 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="relative min-h-screen w-full flex flex-col items-center bg-[#f5f1eb] overflow-hidden" dir={dir}>
-      <Navbar />
+    <main className="fixed inset-0 z-50 w-full h-full flex items-center justify-center bg-[#f5f1eb] p-4 md:p-6" dir={dir}>
 
-      <div className="relative z-20 w-full max-w-5xl h-screen pt-24 pb-6 px-4 md:px-8 flex flex-col">
+      {/* Chat Card Container (Popup Style) */}
+      <div className="relative w-full max-w-4xl h-[85vh] md:h-[90vh] bg-white rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.50)] border border-[#3d2e20]/10 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+
+        {/* Close Button */}
+        <button
+          onClick={() => router.back()}
+          className={`absolute top-6 ${dir === 'rtl' ? 'left-6' : 'right-6'} z-30 p-2 rounded-full bg-[#f5f1eb] text-[#3d2e20]/60 hover:bg-[#3d2e20] hover:text-white transition-colors`}
+        >
+          <X className="w-6 h-6" />
+        </button>
 
         {/* Chat Header */}
-        <div className="flex items-center justify-between py-6 md:animate-in md:fade-in md:slide-in-from-top-4 md:duration-700">
+        <div className="flex-shrink-0 flex items-center justify-between px-8 py-6 bg-[#f5f1eb]/50 border-b border-[#3d2e20]/5">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#3d2e20] rounded-2xl flex items-center justify-center text-white shadow-xl shadow-[#3d2e20]/20">
-              <Bot className="w-7 h-7" />
+            <div className="w-14 h-14 bg-[#3d2e20] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#3d2e20]/20">
+              <Bot className="w-8 h-8" />
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-black text-[#3d2e20]">
@@ -93,28 +101,22 @@ export default function ChatPage() {
               </div>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-[#3d2e20]/10 shadow-sm">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span className="text-xs font-bold text-[#3d2e20]/60 italic">
-              {locale === "ar" ? "مدعوم بالذكاء الاصطناعي" : "Powered by AI"}
-            </span>
-          </div>
         </div>
 
         {/* Chat Messages Area */}
-        <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-6 py-8">
+        <div className="flex-grow overflow-y-auto px-6 md:px-8 py-6 space-y-6 custom-scrollbar bg-[#f5f1eb]/30">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex w-full ${message.sender === "user" ? "justify-end" : "justify-start"} md:animate-in md:zoom-in-95 md:duration-300`}
+              className={`flex w-full ${message.sender === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
             >
               <div className={`flex gap-3 max-w-[85%] md:max-w-[70%] ${message.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${message.sender === "user" ? "bg-white border border-[#3d2e20]/10" : "bg-[#3d2e20] text-white"}`}>
+                <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${message.sender === "user" ? "bg-white border border-[#3d2e20]/10" : "bg-[#3d2e20] text-white"}`}>
                   {message.sender === "user" ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                 </div>
 
                 <div className="space-y-1">
-                  <div className={`p-4 md:p-5 rounded-2xl text-sm md:text-base font-medium shadow-sm transition-all ${message.sender === "user"
+                  <div className={`p-4 md:p-5 rounded-2xl text-sm md:text-base font-medium shadow-sm leading-relaxed ${message.sender === "user"
                     ? "bg-white text-[#3d2e20] rounded-tr-none border border-[#3d2e20]/5"
                     : "bg-[#3d2e20]/5 text-[#3d2e20] rounded-tl-none border border-[#3d2e20]/10"
                     }`}>
@@ -131,8 +133,8 @@ export default function ChatPage() {
         </div>
 
         {/* Chat Input Area */}
-        <div className="py-4 md:animate-in md:fade-in md:slide-in-from-bottom-4 md:duration-700">
-          <div className="relative bg-white rounded-3xl p-2 shadow-2xl border border-[#3d2e20]/10 flex items-center gap-2">
+        <div className="flex-shrink-0 p-6 bg-white border-t border-[#3d2e20]/5">
+          <div className="relative bg-[#f5f1eb] rounded-3xl p-2 flex items-center gap-2 border border-[#3d2e20]/5 focus-within:border-[#3d2e20]/20 focus-within:bg-white transition-all shadow-inner">
             <input
               type="text"
               value={inputText}
@@ -145,11 +147,11 @@ export default function ChatPage() {
               onClick={handleSendMessage}
               className="p-4 bg-[#3d2e20] text-white rounded-2xl hover:bg-[#523e2b] transition-all hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center group"
             >
-              <Send className={`w-5 h-5 ${dir === 'rtl' ? 'rotate-180' : ''} group-hover:translate-x-1 transition-transform`} />
+              <Send className={`w-5 h-5 ${dir === 'ltr' ? 'rotate-45' : 'rotate-[225deg]'} group-hover:translate-x-1 transition-transform`} />
             </button>
           </div>
-          <p className="text-center text-[10px] font-bold text-[#3d2e20]/40 mt-3 uppercase tracking-tighter">
-            {locale === "ar" ? "تم تطوير المساعد بواسطة فريق تباين © 2026" : "Assistant developed by Tabayun Team © 2026"}
+          <p className="text-center text-[10px] font-bold text-[#3d2e20]/20 mt-3 uppercase tracking-widest">
+            {locale === "ar" ? "مساعد قانوني ذكي - نسخة تجريبية" : "AI Legal Assistant - Beta Version"}
           </p>
         </div>
 
@@ -157,7 +159,7 @@ export default function ChatPage() {
 
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
+          width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
           background: transparent;

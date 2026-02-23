@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { MOCK_LAWS_COLLECTION } from "@/lib/mock-data";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Scale, Info, CheckCircle2, AlertCircle, Quote } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Scale, Info, CheckCircle2, AlertCircle, Quote, Bookmark } from "lucide-react";
 import ar from "@/locales/ar/common.json";
 import en from "@/locales/en/common.json";
 
@@ -16,6 +16,39 @@ export default function LawDetailPage() {
   const id = params.id as string;
   const dict = dictionaries[locale as keyof typeof dictionaries] || ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
+
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = localStorage.getItem("bookmarks");
+      const ids: string[] = stored ? JSON.parse(stored) : [];
+      setIsBookmarked(ids.includes(id));
+    } catch {
+      setIsBookmarked(false);
+    }
+  }, [id]);
+
+  const toggleBookmark = () => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const stored = localStorage.getItem("bookmarks");
+      let ids: string[] = stored ? JSON.parse(stored) : [];
+
+      if (ids.includes(id)) {
+        ids = ids.filter((i) => i !== id);
+        setIsBookmarked(false);
+      } else {
+        ids.push(id);
+        setIsBookmarked(true);
+      }
+      localStorage.setItem("bookmarks", JSON.stringify(ids));
+    } catch (error) {
+      console.error("Failed to toggle bookmark", error);
+    }
+  };
 
   const law = MOCK_LAWS_COLLECTION.find((l) => l.id === id);
 
@@ -53,9 +86,17 @@ export default function LawDetailPage() {
           </button>
 
           <div className="space-y-4">
-            <h1 className="text-3xl md:text-5xl font-black text-[#3d2e20] leading-tight">
-              {locale === "ar" ? law.title_ar : law.title_en}
-            </h1>
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl md:text-5xl font-black text-[#3d2e20] leading-tight">
+                {locale === "ar" ? law.title_ar : law.title_en}
+              </h1>
+              <button
+                onClick={toggleBookmark}
+                className={`p-3 rounded-full transition-all ${isBookmarked ? "bg-[#3d2e20] text-white" : "bg-white text-[#3d2e20] border border-[#3d2e20]/10 hover:bg-[#3d2e20]/5"}`}
+              >
+                <Bookmark className={`w-6 h-6 ${isBookmarked ? "fill-current" : ""}`} />
+              </button>
+            </div>
             <div className="h-1 w-20 bg-[#3d2e20] rounded-full" />
           </div>
         </div>

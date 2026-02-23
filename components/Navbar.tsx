@@ -138,25 +138,48 @@ export default function Navbar() {
 
               {isProfileOpen && (
                 <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
-                  <Link
-                    href={`/${locale}/profile`}
-                    onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    <span>{dict.profile || "الملف الشخصي"}</span>
-                  </Link>
+                  {isHomePage ? (
+                    <>
+                      <Link
+                        href={`/${locale}/auth/login`}
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        <span>{dict.login || (locale === 'ar' ? "تسجيل الدخول" : "Login")}</span>
+                      </Link>
+                      <Link
+                        href={`/${locale}/auth/register`}
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        <span>{dict.register || (locale === 'ar' ? "إنشاء حساب" : "Register")}</span>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/${locale}/profile`}
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        <span>{dict.profile || "الملف الشخصي"}</span>
+                      </Link>
 
-                  <button
-                    onClick={() => {
-                      setIsProfileOpen(false);
-                      router.push(`/${locale}`);
-                    }}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>{dict.logout || "تسجيل الخروج"}</span>
-                  </button>
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          router.push(`/${locale}`);
+                        }}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>{dict.logout || "تسجيل الخروج"}</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>

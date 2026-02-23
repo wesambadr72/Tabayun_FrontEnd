@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Bookmark, ArrowRight, ArrowLeft, Trash2 } from "lucide-react";
@@ -9,6 +9,18 @@ export default function BookmarksPage() {
   const router = useRouter();
   const locale = (params.locale as string) || "ar";
   const dir = locale === "ar" ? "rtl" : "ltr";
+
+  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = localStorage.getItem("bookmarks");
+      setBookmarkedIds(stored ? JSON.parse(stored) : []);
+    } catch {
+      setBookmarkedIds([]);
+    }
+  }, []);
 
   return (
     <main className="relative min-h-screen w-full flex flex-col items-center overflow-x-hidden bg-[#f5f1eb]" dir={dir}>
