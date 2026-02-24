@@ -52,9 +52,9 @@ export default function Navbar() {
 
         {/* القسم الأيمن (في RTL) / الأيسر (في LTR): اللوجو والروابط (للديسكتاب) */}
         <div className="flex items-center gap-4 md:gap-12">
-          <Link href={`/${locale}`} className="text-2xl md:text-3xl font-black tracking-wider hover:scale-105 transition-transform uppercase">
+          <span className="text-2xl md:text-3xl font-black tracking-wider uppercase cursor-default">
             {dict.brand}
-          </Link>
+          </span>
 
           {/* روابط الديسكتاب فقط */}
           <div className="hidden md:flex items-center gap-8 text-xl font-bold">
@@ -128,58 +128,39 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => {
-                  setIsProfileOpen(!isProfileOpen);
-                  setIsLangOpen(false);
+                  if (isHomePage) {
+                    router.push(`/${locale}/auth/login`);
+                  } else {
+                    setIsProfileOpen(!isProfileOpen);
+                    setIsLangOpen(false);
+                  }
                 }}
                 className="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer"
               >
                 <UserIcon className="w-6 h-6" />
               </button>
 
-              {isProfileOpen && (
+              {!isHomePage && isProfileOpen && (
                 <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
-                  {isHomePage ? (
-                    <>
-                      <Link
-                        href={`/${locale}/auth/login`}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
-                      >
-                        <UserIcon className="w-4 h-4" />
-                        <span>{dict.login || (locale === 'ar' ? "تسجيل الدخول" : "Login")}</span>
-                      </Link>
-                      <Link
-                        href={`/${locale}/auth/register`}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors"
-                      >
-                        <UserIcon className="w-4 h-4" />
-                        <span>{dict.register || (locale === 'ar' ? "إنشاء حساب" : "Register")}</span>
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        href={`/${locale}/profile`}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
-                      >
-                        <UserIcon className="w-4 h-4" />
-                        <span>{dict.profile || "الملف الشخصي"}</span>
-                      </Link>
+                  <Link
+                    href={`/${locale}/profile`}
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
+                  >
+                    <UserIcon className="w-4 h-4" />
+                    <span>{dict.profile || "الملف الشخصي"}</span>
+                  </Link>
 
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          router.push(`/${locale}`);
-                        }}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>{dict.logout || "تسجيل الخروج"}</span>
-                      </button>
-                    </>
-                  )}
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      router.push(`/${locale}`);
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>{dict.logout || "تسجيل الخروج"}</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -207,7 +188,7 @@ export default function Navbar() {
         >
           {/* Header of Sidebar */}
           <div className="flex items-center justify-between mb-10">
-            <span className="text-2xl font-black text-white">{dict.brand}</span>
+            <span className="text-2xl font-black text-white cursor-default">{dict.brand}</span>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="p-2 rounded-full bg-white/5 border border-white/10"
@@ -277,25 +258,40 @@ export default function Navbar() {
             </div>
 
             {/* Profile & Logout */}
-            <Link
-              href={`/${locale}/profile`}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold"
-            >
-              <UserIcon className="w-5 h-5" />
-              <span>{dict.profile || "الملف الشخصي"}</span>
-            </Link>
+            {isHomePage ? (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  router.push(`/${locale}/auth/login`);
+                }}
+                className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold w-full text-right"
+              >
+                <UserIcon className="w-5 h-5" />
+                <span>{dict.login || (locale === 'ar' ? "تسجيل الدخول" : "Login")}</span>
+              </button>
+            ) : (
+              <>
+                <Link
+                  href={`/${locale}/profile`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold"
+                >
+                  <UserIcon className="w-5 h-5" />
+                  <span>{dict.profile || "الملف الشخصي"}</span>
+                </Link>
 
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                router.push(`/${locale}`);
-              }}
-              className="flex items-center gap-3 w-full p-4 rounded-xl bg-red-400/10 text-red-400 font-bold"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>{dict.logout || "تسجيل الخروج"}</span>
-            </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    router.push(`/${locale}`);
+                  }}
+                  className="flex items-center gap-3 w-full p-4 rounded-xl bg-red-400/10 text-red-400 font-bold"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>{dict.logout || "تسجيل الخروج"}</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

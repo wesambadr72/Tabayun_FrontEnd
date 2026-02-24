@@ -78,7 +78,7 @@ export default function DashboardPage() {
           {/* Main Title & Description */}
           <div className="text-center mb-10 space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3d2e20]/5 border border-[#3d2e20]/10 text-[#3d2e20] text-sm font-bold shadow-sm">
-              <Sparkles className="w-4 h-4 text-[#3d2e20]" />
+              <Sparkles className="w- h-4 text-[#3d2e20]" />
               <span className="font-regular">{locale === "ar" ? "محرك البحث القانوني الأول" : "The #1 Legal Search Engine"}</span>
             </div>
 

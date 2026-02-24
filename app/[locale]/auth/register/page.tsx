@@ -20,6 +20,7 @@ export default function RegisterPage() {
 
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Custom input state
   const [formData, setFormData] = useState({
@@ -32,6 +33,10 @@ export default function RegisterPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear error when user types
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: "" });
+    }
   };
 
   const countries = [
@@ -45,11 +50,63 @@ export default function RegisterPage() {
     { name: locale === "ar" ? "الصين" : "China", flag: "/image/flags/china.png" },
   ];
 
+  const validateStep = (currentStep: number) => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (currentStep === 1) {
+      if (!formData.email) {
+        newErrors.email = locale === "ar" ? "البريد الإلكتروني مطلوب" : "Email is required";
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = locale === "ar" ? "البريد الإلكتروني غير صالح" : "Invalid email address";
+      }
+    } else if (currentStep === 2) {
+      if (!formData.name) {
+        newErrors.name = locale === "ar" ? "الاسم مطلوب" : "Name is required";
+      } else if (formData.name.length < 3) {
+        newErrors.name = locale === "ar" ? "الاسم يجب أن يكون 3 أحرف على الأقل" : "Name must be at least 3 characters";
+      }
+    } else if (currentStep === 3) {
+      const password = formData.password;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+      const onlyEnglish = /^[A-Za-z0-9!@#$%^&*(),.?":{}|<>]*$/.test(password);
+
+      if (!password) {
+        newErrors.password = locale === "ar" ? "كلمة المرور مطلوبة" : "Password is required";
+      } else if (password.length < 8) {
+        newErrors.password = locale === "ar" ? "كلمة المرور يجب أن تكون 8 خانات على الأقل" : "Password must be at least 8 characters";
+      } else if (!onlyEnglish) {
+        newErrors.password = locale === "ar" ? "يجب استخدام حروف إنجليزية فقط" : "Only English letters are allowed";
+      } else if (!hasUppercase || !hasLowercase || !hasNumber || !hasSymbol) {
+        newErrors.password = locale === "ar" 
+          ? "يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز" 
+          : "Must include uppercase, lowercase, number, and symbol";
+      }
+    } else if (currentStep === 4) {
+      if (!formData.repeatPassword) {
+        newErrors.repeatPassword = locale === "ar" ? "يرجى تأكيد كلمة المرور" : "Please confirm your password";
+      } else if (formData.repeatPassword !== formData.password) {
+        newErrors.repeatPassword = locale === "ar" ? "كلمات المرور غير متطابقة" : "Passwords do not match";
+      }
+    } else if (currentStep === 5) {
+      if (!formData.country) {
+        newErrors.country = locale === "ar" ? "يرجى اختيار الدولة" : "Please select a country";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleNext = () => {
-    if (step < 5) setStep(step + 1);
-    else {
-      alert(locale === 'ar' ? "تم التسجيل بنجاح!" : "Registration Complete!");
-      router.push(`/${locale}/dashboard`);
+    if (validateStep(step)) {
+      if (step < 5) setStep(step + 1);
+      else {
+        alert(locale === 'ar' ? "تم التسجيل بنجاح!" : "Registration Complete!");
+        router.push(`/${locale}/dashboard`);
+      }
     }
   };
 
@@ -122,11 +179,16 @@ export default function RegisterPage() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder={dict.emailPlaceholder}
-                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.email ? 'border-red-500' : 'border-transparent'} focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold`}
                     autoFocus
                   />
-                  <Mail className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                  <Mail className={`w-7 h-7 ${errors.email ? 'text-red-500/50' : 'text-[#3d2e20]/20'} absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors`} />
                 </div>
+                {errors.email && (
+                  <p className="text-red-500 text-sm font-bold px-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                    {errors.email}
+                  </p>
+                )}
               </div>
             )}
 
@@ -141,11 +203,16 @@ export default function RegisterPage() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder={dict.namePlaceholder}
-                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.name ? 'border-red-500' : 'border-transparent'} focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold`}
                     autoFocus
                   />
-                  <User className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                  <User className={`w-7 h-7 ${errors.name ? 'text-red-500/50' : 'text-[#3d2e20]/20'} absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors`} />
                 </div>
+                {errors.name && (
+                  <p className="text-red-500 text-sm font-bold px-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                    {errors.name}
+                  </p>
+                )}
               </div>
             )}
 
@@ -161,10 +228,10 @@ export default function RegisterPage() {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder={dict.passwordPlaceholder}
-                      className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                      className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.password ? 'border-red-500' : 'border-transparent'} focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold`}
                       autoFocus
                     />
-                    <Lock className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                    <Lock className={`w-7 h-7 ${errors.password ? 'text-red-500/50' : 'text-[#3d2e20]/20'} absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors`} />
                     <button
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute top-1/2 -translate-y-1/2 right-6 rtl:right-auto rtl:left-6 text-[#3d2e20]/40 hover:text-[#3d2e20] transition p-2"
@@ -172,6 +239,11 @@ export default function RegisterPage() {
                       {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
                     </button>
                   </div>
+                  {errors.password && (
+                    <p className="text-red-500 text-sm font-bold px-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                      {errors.password}
+                    </p>
+                  )}
                 </div>
                 <div className="bg-[#f5f1eb]/50 p-5 rounded-2xl border border-[#3d2e20]/5">
                   <p className="text-[#3d2e20]/60 text-sm font-medium leading-relaxed">
@@ -192,34 +264,49 @@ export default function RegisterPage() {
                     value={formData.repeatPassword}
                     onChange={handleChange}
                     placeholder={dict.repeatPasswordPlaceholder}
-                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold"
+                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.repeatPassword ? 'border-red-500' : 'border-transparent'} focus:border-[#3d2e20]/10 focus:bg-white rounded-2xl px-8 py-5 md:py-6 pl-14 rtl:pl-8 rtl:pr-14 text-xl md:text-2xl outline-none transition-all placeholder-[#3d2e20]/20 text-[#3d2e20] font-bold`}
                     autoFocus
                   />
-                  <Lock className="w-7 h-7 text-[#3d2e20]/20 absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors" />
+                  <Lock className={`w-7 h-7 ${errors.repeatPassword ? 'text-red-500/50' : 'text-[#3d2e20]/20'} absolute top-1/2 -translate-y-1/2 left-6 rtl:left-auto rtl:right-6 group-focus-within:text-[#3d2e20] transition-colors`} />
                 </div>
+                {errors.repeatPassword && (
+                  <p className="text-red-500 text-sm font-bold px-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                    {errors.repeatPassword}
+                  </p>
+                )}
               </div>
             )}
 
             {/* Step 5: Country Selection Overlay */}
             {step === 5 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-in fade-in zoom-in-95 duration-700">
-                {countries.map((item, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setFormData({ ...formData, country: item.name })}
-                    className={`group flex flex-col items-center p-5 rounded-[2rem] border-2 transition-all duration-300 ${formData.country === item.name ? 'bg-[#3d2e20] text-white border-[#3d2e20] shadow-xl scale-105' : 'bg-[#f5f1eb]/50 border-transparent text-[#3d2e20] hover:border-[#3d2e20]/20 hover:bg-white'}`}
-                  >
-                    <div className={`relative w-16 h-16 md:w-20 md:h-20 mb-4 rounded-full overflow-hidden shadow-md border-2 transition-transform duration-500 group-hover:scale-110 ${formData.country === item.name ? 'border-white/20' : 'border-[#3d2e20]/10'}`}>
-                      <Image src={item.flag} alt={item.name} fill className="object-cover" />
-                    </div>
-                    <span className="font-bold text-sm md:text-base">{item.name}</span>
-                    {formData.country === item.name && (
-                      <div className="absolute top-3 right-3 bg-white text-[#3d2e20] rounded-full p-1 shadow-md">
-                        <Check className="w-3 h-3" />
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-in fade-in zoom-in-95 duration-700">
+                  {countries.map((item, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setFormData({ ...formData, country: item.name });
+                        if (errors.country) setErrors({ ...errors, country: "" });
+                      }}
+                      className={`group relative flex flex-col items-center p-5 rounded-[2rem] border-2 transition-all duration-300 ${formData.country === item.name ? 'bg-[#3d2e20] text-white border-[#3d2e20] shadow-xl scale-105' : 'bg-[#f5f1eb]/50 border-transparent text-[#3d2e20] hover:border-[#3d2e20]/20 hover:bg-white'}`}
+                    >
+                      <div className={`relative w-16 h-16 md:w-20 md:h-20 mb-4 rounded-full overflow-hidden shadow-md border-2 transition-transform duration-500 group-hover:scale-110 ${formData.country === item.name ? 'border-white/20' : 'border-[#3d2e20]/10'}`}>
+                        <Image src={item.flag} alt={item.name} fill className="object-cover" />
                       </div>
-                    )}
-                  </button>
-                ))}
+                      <span className="font-bold text-sm md:text-base">{item.name}</span>
+                      {formData.country === item.name && (
+                        <div className="absolute top-3 right-3 bg-white text-[#3d2e20] rounded-full p-1 shadow-md">
+                          <Check className="w-3 h-3" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {errors.country && (
+                  <p className="text-red-500 text-center text-sm font-bold px-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                    {errors.country}
+                  </p>
+                )}
               </div>
             )}
           </div>
