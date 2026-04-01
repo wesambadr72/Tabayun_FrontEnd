@@ -1,12 +1,14 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { lawService } from "@/services/lawService";
+import { Comparison } from "@/types/law";
+import { LawCard } from "@/components/LawCard";
 import ar from "@/locales/ar/common.json";
 import en from "@/locales/en/common.json";
-import { MOCK_LAWS } from "@/lib/mock-data";
-import { ChevronLeft, ChevronRight, Scale, ArrowRight, ArrowLeft, ArrowDownCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Scale, Loader2 } from "lucide-react";
 
 const dictionaries = { ar, en };
 
@@ -18,12 +20,29 @@ function LawsListContent() {
   const dict = dictionaries[locale as keyof typeof dictionaries] || ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const categoryKey = searchParams.get("category") || "traffic";
-  const categoryName = (dict.dashboard.sections as any)[categoryKey] || categoryKey;
+  const categoryId = searchParams.get("category");
+  const categoryName = searchParams.get("name") || (locale === 'ar' ? 'القسم' : 'Category');
 
-  // Assuming user country is Germany for now as per instructions
-  const userCountry = "germany";
-  const laws = MOCK_LAWS[userCountry]?.[categoryKey] || [];
+  const [comparisons, setComparisons] = useState<Comparison[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchComparisons = async () => {
+      if (!categoryId) return;
+      try {
+        setLoading(true);
+        const data = await lawService.getLawsByCategory(Number(categoryId));
+        setComparisons(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComparisons();
+  }, [categoryId]);
 
   return (
     <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>
@@ -40,7 +59,7 @@ function LawsListContent() {
               {locale === "ar" ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
               {locale === "ar" ? "العودة للأقسام" : "Back to Categories"}
             </button>
-            <h1 className="text-4xl md:text-7xl font-black text-[#3d2e20] leading-none">
+            <h1 className="text-4xl md:text-7xl font-black text-[#3d2e20] leading-none text-balance">
               {categoryName}
             </h1>
             <p className="text-[#3d2e20]/60 text-lg md:text-xl font-medium leading-relaxed">
@@ -55,48 +74,31 @@ function LawsListContent() {
         </div>
       </div>
 
-      {/* Laws List Items */}
+      {/* Comparisons List Items */}
       <div className="flex-grow w-full max-w-5xl mx-auto px-6 pb-24">
-        <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 fill-mode-backwards">
-          {laws.length > 0 ? (
-            laws.map((law, index) => (
-              <button
-                key={law.id}
-                onClick={() => router.push(`/${locale}/laws/${law.id}`)}
-                className="group w-full bg-white rounded-[2rem] p-6 md:p-10 border border-[#3d2e20]/5 shadow-sm hover:shadow-xl hover:border-[#3d2e20]/10 transition-all duration-300 text-start rtl:text-right flex flex-col md:flex-row md:items-center justify-between gap-6"
-              >
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-[#3d2e20]/5 text-[#3d2e20]/40 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#3d2e20]/5">
-                      {locale === "ar" ? "قانون" : "LAW"} #{index + 1}
-                    </span>
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-black text-[#3d2e20] group-hover:text-[#3d2e20] transition-colors">
-                    {locale === "ar" ? law.title_ar : law.title_en}
-                  </h3>
-                  <p className="text-[#3d2e20]/50 text-base md:text-lg font-medium leading-relaxed max-w-2xl line-clamp-2">
-                    {locale === "ar" ? law.desc_ar : law.desc_en}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="hidden md:flex flex-col items-end">
-                    <span className="text-xs font-black text-[#3d2e20]/20 uppercase tracking-widest">{locale === 'ar' ? 'استعراض وقارن' : 'View & Compare'}</span>
-                  </div>
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-[#f5f1eb] text-[#3d2e20]/20 flex items-center justify-center group-hover:bg-[#3d2e20] group-hover:text-white transition-all duration-300 shadow-sm">
-                    {locale === "ar" ? <ArrowLeft className="w-6 h-6" /> : <ArrowRight className="w-6 h-6" />}
-                  </div>
-                </div>
-              </button>
-            ))
-          ) : (
-            <div className="py-32 text-center bg-white/40 rounded-[3rem] border-2 border-dashed border-[#3d2e20]/5">
-              <p className="text-[#3d2e20]/30 text-xl font-black">
-                {locale === "ar" ? "لا توجد قوانين متاحة حالياً" : "No laws available yet"}
-              </p>
-            </div>
-          )}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-20 text-red-500 font-bold">
+            {locale === 'ar' ? 'فشل تحميل المقارنات: ' : 'Failed to load comparisons: '} {error}
+          </div>
+        ) : (
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 fill-mode-backwards">
+            {comparisons.length > 0 ? (
+              comparisons.map((comp) => (
+                <LawCard key={comp.id} comparison={comp} locale={locale} />
+              ))
+            ) : (
+              <div className="py-32 text-center bg-white/40 rounded-[3rem] border-2 border-dashed border-[#3d2e20]/5">
+                <p className="text-[#3d2e20]/30 text-xl font-black">
+                  {locale === "ar" ? "لا توجد مقارنات متاحة حالياً" : "No comparisons available yet"}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <Footer />

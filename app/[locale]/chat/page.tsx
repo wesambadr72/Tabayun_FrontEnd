@@ -1,18 +1,13 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Send, User, Bot, Sparkles, X, ArrowLeft, ArrowRight } from "lucide-react";
+import { Send, User, Bot, Sparkles, X, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { chatService } from "@/services/chatService";
+import { ChatMessage } from "@/types/chat";
 import ar from "@/locales/ar/common.json";
 import en from "@/locales/en/common.json";
 
 const dictionaries = { ar, en };
-
-interface Message {
-  id: number;
-  text: string;
-  sender: "user" | "bot";
-  timestamp: Date;
-}
 
 export default function ChatPage() {
   const params = useParams();
@@ -21,17 +16,17 @@ export default function ChatPage() {
   const dict = dictionaries[locale as keyof typeof dictionaries] || ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: 1,
-      text: locale === "ar"
+      role: "bot",
+      content: locale === "ar"
         ? "أهلاً بك في مساعد تباين الذكي! كيف يمكنني مساعدتك في فهم الأنظمة والقوانين اليوم؟"
         : "Welcome to Tabayun AI Assistant! How can I help you understand regulations and laws today?",
-      sender: "bot",
-      timestamp: new Date(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
   const [inputText, setInputText] = useState("");
+  const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -42,31 +37,40 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!inputText.trim() || loading) return;
 
-    const newUserMessage: Message = {
-      id: Date.now(),
-      text: inputText,
-      sender: "user",
-      timestamp: new Date(),
+    const userMessage: ChatMessage = {
+      role: "user",
+      content: inputText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages((prev) => [...prev, newUserMessage]);
+    setMessages((prev) => [...prev, userMessage]);
+    const currentInput = inputText;
     setInputText("");
+    setLoading(true);
 
-    // Simple automated response for UI demo
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: Date.now() + 1,
-        text: locale === "ar"
-          ? "شكراً لسؤالك. أنا حالياً في مرحلة التطوير التجريبي، وبإمكاني مساعدتك في مقارنة القوانين البسيطة. هل تريد معرفة المزيد عن قسم معين؟"
-          : "Thank you for your question. I am currently in beta, and I can help you compare simple laws. Would you like to know more about a specific section?",
-        sender: "bot",
-        timestamp: new Date(),
+    try {
+      const response = await chatService.queryAI(currentInput);
+      const botMessage: ChatMessage = {
+        role: "bot",
+        content: response.response,
+        source: response.source,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
-      setMessages((prev) => [...prev, botResponse]);
-    }, 1000);
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error: any) {
+      const errorMessage: ChatMessage = {
+        role: "bot",
+        content: locale === 'ar' ? "عذراً، حدث خطأ أثناء معالجة طلبك." : "Sorry, an error occurred while processing your request.",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -105,55 +109,80 @@ export default function ChatPage() {
 
         {/* Chat Messages Area */}
         <div className="flex-grow overflow-y-auto px-6 md:px-8 py-6 space-y-6 custom-scrollbar bg-[#f5f1eb]/30">
-          {messages.map((message) => (
+          {messages.map((msg, index) => (
             <div
-              key={message.id}
-              className={`flex w-full ${message.sender === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
+              key={index}
+              className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
             >
-              <div className={`flex gap-3 max-w-[85%] md:max-w-[70%] ${message.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${message.sender === "user" ? "bg-white border border-[#3d2e20]/10" : "bg-[#3d2e20] text-white"}`}>
-                  {message.sender === "user" ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
+              <div className={`flex gap-3 max-w-[85%] md:max-w-[70%] ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${msg.role === "user" ? "bg-[#3d2e20] text-white" : "bg-white border border-[#3d2e20]/10"}`}>
+                  {msg.role === "user" ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                 </div>
 
                 <div className="space-y-1">
-                  <div className={`p-4 md:p-5 rounded-2xl text-sm md:text-base font-medium shadow-sm leading-relaxed ${message.sender === "user"
-                    ? "bg-white text-[#3d2e20] rounded-tr-none border border-[#3d2e20]/5"
-                    : "bg-[#3d2e20]/5 text-[#3d2e20] rounded-tl-none border border-[#3d2e20]/10"
+                  <div className={`p-4 md:p-5 rounded-2xl text-sm md:text-base font-medium shadow-sm leading-relaxed ${msg.role === "user"
+                    ? "bg-[#3d2e20] text-white rounded-tr-none"
+                    : "bg-white text-[#3d2e20] rounded-tl-none border border-[#3d2e20]/10"
                     }`}>
-                    {message.text}
+                    {msg.content}
+                    {msg.source && (
+                      <div className="mt-3 pt-3 border-t border-[#3d2e20]/10 text-xs font-black uppercase tracking-widest opacity-60">
+                        {locale === 'ar' ? 'المصدر: ' : 'Source: '} {msg.source}
+                      </div>
+                    )}
                   </div>
-                  <div className={`text-[10px] font-bold text-[#3d2e20]/30 ${message.sender === "user" ? "text-end" : "text-start"}`}>
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div className={`text-[10px] font-bold text-[#3d2e20]/30 ${msg.role === "user" ? "text-end" : "text-start"}`}>
+                    {msg.timestamp}
                   </div>
                 </div>
               </div>
             </div>
           ))}
+          {loading && (
+            <div className="flex justify-start animate-in fade-in duration-300">
+              <div className="flex gap-3 max-w-[85%] md:max-w-[70%]">
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white border border-[#3d2e20]/10 flex items-center justify-center text-[#3d2e20]/20 animate-pulse">
+                  <Bot className="w-5 h-5" />
+                </div>
+                <div className="bg-white text-[#3d2e20] p-4 md:p-5 rounded-2xl rounded-tl-none border border-[#3d2e20]/10 shadow-sm">
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 bg-[#3d2e20]/20 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-[#3d2e20]/20 rounded-full animate-bounce [animation-delay:0.2s]" />
+                    <div className="w-2 h-2 bg-[#3d2e20]/20 rounded-full animate-bounce [animation-delay:0.4s]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
 
         {/* Chat Input Area */}
-        <div className="flex-shrink-0 p-6 bg-white border-t border-[#3d2e20]/5">
+        <form
+          onSubmit={handleSendMessage}
+          className="flex-shrink-0 p-6 bg-white border-t border-[#3d2e20]/5"
+        >
           <div className="relative bg-[#f5f1eb] rounded-3xl p-2 flex items-center gap-2 border border-[#3d2e20]/5 focus-within:border-[#3d2e20]/20 focus-within:bg-white transition-all shadow-inner">
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+              disabled={loading}
               placeholder={locale === "ar" ? "اكتب استفسارك هنا..." : "Type your inquiry here..."}
               className="flex-grow bg-transparent border-none focus:outline-none px-4 py-3 text-[#3d2e20] font-medium placeholder-[#3d2e20]/30"
             />
             <button
-              onClick={handleSendMessage}
-              className="p-4 bg-[#3d2e20] text-white rounded-2xl hover:bg-[#523e2b] transition-all hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center group"
+              type="submit"
+              disabled={!inputText.trim() || loading}
+              className="p-4 bg-[#3d2e20] text-white rounded-2xl hover:bg-[#523e2b] transition-all hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center group disabled:opacity-30 disabled:scale-100 disabled:hover:bg-[#3d2e20]"
             >
-              <Send className={`w-5 h-5 ${dir === 'ltr' ? 'rotate-45' : 'rotate-[225deg]'} group-hover:translate-x-1 transition-transform`} />
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className={`w-5 h-5 ${dir === 'ltr' ? 'rotate-45' : 'rotate-[225deg]'} group-hover:translate-x-1 transition-transform`} />}
             </button>
           </div>
           <p className="text-center text-[10px] font-bold text-[#3d2e20]/20 mt-3 uppercase tracking-widest">
             {locale === "ar" ? "مساعد قانوني ذكي - نسخة تجريبية" : "AI Legal Assistant - Beta Version"}
           </p>
-        </div>
+        </form>
 
       </div>
     </main>

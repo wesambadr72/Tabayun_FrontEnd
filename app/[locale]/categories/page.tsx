@@ -1,9 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { CATEGORIES_CONFIG } from "@/lib/categories-config";
+import { lawService } from "@/services/lawService";
+import { Category } from "@/types/law";
 import {
   Car,
   Utensils,
@@ -11,7 +12,8 @@ import {
   FileCheck,
   Briefcase,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from "lucide-react";
 
 const dictionaries = {
@@ -20,11 +22,16 @@ const dictionaries = {
 };
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
-  traffic: Car,
-  residency: FileCheck,
-  publicDecency: ShieldCheck,
-  labor: Briefcase,
-  food: Utensils,
+  "المرور": Car,
+  "الإقامة": FileCheck,
+  "الذوق العام": ShieldCheck,
+  "العمل": Briefcase,
+  "الغذاء": Utensils,
+  "Traffic": Car,
+  "Residency": FileCheck,
+  "Public Decency": ShieldCheck,
+  "Labor": Briefcase,
+  "Food": Utensils,
 };
 
 export default function CategoriesPage() {
@@ -34,12 +41,25 @@ export default function CategoriesPage() {
   const dict = dictionaries[locale as keyof typeof dictionaries] || dictionaries.ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const categories = CATEGORIES_CONFIG.map(cat => ({
-    name: (dict.dashboard.sections as any)[cat.key],
-    description: (dict.dashboard as any).descriptions?.[cat.key],
-    icon: CATEGORY_ICONS[cat.key] || Briefcase,
-    key: cat.key
-  }));
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const data = await lawService.getCategories();
+        setCategories(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>
@@ -61,32 +81,45 @@ export default function CategoriesPage() {
 
       {/* Grid Section */}
       <div className="flex-grow w-full max-w-6xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 fill-mode-backwards">
-          {categories.map((cat, index) => (
-            <button
-              key={index}
-              onClick={() => router.push(`/${locale}/laws?category=${cat.key}`)}
-              className="group bg-white p-8 rounded-[2rem] border border-[#3d2e20]/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center"
-            >
-              <div className="w-16 h-16 bg-[#f5f1eb] text-[#3d2e20] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#3d2e20] group-hover:text-white transition-colors duration-300">
-                <cat.icon className="w-8 h-8" strokeWidth={1.5} />
-              </div>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-20 text-red-500 font-bold">
+            {locale === 'ar' ? 'فشل تحميل الأقسام: ' : 'Failed to load categories: '} {error}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 fill-mode-backwards">
+            {categories.map((cat) => {
+              const Icon = CATEGORY_ICONS[cat.name] || Briefcase;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => router.push(`/${locale}/laws?category=${cat.id}&name=${encodeURIComponent(cat.name)}`)}
+                  className="group bg-white p-8 rounded-[2rem] border border-[#3d2e20]/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center"
+                >
+                  <div className="w-16 h-16 bg-[#f5f1eb] text-[#3d2e20] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#3d2e20] group-hover:text-white transition-colors duration-300">
+                    <Icon className="w-8 h-8" strokeWidth={1.5} />
+                  </div>
 
-              <h3 className="text-xl md:text-2xl font-black text-[#3d2e20] mb-3">
-                {cat.name}
-              </h3>
+                  <h3 className="text-xl md:text-2xl font-black text-[#3d2e20] mb-3">
+                    {cat.name}
+                  </h3>
 
-              <p className="text-[#3d2e20]/60 text-sm md:text-base font-medium leading-relaxed mb-6 flex-grow">
-                {cat.description}
-              </p>
+                  <p className="text-[#3d2e20]/60 text-sm md:text-base font-medium leading-relaxed mb-6 flex-grow">
+                    {cat.description}
+                  </p>
 
-              <div className="flex items-center gap-2 text-[#3d2e20] font-black text-sm">
-                <span>{locale === 'ar' ? 'عرض التفاصيل' : 'View Details'}</span>
-                {dir === 'rtl' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-              </div>
-            </button>
-          ))}
-        </div>
+                  <div className="flex items-center gap-2 text-[#3d2e20] font-black text-sm">
+                    <span>{locale === 'ar' ? 'عرض التفاصيل' : 'View Details'}</span>
+                    {dir === 'rtl' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <Footer />

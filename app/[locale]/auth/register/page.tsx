@@ -1,13 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { authService } from "@/services/authService";
+import { lawService } from "@/services/lawService";
 import ar from "../../../../locales/ar/common.json";
 import en from "../../../../locales/en/common.json";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Lock, Check, Sparkles, Globe } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Lock, Check, Sparkles, Globe, Loader2 } from "lucide-react";
 
 const dictionaries = { ar, en };
 
@@ -20,6 +22,9 @@ export default function RegisterPage() {
 
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingCountries, setLoadingCountries] = useState(false);
+  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Custom input state
@@ -31,6 +36,21 @@ export default function RegisterPage() {
     country: ""
   });
 
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true);
+        const data = await lawService.getAvailableCountries();
+        setAvailableCountries(data);
+      } catch (err) {
+        console.error("Failed to fetch countries:", err);
+      } finally {
+        setLoadingCountries(false);
+      }
+    };
+    fetchCountries();
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     // Clear error when user types
@@ -39,16 +59,22 @@ export default function RegisterPage() {
     }
   };
 
-  const countries = [
-    { name: locale === "ar" ? "ألمانيا" : "Germany", flag: "/image/flags/germany.png" },
-    { name: locale === "ar" ? "المملكة المتحدة" : "United Kingdom", flag: "/image/flags/uk.png" },
-    { name: locale === "ar" ? "الولايات المتحدة" : "USA", flag: "/image/flags/usa.png" },
-    { name: locale === "ar" ? "إندونيسيا" : "Indonesia", flag: "/image/flags/indonesia.png" },
-    { name: locale === "ar" ? "إسبانيا" : "Spain", flag: "/image/flags/spain.png" },
-    { name: locale === "ar" ? "إيطاليا" : "Italy", flag: "/image/flags/italy.png" },
-    { name: locale === "ar" ? "الهند" : "India", flag: "/image/flags/india.png" },
-    { name: locale === "ar" ? "الصين" : "China", flag: "/image/flags/china.png" },
-  ];
+  const getFlagPath = (countryName: string) => {
+    const mapping: Record<string, string> = {
+      "de": "/image/flags/germany.png",
+      "uk": "/image/flags/uk.png",
+      };
+    return mapping[countryName] || null;
+  };
+
+  const getLocalizedCountryName = (countryName: string) => {
+    if (locale !== "ar") return countryName;
+    const mapping: Record<string, string> = {
+      "de": "المانيا",
+      "uk": "المملكة المتحدة"
+      };
+    return mapping[countryName] || countryName;
+  };
 
   const validateStep = (currentStep: number) => {
     const newErrors: { [key: string]: string } = {};
@@ -67,22 +93,10 @@ export default function RegisterPage() {
       }
     } else if (currentStep === 3) {
       const password = formData.password;
-      const hasUppercase = /[A-Z]/.test(password);
-      const hasLowercase = /[a-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
-      const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-      const onlyEnglish = /^[A-Za-z0-9!@#$%^&*(),.?":{}|<>]*$/.test(password);
-
       if (!password) {
         newErrors.password = locale === "ar" ? "كلمة المرور مطلوبة" : "Password is required";
       } else if (password.length < 8) {
         newErrors.password = locale === "ar" ? "كلمة المرور يجب أن تكون 8 خانات على الأقل" : "Password must be at least 8 characters";
-      } else if (!onlyEnglish) {
-        newErrors.password = locale === "ar" ? "يجب استخدام حروف إنجليزية فقط" : "Only English letters are allowed";
-      } else if (!hasUppercase || !hasLowercase || !hasNumber || !hasSymbol) {
-        newErrors.password = locale === "ar" 
-          ? "يجب أن تحتوي على حرف كبير، حرف صغير، رقم، ورمز" 
-          : "Must include uppercase, lowercase, number, and symbol";
       }
     } else if (currentStep === 4) {
       if (!formData.repeatPassword) {
@@ -100,13 +114,37 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateStep(step)) {
       if (step < 5) setStep(step + 1);
       else {
-        alert(locale === 'ar' ? "تم التسجيل بنجاح!" : "Registration Complete!");
-        router.push(`/${locale}/dashboard`);
+        await handleSubmit();
       }
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await authService.register({
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.name,
+        country: formData.country,
+        language: locale === 'ar' ? 'Arabic' : 'English'
+      });
+      
+      const loginData = new FormData();
+      loginData.append('username', formData.email);
+      loginData.append('password', formData.password);
+      const loginResponse = await authService.login(loginData);
+      authService.setToken(loginResponse.access_token);
+      
+      router.push(`/${locale}/dashboard`);
+    } catch (err: any) {
+      setErrors({ general: err.message || (locale === 'ar' ? "حدث خطأ ما" : "Something went wrong") });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -168,6 +206,11 @@ export default function RegisterPage() {
 
           {/* Steps Rendering */}
           <div className="space-y-8 min-h-[140px] flex flex-col justify-center">
+            {errors.general && (
+              <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-sm font-bold border border-red-100 animate-in fade-in zoom-in duration-300">
+                {errors.general}
+              </div>
+            )}
             {/* Step 1: Email */}
             {step === 1 && (
               <div className="space-y-4 animate-in fade-in zoom-in-95 duration-500">
@@ -280,28 +323,44 @@ export default function RegisterPage() {
             {/* Step 5: Country Selection Overlay */}
             {step === 5 && (
               <div className="space-y-6">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-in fade-in zoom-in-95 duration-700">
-                  {countries.map((item, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setFormData({ ...formData, country: item.name });
-                        if (errors.country) setErrors({ ...errors, country: "" });
-                      }}
-                      className={`group relative flex flex-col items-center p-5 rounded-[2rem] border-2 transition-all duration-300 ${formData.country === item.name ? 'bg-[#3d2e20] text-white border-[#3d2e20] shadow-xl scale-105' : 'bg-[#f5f1eb]/50 border-transparent text-[#3d2e20] hover:border-[#3d2e20]/20 hover:bg-white'}`}
-                    >
-                      <div className={`relative w-16 h-16 md:w-20 md:h-20 mb-4 rounded-full overflow-hidden shadow-md border-2 transition-transform duration-500 group-hover:scale-110 ${formData.country === item.name ? 'border-white/20' : 'border-[#3d2e20]/10'}`}>
-                        <Image src={item.flag} alt={item.name} fill className="object-cover" />
-                      </div>
-                      <span className="font-bold text-sm md:text-base">{item.name}</span>
-                      {formData.country === item.name && (
-                        <div className="absolute top-3 right-3 bg-white text-[#3d2e20] rounded-full p-1 shadow-md">
-                          <Check className="w-3 h-3" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                {loadingCountries ? (
+                  <div className="flex justify-center py-10">
+                    <Loader2 className="w-8 h-8 animate-spin text-[#3d2e20]" />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-in fade-in zoom-in-95 duration-700">
+                    {availableCountries.map((countryName, index) => {
+                      const flag = getFlagPath(countryName);
+                      const localizedName = getLocalizedCountryName(countryName);
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            setFormData({ ...formData, country: countryName });
+                            if (errors.country) setErrors({ ...errors, country: "" });
+                          }}
+                          className={`group relative flex flex-col items-center p-5 rounded-[2rem] border-2 transition-all duration-300 ${formData.country === countryName ? 'bg-[#3d2e20] text-white border-[#3d2e20] shadow-xl scale-105' : 'bg-[#f5f1eb]/50 border-transparent text-[#3d2e20] hover:border-[#3d2e20]/20 hover:bg-white'}`}
+                        >
+                          <div className={`relative w-16 h-16 md:w-20 md:h-20 mb-4 rounded-full overflow-hidden shadow-md border-2 transition-transform duration-500 group-hover:scale-110 ${formData.country === countryName ? 'border-white/20' : 'border-[#3d2e20]/10'}`}>
+                            {flag ? (
+                              <Image src={flag} alt={countryName} fill className="object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-[#3d2e20]/5">
+                                <Globe className="w-8 h-8 text-[#3d2e20]/20" />
+                              </div>
+                            )}
+                          </div>
+                          <span className="font-bold text-sm md:text-base">{localizedName}</span>
+                          {formData.country === countryName && (
+                            <div className="absolute top-3 right-3 bg-white text-[#3d2e20] rounded-full p-1 shadow-md">
+                              <Check className="w-3 h-3" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {errors.country && (
                   <p className="text-red-500 text-center text-sm font-bold px-2 animate-in fade-in slide-in-from-top-1 duration-300">
                     {errors.country}
@@ -323,10 +382,17 @@ export default function RegisterPage() {
 
             <button
               onClick={handleNext}
-              className="flex-[2] py-4 px-6 md:px-10 bg-[#3d2e20] text-white rounded-full font-black text-lg shadow-xl shadow-[#3d2e20]/20 hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+              disabled={loading}
+              className="flex-[2] py-4 px-6 md:px-10 bg-[#3d2e20] text-white rounded-full font-black text-lg shadow-xl shadow-[#3d2e20]/20 hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <span>{step === 4 ? dict.welcomeBtn : step === 5 ? dict.confirm : dict.next}</span>
-              {locale === "ar" ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+              {loading ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : (
+                <>
+                  <span>{step === 4 ? dict.welcomeBtn : step === 5 ? dict.confirm : dict.next}</span>
+                  {locale === "ar" ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+                </>
+              )}
             </button>
           </div>
 
