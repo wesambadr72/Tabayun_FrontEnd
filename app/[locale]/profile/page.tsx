@@ -26,39 +26,43 @@ export default function ProfilePage() {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        // Try getting from localStorage first
+        // Try getting from localStorage first for instant display
         const cachedUser = authService.getUser();
         if (cachedUser) {
           setUser(cachedUser);
         }
         
-        // Refresh from server
+        // Refresh with fresh data from server
         const freshUser = await authService.getMe();
         setUser(freshUser);
       } catch (err) {
         console.error("Failed to fetch user profile", err);
+        // If it fails and we have no cached user, redirect to login
+        if (!authService.getUser()) {
+          router.push(`/${locale}/auth/login`);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [locale, router]);
 
   const profileItems = [
     {
       label: profileDict.name || (locale === 'ar' ? 'الاسم' : 'Name'),
-      value: user?.full_name || profileDict.userName || (locale === 'ar' ? 'جاري التحميل...' : 'Loading...'),
+      value: user?.full_name || (locale === 'ar' ? 'غير متوفر' : 'N/A'),
       icon: UserIcon
     },
     {
       label: profileDict.email || (locale === 'ar' ? 'البريد الالكتروني' : 'Email'),
-      value: user?.email || 'user@gmail.com',
+      value: user?.email || 'N/A',
       icon: Mail
     },
     {
       label: profileDict.country || (locale === 'ar' ? 'الدولة' : 'Country'),
-      value: user?.country || (locale === 'ar' ? 'ألمانيا' : 'Germany'),
+      value: user?.country || (locale === 'ar' ? 'غير محدد' : 'N/A'),
       icon: Globe
     },
     {
@@ -68,7 +72,7 @@ export default function ProfilePage() {
     },
     {
       label: profileDict.favorites || (locale === 'ar' ? 'المفضلة' : 'Favorites'),
-      value: profileDict.lawsCount || (locale === 'ar' ? '7 قوانين' : '7 Laws'),
+      value: (locale === 'ar' ? 'قوانين محفوظة' : 'Saved Laws'),
       icon: Heart
     },
   ];

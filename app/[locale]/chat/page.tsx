@@ -54,10 +54,30 @@ export default function ChatPage() {
 
     try {
       const response = await chatService.queryAI(currentInput);
+      
+      let finalContent = response.response;
+      let finalSource = response.source;
+
+      // Try to parse the response if it looks like JSON
+      if (typeof finalContent === 'string' && finalContent.trim().startsWith('{')) {
+        try {
+          const parsed = JSON.parse(finalContent);
+          if (parsed.answer) {
+            finalContent = parsed.answer;
+            // If there are references in the JSON, use them if source is missing
+            if (parsed.references && parsed.references.length > 0 && !finalSource) {
+              finalSource = parsed.references.join(', ');
+            }
+          }
+        } catch (e) {
+          console.log("Response was not valid JSON, using as raw text");
+        }
+      }
+
       const botMessage: ChatMessage = {
         role: "bot",
-        content: response.response,
-        source: response.source,
+        content: finalContent,
+        source: finalSource,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, botMessage]);
