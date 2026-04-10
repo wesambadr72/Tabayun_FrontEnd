@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+# project files
+PROJECT_PROGRESS.md
+
 # next.js
 /.next/
 /out/
