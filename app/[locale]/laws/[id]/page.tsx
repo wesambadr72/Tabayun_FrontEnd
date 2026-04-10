@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { MOCK_LAWS_COLLECTION } from "@/lib/mock-data";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Scale, Info, CheckCircle2, AlertCircle, Quote, Bookmark } from "lucide-react";
+import { lawService } from "@/services/lawService";
+import { Comparison } from "@/types/law";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Scale, Info, CheckCircle2, AlertCircle, Quote, Bookmark, Loader2 } from "lucide-react";
 import ar from "@/locales/ar/common.json";
 import en from "@/locales/en/common.json";
 
@@ -18,6 +19,27 @@ export default function LawDetailPage() {
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [comparison, setComparison] = useState<Comparison | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchComparison = async () => {
+      try {
+        setLoading(true);
+        const data = await lawService.getComparisonById(Number(id));
+        setComparison(data);
+      } catch (err: any) {
+        console.error("Failed to fetch comparison", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) {
+      fetchComparison();
+    }
+  }, [id]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -50,14 +72,21 @@ export default function LawDetailPage() {
     }
   };
 
-  const law = MOCK_LAWS_COLLECTION.find((l) => l.id === id);
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[#f5f1eb] flex flex-col items-center justify-center p-4">
+        <Navbar />
+        <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
+      </main>
+    );
+  }
 
-  if (!law) {
+  if (error || !comparison) {
     return (
       <main className="min-h-screen bg-[#f5f1eb] flex flex-col items-center justify-center p-4">
         <Navbar />
         <h1 className="text-2xl font-bold text-[#3d2e20]">
-          {locale === "ar" ? "القانون غير موجود" : "Law not found"}
+          {locale === "ar" ? "لا توجد بيانات لهذا القانون" : "No data for this law"}
         </h1>
         <button
           onClick={() => router.back()}
@@ -88,7 +117,7 @@ export default function LawDetailPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl md:text-5xl font-black text-[#3d2e20] leading-tight">
-                {locale === "ar" ? law.title_ar : law.title_en}
+                {comparison.foreign_law?.title || (locale === "ar" ? "قانون غير متوفر" : "Unavailable Law")}
               </h1>
               <button
                 onClick={toggleBookmark}
@@ -104,13 +133,13 @@ export default function LawDetailPage() {
         {/* Improved Comparison Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl px-4 md:px-8 mb-12 relative animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-backwards">
 
-          {/* Country Card 1: Germany */}
+          {/* Country Card 1: Foreign Law */}
           <div className="relative group bg-white rounded-3xl p-8 md:p-10 border border-[#3d2e20]/5 shadow-sm hover:shadow-xl transition-all duration-500">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <span className="text-3xl shadow-sm">🇩🇪</span>
+                <span className="text-3xl shadow-sm">🌍</span>
                 <span className="text-sm font-black text-[#3d2e20]/40 uppercase tracking-widest">
-                  {locale === "ar" ? "ألمانيا" : "Germany"}
+                  {comparison.foreign_law?.country || (locale === "ar" ? "دولة أجنبية" : "Foreign Country")}
                 </span>
               </div>
               <div className="p-2 rounded-full bg-[#f5f1eb] text-[#3d2e20]/20">
@@ -120,10 +149,10 @@ export default function LawDetailPage() {
 
             <div className="space-y-4">
               <h3 className="text-2xl font-black text-[#3d2e20]">
-                {locale === "ar" ? law.title_ar : law.title_en}
+                {comparison.foreign_law?.title || (locale === "ar" ? "لا يوجد عنوان" : "No Title")}
               </h3>
               <p className="text-[#3d2e20]/60 text-lg leading-relaxed font-medium">
-                {locale === "ar" ? law.desc_ar : law.desc_en}
+                {comparison.foreign_law?.simplified_text || (locale === "ar" ? "لا يوجد نص" : "No Text")}
               </p>
             </div>
           </div>
@@ -147,10 +176,10 @@ export default function LawDetailPage() {
 
             <div className="relative z-10 space-y-4">
               <h3 className="text-2xl font-black">
-                {locale === "ar" ? law.saudi_title_ar : law.saudi_title_en}
+                {comparison.saudi_law?.title || (locale === "ar" ? "لا يوجد عنوان" : "No Title")}
               </h3>
               <p className="text-white/80 text-lg leading-relaxed font-medium">
-                {locale === "ar" ? law.saudi_desc_ar : law.saudi_desc_en}
+                {comparison.saudi_law?.simplified_text || (locale === "ar" ? "لا يوجد نص" : "No Text")}
               </p>
             </div>
           </div>
@@ -178,7 +207,7 @@ export default function LawDetailPage() {
                   <Quote className="absolute -top-4 -right-6 w-12 h-12 text-[#3d2e20]/5 rtl:block hidden" />
                   <Quote className="absolute -top-4 -left-6 w-12 h-12 text-[#3d2e20]/5 ltr:block hidden" />
                   <p className="text-[#3d2e20] text-xl md:text-2xl leading-relaxed font-bold italic">
-                    {locale === "ar" ? law.difference_ar : law.difference_en}
+                    {comparison.comparison_text || (locale === "ar" ? "لا يوجد نص تباين" : "No comparison text")}
                   </p>
                 </div>
               </div>

@@ -93,7 +93,7 @@ function LawsListContent() {
             ) : (
               <div className="py-32 text-center bg-white/40 rounded-[3rem] border-2 border-dashed border-[#3d2e20]/5">
                 <p className="text-[#3d2e20]/30 text-xl font-black">
-                  {locale === "ar" ? "لا توجد مقارنات متاحة حالياً" : "No comparisons available yet"}
+                  {locale === "ar" ? "لا توجد مقارنات متاحة حالياً" : "No comparisons available"}
                 </p>
               </div>
             )}

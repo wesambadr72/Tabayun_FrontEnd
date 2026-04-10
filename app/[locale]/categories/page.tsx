@@ -89,6 +89,10 @@ export default function CategoriesPage() {
           <div className="text-center py-20 text-red-500 font-bold">
             {locale === 'ar' ? 'فشل تحميل الأقسام: ' : 'Failed to load categories: '} {error}
           </div>
+        ) : categories.length === 0 ? (
+          <div className="text-center py-20 text-[#3d2e20]/60 font-bold text-xl">
+            {locale === 'ar' ? 'لا يوجد أقسام' : 'No categories available'}
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 fill-mode-backwards">
             {categories.map((cat) => {

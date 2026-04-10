@@ -59,6 +59,10 @@ export default function LoginPage() {
         
         const response = await authService.login(data);
         authService.setToken(response.access_token);
+        
+        // Fetch and store user profile after login
+        await authService.getMe();
+
         router.push(`/${locale}/dashboard`);
       } catch (err: any) {
         setErrors({ general: err.message });

@@ -84,7 +84,7 @@ export default function BookmarksPage() {
                 <Bookmark className="w-full h-full" strokeWidth={0.5} />
               </div>
               <p className="text-[#3d2e20]/40 text-2xl font-bold mb-8">
-                {locale === "ar" ? "قائمة المحفوظات فارغة حالياً" : "Your bookmarks list is currently empty"}
+                {locale === "ar" ? "لا يوجد محفوظات" : "No bookmarks"}
               </p>
               <button
                 onClick={() => router.push(`/${locale}/categories`)}

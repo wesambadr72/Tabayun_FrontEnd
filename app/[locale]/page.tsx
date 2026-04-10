@@ -5,11 +5,12 @@ import FeaturesSection from "@/components/features/FeaturesSection";
 import BotCTASection from "@/components/features/BotCTASection";
 import Footer from "@/components/Footer";
 
-export default function HomePage({
-  params: { locale },
+export default async function HomePage({
+  params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   return (
     <main className="flex min-h-screen flex-col items-center justify-between bg-[#f5f1eb]">
       <div className="fixed top-0 w-full z-50 flex justify-center py-4 bg-transparent pointer-events-none">

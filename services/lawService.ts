@@ -7,6 +7,9 @@ export const lawService = {
   getLawsByCategory: (categoryId: number) => 
     api.get<Comparison[]>(`/laws/by-category/${categoryId}`),
 
+  getComparisonById: (comparisonId: number) => 
+    api.get<Comparison>(`/comparison/${comparisonId}`),
+
   subscribeToCategory: (categoryId: number) => 
     api.post<{ message: string }>(`/laws/subscribe/${categoryId}`),
 

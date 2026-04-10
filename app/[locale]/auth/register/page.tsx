@@ -126,7 +126,7 @@ export default function RegisterPage() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      await authService.register({
+      const registerResponse = await authService.register({
         email: formData.email,
         password: formData.password,
         full_name: formData.name,
@@ -134,6 +134,8 @@ export default function RegisterPage() {
         language: locale === 'ar' ? 'Arabic' : 'English'
       });
       
+      authService.setUser(registerResponse);
+
       const loginData = new FormData();
       loginData.append('username', formData.email);
       loginData.append('password', formData.password);

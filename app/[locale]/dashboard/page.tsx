@@ -1,7 +1,9 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { lawService } from "@/services/lawService";
+import { Comparison, Bookmark as BookmarkType } from "@/types/law";
 import {
   Search,
   Sparkles,
@@ -32,28 +34,24 @@ export default function DashboardPage() {
   const dict = dictionaries[locale as keyof typeof dictionaries] || dictionaries.ar;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
-  const trendingLaws = [
-    {
-      title: locale === "ar" ? "مخالفة السرعة" : "Speeding Ticket",
-      icon: Car,
-      color: "bg-blue-500/10 text-blue-600",
-    },
-    {
-      title: locale === "ar" ? "السجل التجاري" : "Commercial Register",
-      icon: Store,
-      color: "bg-amber-500/10 text-amber-600",
-    },
-    {
-      title: locale === "ar" ? "مخالفة الإشارة" : "Traffic Signal",
-      icon: AlertCircle,
-      color: "bg-red-500/10 text-red-600",
-    },
-    {
-      title: locale === "ar" ? "إلقاء النفايات" : "Littering Fine",
-      icon: Trash2,
-      color: "bg-green-500/10 text-green-600",
-    },
-  ];
+  const [priorityComparisons, setPriorityComparisons] = useState<Comparison[]>([]);
+  const [recentBookmarks, setRecentBookmarks] = useState<BookmarkType[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [comparisonsData, bookmarksData] = await Promise.all([
+          lawService.getPriorityComparisons(),
+          lawService.getMyBookmarks()
+        ]);
+        setPriorityComparisons(comparisonsData.slice(0, 4)); // Get top 4
+        setRecentBookmarks(bookmarksData.slice(0, 3)); // Get 3 most recent
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+      }
+    };
+    fetchData();
+  }, []);
 
   const quickStats = [
     { label: locale === 'ar' ? 'نظام وقانون' : 'Laws & Regs', value: '2,400+', icon: Scale },
@@ -144,25 +142,34 @@ export default function DashboardPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {trendingLaws.map((law, index) => (
-                  <button
-                    key={index}
-                    className="group flex items-center p-6 bg-white border border-[#3d2e20]/5 rounded-3xl hover:border-[#3d2e20]/20 hover:shadow-xl transition-all duration-300 text-right rtl:text-right ltr:text-left"
-                  >
-                    <div className={`p-4 rounded-2xl ${law.color} mb-0 mr-0 rtl:ml-4 ltr:mr-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <law.icon className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <span className="text-[#3d2e20] font-black text-lg block">
-                        {law.title}
-                      </span>
-                      <span className="text-xs font-bold text-[#3d2e20]/30 uppercase tracking-tighter">
-                        {locale === 'ar' ? 'تحديث منذ ساعة' : 'Updated 1h ago'}
-                      </span>
-                    </div>
-                    {dir === 'rtl' ? <ArrowLeft className="w-5 h-5 opacity-0 group-hover:opacity-40 transition-opacity" /> : <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-40 transition-opacity" />}
-                  </button>
-                ))}
+                {priorityComparisons.length > 0 ? (
+                  priorityComparisons.map((comp, index) => (
+                    <button
+                      key={comp.id}
+                      onClick={() => router.push(`/${locale}/laws/${comp.id}`)}
+                      className="group flex items-center p-6 bg-white border border-[#3d2e20]/5 rounded-3xl hover:border-[#3d2e20]/20 hover:shadow-xl transition-all duration-300 text-right rtl:text-right ltr:text-left"
+                    >
+                      <div className={`p-4 rounded-2xl bg-[#3d2e20]/5 text-[#3d2e20] mb-0 mr-0 rtl:ml-4 ltr:mr-4 group-hover:scale-110 transition-transform duration-300`}>
+                        <Scale className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-[#3d2e20] font-black text-lg block line-clamp-1">
+                          {comp.foreign_law?.title || (locale === 'ar' ? 'قانون غير متوفر' : 'Law unavailable')}
+                        </span>
+                        <span className="text-xs font-bold text-[#3d2e20]/30 uppercase tracking-tighter">
+                          {comp.foreign_law?.country || (locale === 'ar' ? 'دولة أجنبية' : 'Foreign country')}
+                        </span>
+                      </div>
+                      {dir === 'rtl' ? <ArrowLeft className="w-5 h-5 opacity-0 group-hover:opacity-40 transition-opacity" /> : <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-40 transition-opacity" />}
+                    </button>
+                  ))
+                ) : (
+                  <div className="col-span-full py-12 text-center bg-white/50 rounded-3xl border-2 border-dashed border-[#3d2e20]/5">
+                    <p className="text-[#3d2e20]/40 font-bold">
+                      {locale === 'ar' ? 'لا يوجد مقارنات شائعة حالياً' : 'No trending comparisons available'}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -176,17 +183,34 @@ export default function DashboardPage() {
               </h3>
 
               <div className="space-y-6">
-                {[1, 2, 3].map((_, i) => (
-                  <div key={i} className="flex gap-4 group cursor-pointer">
-                    <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-white group-hover:text-[#3d2e20] transition-all">
-                      <Bookmark className="w-4 h-4" />
+                {recentBookmarks.length > 0 ? (
+                  recentBookmarks.map((bookmark) => (
+                    <div 
+                      key={bookmark.id} 
+                      onClick={() => bookmark.comparison_id && router.push(`/${locale}/laws/${bookmark.comparison_id}`)}
+                      className="flex gap-4 group cursor-pointer"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-white group-hover:text-[#3d2e20] transition-all">
+                        <Bookmark className="w-4 h-4" />
+                      </div>
+                      <div className="border-b border-white/10 pb-4 flex-1">
+                        <div className="font-bold text-sm line-clamp-1">
+                          {bookmark.comparison ? 
+                            `${bookmark.comparison.foreign_law?.title}` : 
+                            (locale === 'ar' ? 'مقارنة محفوظة' : 'Saved comparison')
+                          }
+                        </div>
+                        <div className="text-[10px] uppercase tracking-widest text-white/40 mt-1 font-black">
+                          {new Date(bookmark.created_at).toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US')}
+                        </div>
+                      </div>
                     </div>
-                    <div className="border-b border-white/10 pb-4 flex-1">
-                      <div className="font-bold text-sm line-clamp-1">{locale === 'ar' ? 'مقارنة نظام المرور: ألمانيا × السعودية' : 'Traffic Law: Germany vs KSA'}</div>
-                      <div className="text-[10px] uppercase tracking-widest text-white/40 mt-1 font-black">21 FEB 2024</div>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-white/40 font-bold text-sm italic">
+                    {locale === 'ar' ? 'لا يوجد نشاطات حالياً' : 'No recent activities'}
                   </div>
-                ))}
+                )}
               </div>
 
               <button

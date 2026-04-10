@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import ar from "../locales/ar/common.json";
 import en from "../locales/en/common.json";
 import { Menu, X, Globe, User as UserIcon, LogOut, ChevronRight, ChevronLeft, MessageSquare } from "lucide-react";
+
+import { authService } from "@/services/authService";
 
 const dictionaries = { ar, en };
 
@@ -21,8 +23,12 @@ export default function Navbar() {
   // فحص هل نحن في صفحات تسجيل الدخول أو التسجيل
   const isAuthPage = pathname.includes('/auth/');
 
-  // فحص هل نحن في الصفحة الرئيسية (قبل تسجيل الدخول)
-  const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
+  // حالة تسجيل الدخول الفعلية
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!authService.getToken());
+  }, [pathname]);
 
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -58,7 +64,7 @@ export default function Navbar() {
 
           {/* روابط الديسكتاب فقط */}
           <div className="hidden md:flex items-center gap-8 text-xl font-bold">
-            {!isHomePage && (
+            {isLoggedIn && (
               <>
                 <Link
                   href={`/${locale}/dashboard`}
@@ -128,7 +134,7 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => {
-                  if (isHomePage) {
+                  if (!isLoggedIn) {
                     router.push(`/${locale}/auth/login`);
                   } else {
                     setIsProfileOpen(!isProfileOpen);
@@ -140,7 +146,7 @@ export default function Navbar() {
                 <UserIcon className="w-6 h-6" />
               </button>
 
-              {!isHomePage && isProfileOpen && (
+              {isLoggedIn && isProfileOpen && (
                 <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
                   <Link
                     href={`/${locale}/profile`}
@@ -154,7 +160,8 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       setIsProfileOpen(false);
-                      router.push(`/${locale}`);
+                      authService.logout();
+                      router.push(`/${locale}/auth/login`);
                     }}
                     className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
                   >
@@ -199,7 +206,7 @@ export default function Navbar() {
 
           {/* Navigation Links */}
           <div className="flex flex-col gap-4 mb-auto text-white">
-            {!isHomePage && (
+            {isLoggedIn && (
               <>
                 <Link
                   href={`/${locale}/dashboard`}
@@ -258,7 +265,7 @@ export default function Navbar() {
             </div>
 
             {/* Profile & Logout */}
-            {isHomePage ? (
+            {!isLoggedIn ? (
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
@@ -267,7 +274,7 @@ export default function Navbar() {
                 className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold w-full text-right"
               >
                 <UserIcon className="w-5 h-5" />
-                <span>{dict.login || (locale === 'ar' ? "تسجيل الدخول" : "Login")}</span>
+                <span>{(dict as any).login || (locale === 'ar' ? "تسجيل الدخول" : "Login")}</span>
               </button>
             ) : (
               <>
@@ -283,7 +290,8 @@ export default function Navbar() {
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    router.push(`/${locale}`);
+                    authService.logout();
+                    router.push(`/${locale}/auth/login`);
                   }}
                   className="flex items-center gap-3 w-full p-4 rounded-xl bg-red-400/10 text-red-400 font-bold"
                 >

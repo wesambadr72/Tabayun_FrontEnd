@@ -1,9 +1,11 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { User, Mail, Globe, Languages, Heart, LogOut, Camera, ChevronLeft, ChevronRight } from "lucide-react";
+import { User as UserIcon, Mail, Globe, Languages, Heart, LogOut, Camera, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { authService } from "@/services/authService";
+import { User } from "@/types/auth";
 import ar from "@/locales/ar/common.json";
 import en from "@/locales/en/common.json";
 
@@ -17,25 +19,51 @@ export default function ProfilePage() {
   const profileDict = commonDict.auth?.profile || {};
   const dir = locale === "ar" ? "rtl" : "ltr";
 
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        // Try getting from localStorage first
+        const cachedUser = authService.getUser();
+        if (cachedUser) {
+          setUser(cachedUser);
+        }
+        
+        // Refresh from server
+        const freshUser = await authService.getMe();
+        setUser(freshUser);
+      } catch (err) {
+        console.error("Failed to fetch user profile", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const profileItems = [
     {
       label: profileDict.name || (locale === 'ar' ? 'الاسم' : 'Name'),
-      value: profileDict.userName || (locale === 'ar' ? 'فيصل' : 'Faisal'),
-      icon: User
+      value: user?.full_name || profileDict.userName || (locale === 'ar' ? 'جاري التحميل...' : 'Loading...'),
+      icon: UserIcon
     },
     {
       label: profileDict.email || (locale === 'ar' ? 'البريد الالكتروني' : 'Email'),
-      value: profileDict.userEmail || 'user@gmail.com',
+      value: user?.email || 'user@gmail.com',
       icon: Mail
     },
     {
       label: profileDict.country || (locale === 'ar' ? 'الدولة' : 'Country'),
-      value: profileDict.germany || (locale === 'ar' ? 'ألمانيا' : 'Germany'),
+      value: user?.country || (locale === 'ar' ? 'ألمانيا' : 'Germany'),
       icon: Globe
     },
     {
       label: profileDict.language || (locale === 'ar' ? 'اللغة' : 'Language'),
-      value: profileDict.arabic || (locale === 'ar' ? 'عربي' : 'Arabic'),
+      value: user?.language || (locale === 'ar' ? 'عربي' : 'Arabic'),
       icon: Languages
     },
     {
@@ -44,6 +72,20 @@ export default function ProfilePage() {
       icon: Heart
     },
   ];
+
+  const handleLogout = () => {
+    authService.logout();
+    router.push(`/${locale}/auth/login`);
+  };
+
+  if (loading && !user) {
+    return (
+      <main className="min-h-screen bg-[#f5f1eb] flex flex-col items-center justify-center">
+        <Navbar />
+        <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
+      </main>
+    );
+  }
 
   return (
     <main className="relative min-h-screen w-full flex flex-col items-center overflow-x-hidden bg-[#f5f1eb]" dir={dir}>
@@ -118,7 +160,7 @@ export default function ProfilePage() {
           {/* Logout Button */}
           <div className="mt-12 pt-8 border-t border-[#f5f1eb] flex justify-center">
             <button
-              onClick={() => router.push(`/${locale}`)}
+              onClick={handleLogout}
               className="flex items-center gap-3 text-red-500 hover:text-red-600 font-bold text-lg transition-all hover:bg-red-50 px-8 py-3 rounded-xl w-full justify-center group"
             >
               <LogOut className="w-5 h-5 group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform" />
