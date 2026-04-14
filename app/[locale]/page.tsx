@@ -1,11 +1,28 @@
-export default function HomePage({ params: { locale } }: { params: { locale: string } }) {
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/features/Hero";
+import AboutSection from "@/components/features/AboutSection";
+import FeaturesSection from "@/components/features/FeaturesSection";
+import BotCTASection from "@/components/features/BotCTASection";
+import Footer from "@/components/Footer";
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Welcome to Tabayun ({locale})
-        </p>
+    <main className="flex min-h-screen flex-col items-center justify-between bg-[#f5f1eb]">
+      <div className="fixed top-0 w-full z-50 flex justify-center py-4 bg-transparent pointer-events-none">
+        <div className="pointer-events-auto w-full max-w-6xl px-4">
+          <Navbar />
+        </div>
       </div>
+      <Hero />
+      <AboutSection />
+      <FeaturesSection />
+      <BotCTASection />
+      <Footer />
     </main>
   );
 }
