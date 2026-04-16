@@ -31,3 +31,33 @@ body {
     text-wrap: balance;
   }
 }
+
+/* --- Global Custom Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(61, 46, 32, 0.2); /* #3d2e20 with opacity */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(61, 46, 32, 0.4);
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(61, 46, 32, 0.2) transparent;
+}
+
+/* For specific containers like chat that need it even thinner */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
