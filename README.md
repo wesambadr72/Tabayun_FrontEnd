@@ -1,74 +1,85 @@
-# 🌐 تباين (Tabayun) - Comprehensive Legal Awareness Platform
+![Tabayun Banner](./public/Frame_22.png)
 
-**تباين (Tabayun)** هو منصة رقمية متطورة متعددة اللغات مصممة لمساعدة السياح الأجانب في فهم واحترام القوانين واللوائح المحلية في المملكة العربية السعودية. تعتمد المنصة على تقنيات الذكاء الاصطناعي المتقدمة لتوفير معلومات قانونية دقيقة وسهلة الوصول مخصصة للزوار الدوليين.
+# Tabayun — Multilingual Legal Awareness Platform
 
----
+> Bridging the gap between legal complexity and traveler awareness in Saudi Arabia.
 
-
-## 🚀 التقنيات المستخدمة (Technology Stack)
-
-### الواجهة الأمامية (Frontend)
-- **الإطار البرمجي:** Next.js 15+ (React 19)
-- **اللغة:** TypeScript
-- **التصميم:** Tailwind CSS + Shadcn/ui
-- **تدويل اللغة (i18n):** English, Arabic, French, Spanish
-- **الاستضافة:** Vercel
+![Next.js](https://img.shields.io/badge/Next.js-15+-black?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?style=flat-square)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=flat-square)
+![i18n](https://img.shields.io/badge/i18n-EN%20AR%20FR%20ES-green?style=flat-square)
 
 ---
 
-## ✨ المميزات الرئيسية (Core Features)
+## Overview
 
-### ميزات المستخدمين
-- [x] **تسجيل آمن:** نظام دخول وتسجيل حسابات محمي.
-- [x] **تصفح القوانين:** استعراض القوانين حسب التصنيفات.
-- [x] **مقارنة قانونية:** ميزة المقارنة جنباً إلى جنب لفهم الفروقات.
-- [x] **مساعد ذكي (Chatbot):** متاح 24/7 للإجابة على الاستفسارات القانونية.
-- [x] **العلامات المرجعية:** حفظ القوانين المهمة للرجوع إليها لاحقاً.
-
-### ميزات المسؤولين (Admin)
-- [x] **لوحة تحكم شاملة:** إحصائيات دقيقة عن استخدام المنصة.
-- [x] **إدارة المحتوى:** إضافة، تعديل، وحذف القوانين.
-- [x] **إدارة المستخدمين:** التحكم في الصلاحيات والمستخدمين.
-- [x] **سجل النشاطات:** تتبع كافة الإجراءات الإدارية.
-- [x] **تحديث المعرفة:** تحديث قاعدة بيانات المساعد الذكي.
+**Tabayun** is an advanced multilingual digital platform designed to help international tourists navigate and understand local laws and regulations in Saudi Arabia. Powered by AI, the platform delivers accurate, accessible legal guidance tailored specifically to foreign visitors — reducing legal uncertainty and promoting a safe, respectful experience in the Kingdom.
 
 ---
 
-## 📂 هيكل المشروع (Project Structure)
+## Technology Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 15+ (React 19) |
+| Language | TypeScript |
+| Styling | Tailwind CSS + shadcn/ui |
+| Internationalization | EN, AR, FR, ES |
+| Deployment | Vercel |
+| Backend | FastAPI |
+
+---
+
+## Features
+
+### User-Facing
+- **Secure authentication** — protected account registration and login
+- **Law browser** — categorized browsing of Saudi regulations
+- **Legal comparison** — side-by-side view to understand legal distinctions
+- **AI chatbot** — 24/7 intelligent assistant for legal queries
+- **Bookmarks** — save and revisit important regulations
+
+### Admin Panel
+- **Analytics dashboard** — detailed platform usage statistics
+- **Content management** — create, edit, and remove legal entries
+- **User management** — role and permission control
+- **Activity log** — full audit trail of administrative actions
+- **Knowledge base updates** — refresh the AI assistant's data directly
+
+---
+
+## Project Structure
 
 ```text
- tabayun-frontend/ 
- ├── app/                # App Router (Next.js 15)
- │   └── [locale]/       # Dynamic routes for i18n
- ├── components/         # Shadcn/ui & custom components
- ├── hooks/              # Custom React hooks
- ├── services/           # API integrations (FastAPI)
- ├── types/              # TypeScript definitions
- ├── lib/                # Shared utilities
- ├── locales/            # Translation files (JSON)
- └── public/             # Static assets
+tabayun-frontend/
+├── app/                # App Router (Next.js 15)
+│   └── [locale]/       # Dynamic i18n routes
+├── components/         # shadcn/ui & custom components
+├── hooks/              # Custom React hooks
+├── services/           # FastAPI integrations
+├── types/              # TypeScript definitions
+├── lib/                # Shared utilities
+├── locales/            # JSON translation files
+└── public/             # Static assets
 ```
 
 ---
 
-## 🛠️ التشغيل والتطوير (Getting Started)
+## Getting Started
 
-1. **تثبيت الاعتمادات:**
-   ```bash
-   npm install
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. **تشغيل بيئة التطوير:**
-   ```bash
-   npm run dev
-   ```
+# Start development server
+npm run dev
 
-3. **بناء المشروع للإنتاج:**
-   ```bash
-   npm run build
-   ```
+# Build for production
+npm run build
+```
 
 ---
 
-## 🎯 هدف المشروع
-الهدف الأساسي هو مساعدة السياح في فهم القوانين واللوائح السعودية، وتعزيز الوعي القانوني والامتثال مع تحسين تجربة الزوار الشاملة في المملكة.
+## Mission
+
+Tabayun exists to reduce legal friction for international visitors in Saudi Arabia — promoting compliance, cultural respect, and a smoother overall experience through accessible, AI-assisted legal awareness.
