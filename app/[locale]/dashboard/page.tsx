@@ -211,7 +211,7 @@ export default function DashboardPage() {
                       <div className="border-b border-white/10 pb-4 flex-1">
                         <div className="font-bold text-sm line-clamp-1">
                           {bookmark.comparison ? 
-                            `${bookmark.comparison.foreign_law?.title}` : 
+                            `${bookmark.comparison.title}` : 
                             (locale === 'ar' ? 'مقارنة محفوظة' : 'Saved comparison')
                           }
                         </div>

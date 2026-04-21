@@ -4,7 +4,7 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import ar from "../locales/ar/common.json";
 import en from "../locales/en/common.json";
-import { Menu, X, Globe, User as UserIcon, LogOut, ChevronRight, ChevronLeft, MessageSquare } from "lucide-react";
+import { Menu, X, Globe, User as UserIcon, LogOut, ChevronRight, ChevronLeft, MessageSquare, Bell } from "lucide-react";
 
 import { authService } from "@/services/authService";
 
@@ -33,6 +33,7 @@ export default function Navbar() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   if (isAuthPage) return null;
 
@@ -108,6 +109,7 @@ export default function Navbar() {
                 onClick={() => {
                   setIsLangOpen(!isLangOpen);
                   setIsProfileOpen(false);
+                  setIsNotificationsOpen(false);
                 }}
                 className="flex items-center justify-center gap-2 h-10 px-4 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/20 group"
               >
@@ -130,6 +132,38 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* 1.5. أيقونة الإشعارات (تظهر فقط إذا كان مسجل الدخول) */}
+            {isLoggedIn && (
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setIsNotificationsOpen(!isNotificationsOpen);
+                    setIsProfileOpen(false);
+                    setIsLangOpen(false);
+                  }}
+                  className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/20 transition cursor-pointer relative"
+                >
+                  <Bell className="w-5 h-5 text-white" />
+                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+
+                {isNotificationsOpen && (
+                  <div className={`absolute top-full mt-3 ${dir === 'rtl' ? 'left-1/2 -translate-x-1/2' : 'right-1/2 translate-x-1/2'} w-64 md:w-80 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 p-4`}>
+                    <div className="text-white/60 text-sm text-center py-4 border-b border-white/10 mb-2">
+                       {locale === 'ar' ? 'لا توجد إشعارات جديدة حالياً' : 'No new notifications right now'}
+                    </div>
+                    <Link
+                      href={`/${locale}/notifications`}
+                      onClick={() => setIsNotificationsOpen(false)}
+                      className="block w-full text-center px-4 py-2 mt-2 bg-white/10 hover:bg-white/20 rounded-xl text-white text-sm font-bold transition-colors"
+                    >
+                      {locale === 'ar' ? 'عرض جميع الاشعارات' : 'View all notifications'}
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* 2. أيقونة البروفايل */}
             <div className="relative">
               <button
@@ -139,6 +173,7 @@ export default function Navbar() {
                   } else {
                     setIsProfileOpen(!isProfileOpen);
                     setIsLangOpen(false);
+                    setIsNotificationsOpen(false);
                   }
                 }}
                 className="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer"
@@ -285,6 +320,16 @@ export default function Navbar() {
                 >
                   <UserIcon className="w-5 h-5" />
                   <span>{dict.profile || "الملف الشخصي"}</span>
+                </Link>
+
+                <Link
+                  href={`/${locale}/notifications`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold relative"
+                >
+                  <Bell className="w-5 h-5" />
+                  <span>{locale === 'ar' ? 'الإشعارات' : 'Notifications'}</span>
+                  <span className="w-2 h-2 bg-red-500 rounded-full ml-auto mr-auto"></span>
                 </Link>
 
                 <button

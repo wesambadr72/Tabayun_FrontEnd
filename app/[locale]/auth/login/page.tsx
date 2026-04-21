@@ -187,20 +187,6 @@ export default function LoginPage() {
                   )}
                 </button>
 
-                <div className="relative py-4 flex items-center">
-                  <div className="flex-grow border-t border-[#3d2e20]/10"></div>
-                  <span className="flex-shrink-0 mx-4 text-[#3d2e20]/40 text-sm font-bold uppercase">أو</span>
-                  <div className="flex-grow border-t border-[#3d2e20]/10"></div>
-                </div>
-
-                <button
-                  type="button"
-                  className="w-full bg-white border-2 border-transparent hover:border-[#3d2e20]/10 text-[#3d2e20] py-4 rounded-[1.5rem] text-lg font-bold flex items-center justify-center gap-3 hover:bg-gray-50 transition shadow-lg shadow-[#3d2e20]/5 hover:scale-[1.01] active:scale-95"
-                  suppressHydrationWarning
-                >
-                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
-                  {dict.google}
-                </button>
 
                 <div className="pt-6 text-center">
                   <p className="text-[#3d2e20]/60 font-medium">
