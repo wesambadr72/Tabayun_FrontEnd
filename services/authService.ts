@@ -31,6 +31,12 @@ export const authService = {
     return user;
   },
 
+  updateProfile: async (data: any): Promise<User> => {
+    const user = await api.put<User>('/auth/profile', data);
+    authService.setUser(user);
+    return user;
+  },
+
   logout: () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
