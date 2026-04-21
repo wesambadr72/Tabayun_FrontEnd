@@ -1,13 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { authService } from "@/services/authService";
 import ar from "../../../../locales/ar/common.json";
 import en from "../../../../locales/en/common.json";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { User, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, Loader2, Scale } from "lucide-react";
 
 const dictionaries = { ar, en };
 
@@ -16,195 +15,248 @@ export default function LoginPage() {
   const router = useRouter();
   const locale = (params.locale as string) || "ar";
   const dict = (dictionaries[locale as keyof typeof dictionaries] || ar).auth.login;
-  const dir = locale === "ar" ? "rtl" : "ltr";
+  const isAr = locale === "ar";
+  const dir = isAr ? "rtl" : "ltr";
 
-  const [mounted, setMounted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
-    }
+    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.email) {
-      newErrors.email = locale === "ar" ? "البريد الالكتروني مطلوب" : "Email is required";
-    }
-
-    const password = formData.password;
-    if (!password) {
-      newErrors.password = locale === "ar" ? "كلمة المرور مطلوبة" : "Password is required";
-    }
-
+    if (!formData.email)
+      newErrors.email = isAr ? "البريد الإلكتروني مطلوب" : "Email is required";
+    if (!formData.password)
+      newErrors.password = isAr ? "كلمة المرور مطلوبة" : "Password is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      try {
-        setLoading(true);
-        const data = new FormData();
-        data.append('email', formData.email);
-        data.append('password', formData.password);
-        
-        const response = await authService.login(data);
-        authService.setToken(response.access_token);
-        
-        // Fetch and store user profile after login using the new /me endpoint
-        await authService.getMe();
-        
-        router.push(`/${locale}/dashboard`);
-      } catch (err: any) {
-        setErrors({ general: err.message });
-      } finally {
-        setLoading(false);
-      }
+    if (!validate()) return;
+    try {
+      setLoading(true);
+      const data = new FormData();
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+      const response = await authService.login(data);
+      authService.setToken(response.access_token);
+      await authService.getMe();
+      router.push(`/${locale}/dashboard`);
+    } catch (err: any) {
+      setErrors({ general: err.message });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-[#f5f1eb] overflow-x-hidden" dir={dir}>
-      {/* Navbar Wrapper */}
-      <div className="fixed top-0 w-full z-50 flex justify-center py-4 bg-transparent pointer-events-none">
-        <div className="pointer-events-auto w-full max-w-6xl px-4">
-          <Navbar />
+    <main className="min-h-screen flex" dir={dir}>
+
+      {/* ── Brand panel ── */}
+      <div
+        className="hidden lg:flex flex-col justify-between w-[420px] xl:w-[480px] flex-shrink-0 relative overflow-hidden p-10"
+        style={{ background: "linear-gradient(160deg, #1a1410 0%, #2e2218 60%, #3d2e20 100%)" }}
+      >
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <Image src="/image/saudi.png" alt="" fill className="object-cover opacity-20" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(26,20,16,0.9), rgba(61,46,32,0.85))" }} />
+        </div>
+
+        {/* Top: Logo */}
+        <div className="relative z-10">
+          <Link href={`/${locale}`} className="inline-flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center"
+              style={{ background: "rgba(196,168,130,0.15)", border: "1px solid rgba(196,168,130,0.3)" }}
+            >
+              <Scale className="w-5 h-5" style={{ color: "#c4a882" }} />
+            </div>
+            <span className="text-xl font-black text-white">{isAr ? "تباين" : "Tabayun"}</span>
+          </Link>
+        </div>
+
+        {/* Middle: Quote / tagline */}
+        <div className="relative z-10 space-y-4">
+          <div
+            className="w-12 h-1 rounded-full"
+            style={{ background: "linear-gradient(to right, #c4a882, #8B6F47)" }}
+          />
+          <h2 className="text-3xl xl:text-4xl font-black text-white leading-snug">
+            {isAr
+              ? "اعرف حقوقك\nأينما كنت"
+              : "Know your rights\nanywhere"}
+          </h2>
+          <p className="text-base" style={{ color: "rgba(255,255,255,0.5)" }}>
+            {isAr
+              ? "مقارنة فورية بين أنظمة المملكة وقوانين دولتك"
+              : "Instant comparison between Saudi laws and your country's"}
+          </p>
+        </div>
+
+        {/* Bottom: Stats */}
+        <div className="relative z-10 grid grid-cols-2 gap-4">
+          {[
+            { num: "+100", label: isAr ? "نظام وقانون" : "Laws" },
+            { num: "24/7", label: isAr ? "دعم ذكي" : "AI Support" },
+          ].map((s, i) => (
+            <div
+              key={i}
+              className="rounded-2xl p-4"
+              style={{ background: "rgba(196,168,130,0.08)", border: "1px solid rgba(196,168,130,0.12)" }}
+            >
+              <p className="text-2xl font-black text-white">{s.num}</p>
+              <p className="text-xs font-semibold mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>{s.label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="w-full mt-32 mb-10 flex-grow flex flex-col items-center justify-center px-4 md:px-6 relative overflow-hidden">
+      {/* ── Form panel ── */}
+      <div className="flex-1 bg-[#f5f1eb] flex flex-col justify-center items-center px-5 sm:px-10 py-16 min-h-screen overflow-y-auto">
 
-        {/* Background Elements - Subtle */}
-        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-[#3d2e20]/5 rounded-full blur-[100px] pointer-events-none hidden md:block" />
-        <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-[#d4c5b5]/40 rounded-full blur-[100px] pointer-events-none hidden md:block" />
+        {/* Mobile logo */}
+        <div className="lg:hidden mb-8">
+          <Link href={`/${locale}`} className="inline-flex items-center gap-2">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: "rgba(61,46,32,0.08)" }}
+            >
+              <Scale className="w-4.5 h-4.5 text-[#3d2e20]" />
+            </div>
+            <span className="text-lg font-black text-[#3d2e20]">{isAr ? "تباين" : "Tabayun"}</span>
+          </Link>
+        </div>
 
-        <div className="relative z-10 w-full max-w-lg flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
-
+        <div className="w-full max-w-md">
           {/* Header */}
-          <div className="space-y-4 mb-12">
-            <h1 className="text-4xl md:text-5xl font-black text-[#3d2e20] tracking-tight">{dict.title}</h1>
-            <p className="text-[#3d2e20]/60 text-lg font-medium">مرحباً بعودتك إلى تباين</p>
+          <div className={`mb-10 ${isAr ? "text-right" : "text-left"}`}>
+            <h1 className="text-3xl sm:text-4xl font-black text-[#3d2e20] mb-2">
+              {isAr ? "أهلاً بعودتك 👋" : "Welcome back 👋"}
+            </h1>
+            <p className="text-[#3d2e20]/50 font-medium">
+              {isAr ? "سجّل دخولك للمتابعة" : "Sign in to continue"}
+            </p>
           </div>
 
           {/* Form */}
-          {!mounted ? (
-            <div className="w-full h-96 flex flex-col items-center justify-center space-y-4">
-              <Loader2 className="w-10 h-10 animate-spin text-[#3d2e20]/20" />
-              <p className="text-[#3d2e20]/20 font-bold uppercase tracking-widest text-xs animate-pulse">
-                {locale === 'ar' ? 'جاري التحميل...' : 'Loading Tabayun...'}
-              </p>
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            {errors.general && (
+              <div className="bg-red-50 text-red-600 px-4 py-3.5 rounded-2xl text-sm font-semibold border border-red-100">
+                {errors.general}
+              </div>
+            )}
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label className={`block text-sm font-bold text-[#3d2e20] ${isAr ? "text-right" : "text-left"}`}>
+                {dict.email || (isAr ? "البريد الإلكتروني" : "Email")}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none text-[#3d2e20]/30">
+                  <Mail className="w-4.5 h-4.5" strokeWidth={2} />
+                </div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder={isAr ? "example@email.com" : "example@email.com"}
+                  className={`w-full bg-white rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
+                    errors.email
+                      ? "border-2 border-red-300 focus:border-red-400"
+                      : "border-2 border-transparent focus:border-[#3d2e20]/20"
+                  }`}
+                  dir="ltr"
+                />
+              </div>
+              {errors.email && <p className="text-red-500 text-xs font-semibold ps-1">{errors.email}</p>}
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="w-full space-y-6">
-              {errors.general && (
-                <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-sm font-bold border border-red-100 animate-in fade-in zoom-in duration-300">
-                  {errors.general}
-                </div>
-              )}
-              {/* email Field */}
-              <div className="space-y-2 text-start">
-                <label className="text-[#3d2e20] font-bold px-2">{dict.email}</label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 start-0 ps-5 flex items-center pointer-events-none text-[#3d2e20]/30 group-focus-within:text-[#3d2e20] transition-colors">
-                    <User className="w-5 h-5" strokeWidth={2.5} />
-                  </div>
-                  <input
-                    type="text"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder={locale === 'ar' ? 'أدخل البريد الإلكتروني' : 'Enter email'}
-                    className={`w-full bg-white border-2 ${errors.email ? 'border-red-200' : 'border-[#3d2e20]/5'} rounded-[1.5rem] py-5 ps-14 pe-6 text-[#3d2e20] font-bold placeholder:text-[#3d2e20]/20 focus:outline-none focus:border-[#3d2e20] focus:ring-4 focus:ring-[#3d2e20]/5 transition-all shadow-sm`}
-                    suppressHydrationWarning
-                  />
-                </div>
-                {errors.email && <p className="text-red-500 text-xs font-bold px-4 mt-1">{errors.email}</p>}
-              </div>
 
-              {/* Password Field */}
-              <div className="space-y-2 text-start">
-                <div className="flex justify-between items-center px-2">
-                  <label className="text-[#3d2e20] font-bold">{dict.password}</label>
-                  <Link href="#" className="text-sm font-black text-[#3d2e20]/40 hover:text-[#3d2e20] transition-colors tracking-tight uppercase">
-                    {dict.forgotPassword}
-                  </Link>
-                </div>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 start-0 ps-5 flex items-center pointer-events-none text-[#3d2e20]/30 group-focus-within:text-[#3d2e20] transition-colors">
-                    <Lock className="w-5 h-5" strokeWidth={2.5} />
-                  </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className={`w-full bg-white border-2 ${errors.password ? 'border-red-200' : 'border-[#3d2e20]/5'} rounded-[1.5rem] py-5 ps-14 pe-14 text-[#3d2e20] font-bold placeholder:text-[#3d2e20]/20 focus:outline-none focus:border-[#3d2e20] focus:ring-4 focus:ring-[#3d2e20]/5 transition-all shadow-sm`}
-                    suppressHydrationWarning
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 end-0 pe-5 flex items-center text-[#3d2e20]/20 hover:text-[#3d2e20] transition-colors"
-                    suppressHydrationWarning
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" strokeWidth={2.5} /> : <Eye className="w-5 h-5" strokeWidth={2.5} />}
-                  </button>
-                </div>
-                {errors.password && <p className="text-red-500 text-xs font-bold px-4 mt-1">{errors.password}</p>}
+            {/* Password */}
+            <div className="space-y-1.5">
+              <div className={`flex items-center justify-between ${isAr ? "flex-row-reverse" : ""}`}>
+                <label className="text-sm font-bold text-[#3d2e20]">
+                  {dict.password}
+                </label>
+                <Link href="#" className="text-xs font-bold text-[#3d2e20]/40 hover:text-[#3d2e20] transition-colors">
+                  {dict.forgotPassword}
+                </Link>
               </div>
-
-              {/* Actions */}
-              <div className="space-y-4 pt-6">
+              <div className="relative">
+                <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none text-[#3d2e20]/30">
+                  <Lock className="w-4.5 h-4.5" strokeWidth={2} />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className={`w-full bg-white rounded-2xl ps-11 pe-11 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
+                    errors.password
+                      ? "border-2 border-red-300 focus:border-red-400"
+                      : "border-2 border-transparent focus:border-[#3d2e20]/20"
+                  }`}
+                />
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#3d2e20] hover:bg-[#523e2b] text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-[#3d2e20]/20 transform hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
-                  suppressHydrationWarning
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 end-0 pe-4 flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20] transition-colors"
                 >
-                  {loading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    <>
-                      <span className="text-lg uppercase tracking-widest">{dict.title}</span>
-                      {dir === "rtl" ? <ArrowLeft className="w-6 h-6" /> : <ArrowRight className="w-6 h-6" />}
-                    </>
-                  )}
+                  {showPassword ? <EyeOff className="w-4.5 h-4.5" strokeWidth={2} /> : <Eye className="w-4.5 h-4.5" strokeWidth={2} />}
                 </button>
-
-
-                <div className="pt-6 text-center">
-                  <p className="text-[#3d2e20]/60 font-medium">
-                    ليس لديك حساب؟ {' '}
-                    <Link href={`/${locale}/auth/register`} className="text-[#3d2e20] font-bold hover:underline">
-                      {dict.createAccount}
-                    </Link>
-                  </p>
-                </div>
-
               </div>
-            </form>
-          )}
+              {errors.password && <p className="text-red-500 text-xs font-semibold ps-1">{errors.password}</p>}
+            </div>
 
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 flex items-center justify-center gap-2.5 py-4 rounded-2xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
+              style={{
+                background: "linear-gradient(135deg, #3d2e20, #523e2b)",
+                color: "white",
+                boxShadow: "0 8px 24px rgba(61,46,32,0.25)",
+              }}
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <span>{dict.enter}</span>
+                  {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Register link */}
+          <p className={`mt-8 text-sm text-[#3d2e20]/50 font-medium ${isAr ? "text-right" : "text-left"}`}>
+            {isAr ? "ليس لديك حساب؟" : "Don't have an account?"}{" "}
+            <Link
+              href={`/${locale}/auth/register`}
+              className="font-bold text-[#3d2e20] hover:underline underline-offset-4"
+            >
+              {dict.createAccount}
+            </Link>
+          </p>
+
+          {/* Footer note */}
+          <p className={`mt-10 text-xs text-[#3d2e20]/30 font-medium ${isAr ? "text-right" : "text-left"}`}>
+            {dict.rights}
+          </p>
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 }
