@@ -4,6 +4,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { lawService } from "@/services/lawService";
+import { authService } from "@/services/authService";
 import { Comparison } from "@/types/law";
 import { LawCard } from "@/components/LawCard";
 import ar from "@/locales/ar/common.json";
@@ -26,6 +27,14 @@ function LawsListContent() {
   const [comparisons, setComparisons] = useState<Comparison[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+
+  useEffect(() => {
+    const user = authService.getUser();
+    if (user && user.country) {
+      setUserCountry(user.country);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchComparisons = async () => {
@@ -33,7 +42,17 @@ function LawsListContent() {
       try {
         setLoading(true);
         const data = await lawService.getLawsByCategory(Number(categoryId));
-        setComparisons(data);
+        
+        // Filter by user country if available
+        let filteredData = data;
+        if (userCountry) {
+          filteredData = data.filter(comp => 
+            comp.foreign_law?.country.toLowerCase() === userCountry.toLowerCase() ||
+            !comp.foreign_law // Fallback for list view where foreign_law might not be pre-loaded
+          );
+        }
+        
+        setComparisons(filteredData);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -42,7 +61,7 @@ function LawsListContent() {
     };
 
     fetchComparisons();
-  }, [categoryId]);
+  }, [categoryId, userCountry]);
 
   return (
     <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>

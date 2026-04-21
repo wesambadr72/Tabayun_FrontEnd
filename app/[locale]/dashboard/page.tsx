@@ -36,6 +36,13 @@ export default function DashboardPage() {
 
   const [priorityComparisons, setPriorityComparisons] = useState<Comparison[]>([]);
   const [recentBookmarks, setRecentBookmarks] = useState<BookmarkType[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!searchQuery.trim()) return;
+    router.push(`/${locale}/search?q=${encodeURIComponent(searchQuery)}`);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +83,7 @@ export default function DashboardPage() {
           {/* Main Title & Description */}
           <div className="text-center mb-10 space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3d2e20]/5 border border-[#3d2e20]/10 text-[#3d2e20] text-sm font-bold shadow-sm">
-              <Sparkles className="w- h-4 text-[#3d2e20]" />
+              <Sparkles className="w-4 h-4 text-[#3d2e20]" />
               <span className="font-regular">{locale === "ar" ? "محرك البحث القانوني الأول" : "The #1 Legal Search Engine"}</span>
             </div>
 
@@ -92,22 +99,30 @@ export default function DashboardPage() {
           </div>
 
           {/* Redesigned Search Bar */}
-          <div className="w-full max-w-3xl mb-12 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-150 fill-mode-backwards px-4">
+          <form 
+            onSubmit={handleSearch}
+            className="w-full max-w-3xl mb-12 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-150 fill-mode-backwards px-4"
+          >
             <div className="relative flex items-center bg-white border border-[#3d2e20]/10 rounded-3xl shadow-2xl p-2 focus-within:ring-4 focus-within:ring-[#3d2e20]/5 transition-all">
               <div className="pl-6 pr-2 text-[#3d2e20]/30 border-r border-[#3d2e20]/10 hidden md:block">
                 <Globe className="w-6 h-6" />
               </div>
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={locale === "ar" ? "ابحث عن مخالفة، قانون، أو نظام..." : "Search for a violation, law, or regulation..."}
                 className="w-full bg-transparent border-none py-5 px-6 text-xl text-[#3d2e20] placeholder-[#3d2e20]/30 focus:outline-none font-bold"
               />
-              <button className="bg-[#3d2e20] hover:bg-[#523e2b] text-white px-8 py-5 rounded-2xl transition-all flex items-center gap-2 shadow-lg active:scale-95">
+              <button 
+                type="submit"
+                className="bg-[#3d2e20] hover:bg-[#523e2b] text-white px-8 py-5 rounded-2xl transition-all flex items-center gap-2 shadow-lg active:scale-95"
+              >
                 <Search className="w-6 h-6" />
                 <span className="font-black text-lg hidden sm:block">{locale === 'ar' ? 'بحث' : 'Search'}</span>
               </button>
             </div>
-          </div>
+          </form>
 
           {/* Quick Stats Banner */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-20 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 fill-mode-backwards">

@@ -22,16 +22,21 @@ const dictionaries = {
 };
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
-  "المرور": Car,
-  "الإقامة": FileCheck,
-  "الذوق العام": ShieldCheck,
-  "العمل": Briefcase,
-  "الغذاء": Utensils,
-  "Traffic": Car,
-  "Residency": FileCheck,
-  "Public Decency": ShieldCheck,
-  "Labor": Briefcase,
-  "Food": Utensils,
+  "traffic": Car,
+  "visa_residency": FileCheck,
+  "residency": FileCheck,
+  "public_decency": ShieldCheck,
+  "labor": Briefcase,
+  "food": Utensils,
+};
+
+const CATEGORY_MAP: Record<string, string> = {
+  "traffic": "traffic",
+  "visa_residency": "residency",
+  "residency": "residency",
+  "public_decency": "publicDecency",
+  "labor": "labor",
+  "food": "food",
 };
 
 export default function CategoriesPage() {
@@ -96,11 +101,18 @@ export default function CategoriesPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 fill-mode-backwards">
             {categories.map((cat) => {
-              const Icon = CATEGORY_ICONS[cat.name] || Briefcase;
-              return (
+              const apiName = cat.name.toLowerCase().replace(/ /g, '_');
+              const iconKey = apiName;
+              const translationKey = CATEGORY_MAP[apiName] || apiName;
+              
+              const Icon = CATEGORY_ICONS[iconKey] || Briefcase;
+              const translatedName = dict.dashboard.sections?.[translationKey] || cat.name;
+              const translatedDesc = dict.dashboard.descriptions?.[translationKey] || cat.description;
+
+              return (    
                 <button
                   key={cat.id}
-                  onClick={() => router.push(`/${locale}/laws?category=${cat.id}&name=${encodeURIComponent(cat.name)}`)}
+                  onClick={() => router.push(`/${locale}/laws?category=${cat.id}&name=${encodeURIComponent(translatedName)}`)}
                   className="group bg-white p-8 rounded-[2rem] border border-[#3d2e20]/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center"
                 >
                   <div className="w-16 h-16 bg-[#f5f1eb] text-[#3d2e20] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#3d2e20] group-hover:text-white transition-colors duration-300">
@@ -108,11 +120,11 @@ export default function CategoriesPage() {
                   </div>
 
                   <h3 className="text-xl md:text-2xl font-black text-[#3d2e20] mb-3">
-                    {cat.name}
+                    {translatedName}
                   </h3>
 
                   <p className="text-[#3d2e20]/60 text-sm md:text-base font-medium leading-relaxed mb-6 flex-grow">
-                    {cat.description}
+                    {translatedDesc}
                   </p>
 
                   <div className="flex items-center gap-2 text-[#3d2e20] font-black text-sm">
