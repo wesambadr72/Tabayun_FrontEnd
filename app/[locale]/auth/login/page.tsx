@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: ""
   });
 
@@ -40,8 +40,8 @@ export default function LoginPage() {
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.username) {
-      newErrors.username = locale === "ar" ? "اسم المستخدم مطلوب" : "Username is required";
+    if (!formData.email) {
+      newErrors.email = locale === "ar" ? "البريد الالكتروني مطلوب" : "Email is required";
     }
 
     const password = formData.password;
@@ -59,7 +59,7 @@ export default function LoginPage() {
       try {
         setLoading(true);
         const data = new FormData();
-        data.append('username', formData.username);
+        data.append('email', formData.email);
         data.append('password', formData.password);
         
         const response = await authService.login(data);
@@ -116,24 +116,24 @@ export default function LoginPage() {
                   {errors.general}
                 </div>
               )}
-              {/* Username Field */}
+              {/* email Field */}
               <div className="space-y-2 text-start">
-                <label className="text-[#3d2e20] font-bold px-2">{dict.username}</label>
+                <label className="text-[#3d2e20] font-bold px-2">{dict.email}</label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 start-0 ps-5 flex items-center pointer-events-none text-[#3d2e20]/30 group-focus-within:text-[#3d2e20] transition-colors">
                     <User className="w-5 h-5" strokeWidth={2.5} />
                   </div>
                   <input
                     type="text"
-                    name="username"
-                    value={formData.username}
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
-                    placeholder={locale === 'ar' ? 'أدخل اسم المستخدم' : 'Enter username'}
-                    className={`w-full bg-white border-2 ${errors.username ? 'border-red-200' : 'border-[#3d2e20]/5'} rounded-[1.5rem] py-5 ps-14 pe-6 text-[#3d2e20] font-bold placeholder:text-[#3d2e20]/20 focus:outline-none focus:border-[#3d2e20] focus:ring-4 focus:ring-[#3d2e20]/5 transition-all shadow-sm`}
+                    placeholder={locale === 'ar' ? 'أدخل البريد الإلكتروني' : 'Enter email'}
+                    className={`w-full bg-white border-2 ${errors.email ? 'border-red-200' : 'border-[#3d2e20]/5'} rounded-[1.5rem] py-5 ps-14 pe-6 text-[#3d2e20] font-bold placeholder:text-[#3d2e20]/20 focus:outline-none focus:border-[#3d2e20] focus:ring-4 focus:ring-[#3d2e20]/5 transition-all shadow-sm`}
                     suppressHydrationWarning
                   />
                 </div>
-                {errors.username && <p className="text-red-500 text-xs font-bold px-4 mt-1">{errors.username}</p>}
+                {errors.email && <p className="text-red-500 text-xs font-bold px-4 mt-1">{errors.email}</p>}
               </div>
 
               {/* Password Field */}

@@ -29,6 +29,7 @@
   "auth": {
     "login": {
       "title": "Login",
+      "email": "Email Address:",
       "username": "Username:",
       "password": "Password:",
       "forgotPassword": "Forgot password?",
