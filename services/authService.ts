@@ -3,19 +3,30 @@ import { AuthResponse, RegisterResponse, User } from '@/types/auth';
 
 export const authService = {
   login: async (formData: FormData): Promise<AuthResponse> => {
-    // For OAuth2 password flow, we use URLSearchParams or FormData
-    const body = new URLSearchParams(formData as any);
+    // For OAuth2 password flow, we use URLSearchParams
+    const params = new URLSearchParams();
+    
+    // Ensure email is sent as username (FastAPI OAuth2 requirement)
+    const email = formData.get('email');
+    const username = formData.get('username');
+    const password = formData.get('password');
+
+    if (email) params.append('username', email as string);
+    else if (username) params.append('username', username as string);
+    
+    if (password) params.append('password', password as string);
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: body.toString(),
+      body: params.toString(),
     });
 
     if (!response.ok) {
-      throw new Error('Invalid credentials');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'خطأ في تسجيل الدخول. يرجى التأكد من البريد الإلكتروني وكلمة المرور.');
     }
 
     return response.json();

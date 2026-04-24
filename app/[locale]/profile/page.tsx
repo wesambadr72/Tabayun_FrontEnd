@@ -41,7 +41,7 @@ export default function ProfilePage() {
         // Refresh with fresh data from server
         const [freshUser, countries] = await Promise.all([
           authService.getMe(),
-          lawService.getAvailableCountries().catch(() => [])
+          lawService.getAvailableCountries().catch(() => [] as string[])
         ]);
         
         setUser(freshUser);
