@@ -52,15 +52,15 @@
 
 ```text
 tabayun-frontend/
-├── app/                # App Router (Next.js 15)
-│   └── [locale]/       # Dynamic i18n routes
-├── components/         # shadcn/ui & custom components
-├── hooks/              # Custom React hooks
-├── services/           # FastAPI integrations
-├── types/              # TypeScript definitions
-├── lib/                # Shared utilities
-├── locales/            # JSON translation files
-└── public/             # Static assets
+├── app/                 # App Router (Next.js 15)
+│   └── [locale]/        # Dynamic i18n routes
+├── components/          # shadcn/ui & custom components
+├── hooks/               # Custom React hooks
+├── services/            # FastAPI integrations
+├── types/               # TypeScript definitions
+├── lib/                 # Shared utilities
+├── locales/             # JSON translation files
+└── public/              # Static assets
 ```
 
 ---
