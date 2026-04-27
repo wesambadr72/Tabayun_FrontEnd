@@ -36,6 +36,14 @@ export const authService = {
     return api.post<RegisterResponse>('/auth/register', userData);
   },
 
+  checkEmail: async (email: string): Promise<{ available: boolean }> => {
+    return api.get<{ available: boolean }>(`/auth/check-email?email=${encodeURIComponent(email)}`);
+  },
+
+  forgotPassword: async (email: string): Promise<any> => {
+    return api.post('/auth/forgot-password', { email });
+  },
+
   getMe: async (): Promise<User> => {
     const user = await api.get<User>('/auth/me');
     authService.setUser(user);

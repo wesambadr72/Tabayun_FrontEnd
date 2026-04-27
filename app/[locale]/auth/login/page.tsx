@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { authService } from "@/services/authService";
 import ar from "../../../../locales/ar/common.json";
 import en from "../../../../locales/en/common.json";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, Loader2, Scale } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, Loader2, Scale, X } from "lucide-react";
 
 const dictionaries = { ar, en };
 
@@ -22,6 +22,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showForgotDialog, setShowForgotDialog] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [isSendingReset, setIsSendingReset] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -183,14 +187,9 @@ export default function LoginPage() {
 
             {/* Password */}
             <div className="space-y-1.5">
-              <div className={`flex items-center justify-between ${isAr ? "flex-row-reverse" : ""}`}>
-                <label className="text-sm font-bold text-[#3d2e20]">
-                  {dict.password}
-                </label>
-                <Link href="#" className="text-xs font-bold text-[#3d2e20]/40 hover:text-[#3d2e20] transition-colors">
-                  {dict.forgotPassword}
-                </Link>
-              </div>
+              <label className={`block text-sm font-bold text-[#3d2e20] ${isAr ? "text-right" : "text-left"}`}>
+                {dict.password}
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none text-[#3d2e20]/30">
                   <Lock className="w-4.5 h-4.5" strokeWidth={2} />
@@ -205,7 +204,8 @@ export default function LoginPage() {
                     errors.password
                       ? "border-2 border-red-300 focus:border-red-400"
                       : "border-2 border-transparent focus:border-[#3d2e20]/20"
-                  }`}
+                  } ${isAr ? "text-right" : "text-left"}`}
+                  dir={isAr ? "rtl" : "ltr"}
                 />
                 <button
                   type="button"
@@ -213,6 +213,19 @@ export default function LoginPage() {
                   className="absolute inset-y-0 end-0 pe-4 flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20] transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4.5 h-4.5" strokeWidth={2} /> : <Eye className="w-4.5 h-4.5" strokeWidth={2} />}
+                </button>
+              </div>
+              <div className="flex justify-start px-1">
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setForgotEmail("");
+                    setResetSuccess(false);
+                    setShowForgotDialog(true);
+                  }}
+                  className="text-xs font-bold text-[#3d2e20]/40 hover:text-[#3d2e20] transition-colors"
+                >
+                  {dict.forgotPassword}
                 </button>
               </div>
               {errors.password && <p className="text-red-500 text-xs font-semibold ps-1">{errors.password}</p>}
@@ -257,6 +270,106 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+      {/* Forgot Password Dialog */}
+      {showForgotDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-[#1a1410]/60 backdrop-blur-sm" 
+            onClick={() => setShowForgotDialog(false)}
+          />
+          <div className="relative w-full max-w-md bg-[#f5f1eb] rounded-[32px] p-8 shadow-2xl overflow-hidden border border-white/20">
+            <button 
+              onClick={() => setShowForgotDialog(false)}
+              className="absolute top-6 end-6 p-2 rounded-full hover:bg-[#3d2e20]/5 transition-colors"
+            >
+              <X className="w-5 h-5 text-[#3d2e20]/40" />
+            </button>
+
+            {!resetSuccess ? (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black text-[#3d2e20] mb-2">
+                    {isAr ? "نسيت كلمة المرور؟" : "Forgot password?"}
+                  </h3>
+                  <p className="text-sm font-medium text-[#3d2e20]/50">
+                    {isAr 
+                      ? "لا تقلق، أدخل بريدك الإلكتروني وسنرسل لك رابطاً لاستعادة كلمة المرور"
+                      : "Don't worry, enter your email and we'll send you a password reset link"}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-[#3d2e20]">
+                    {isAr ? "البريد الإلكتروني" : "Email"}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none text-[#3d2e20]/30">
+                      <Mail className="w-4.5 h-4.5" strokeWidth={2} />
+                    </div>
+                    <input
+                      type="email"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="example@email.com"
+                      className="w-full bg-white rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 border-2 border-transparent focus:border-[#3d2e20]/20 focus:outline-none transition-all shadow-sm text-sm"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={async () => {
+                    if (!forgotEmail) return;
+                    setIsSendingReset(true);
+                    try {
+                      await authService.forgotPassword(forgotEmail);
+                      setResetSuccess(true);
+                    } catch (err: any) {
+                      setErrors({ general: err.message });
+                    } finally {
+                      setIsSendingReset(false);
+                    }
+                  }}
+                  disabled={isSendingReset || !forgotEmail}
+                  className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-black text-base transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
+                  style={{
+                    background: "linear-gradient(135deg, #3d2e20, #523e2b)",
+                    color: "white",
+                  }}
+                >
+                  {isSendingReset ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <span>{isAr ? "إرسال رابط الاستعادة" : "Send Reset Link"}</span>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="text-center space-y-6 py-4">
+                <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto">
+                  <Mail className="w-10 h-10 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-[#3d2e20] mb-2">
+                    {isAr ? "تم الإرسال بنجاح!" : "Sent Successfully!"}
+                  </h3>
+                  <p className="text-sm font-medium text-[#3d2e20]/50">
+                    {isAr
+                      ? "تحقق من بريدك الإلكتروني للحصول على تعليمات استعادة كلمة المرور"
+                      : "Check your email for instructions on how to reset your password"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowForgotDialog(false)}
+                  className="w-full py-4 rounded-2xl font-black text-base bg-[#3d2e20] text-white"
+                >
+                  {isAr ? "حسناً" : "Got it"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }

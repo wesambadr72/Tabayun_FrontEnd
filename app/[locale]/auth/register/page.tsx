@@ -33,6 +33,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     email: "", name: "", password: "", repeatPassword: "", country: "",
   });
+  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -75,17 +76,45 @@ export default function RegisterPage() {
     return mapping[countryName] || countryName;
   };
 
-  const validateStep = (s: number) => {
+  const validateStep = async (s: number) => {
     const e: { [key: string]: string } = {};
     if (s === 1) {
-      if (!formData.email) e.email = isAr ? "البريد الإلكتروني مطلوب" : "Email is required";
-      else if (!/\S+@\S+\.\S+/.test(formData.email)) e.email = isAr ? "البريد غير صالح" : "Invalid email";
+      if (!formData.email) {
+        e.email = isAr ? "البريد الإلكتروني مطلوب" : "Email is required";
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        e.email = isAr ? "البريد غير صالح" : "Invalid email";
+      } else {
+        // Check if email exists in database
+        try {
+          setIsValidating(true);
+          const res = await authService.checkEmail(formData.email);
+          if (!res.available) {
+            e.email = isAr ? "هذا البريد مسجل مسبقاً" : "This email is already registered";
+          }
+        } catch (err) {
+          console.error("Email check failed", err);
+        } finally {
+          setIsValidating(false);
+        }
+      }
     } else if (s === 2) {
       if (!formData.name) e.name = isAr ? "الاسم مطلوب" : "Name is required";
       else if (formData.name.length < 3) e.name = isAr ? "الاسم يجب أن يكون 3 أحرف على الأقل" : "At least 3 characters";
     } else if (s === 3) {
-      if (!formData.password) e.password = isAr ? "كلمة المرور مطلوبة" : "Password is required";
-      else if (formData.password.length < 8) e.password = isAr ? "8 خانات على الأقل" : "At least 8 characters";
+      const password = formData.password;
+      if (!password) {
+        e.password = isAr ? "كلمة المرور مطلوبة" : "Password is required";
+      } else if (password.length < 8) {
+        e.password = isAr ? "8 خانات على الأقل" : "At least 8 characters";
+      } else if (!/[A-Z]/.test(password)) {
+        e.password = isAr ? "يجب أن تحتوي على حرف كبير واحد على الأقل" : "Must contain at least one uppercase letter";
+      } else if (!/[a-z]/.test(password)) {
+        e.password = isAr ? "يجب أن تحتوي على حرف صغير واحد على الأقل" : "Must contain at least one lowercase letter";
+      } else if (!/[0-9]/.test(password)) {
+        e.password = isAr ? "يجب أن تحتوي على رقم واحد على الأقل" : "Must contain at least one number";
+      } else if (!/[!@#$%^&*]/.test(password)) {
+        e.password = isAr ? "يجب أن تحتوي على رمز واحد على الأقل (!@#$%^&*)" : "Must contain at least one special character (!@#$%^&*)";
+      }
     } else if (s === 4) {
       if (!formData.repeatPassword) e.repeatPassword = isAr ? "يرجى تأكيد كلمة المرور" : "Confirm password";
       else if (formData.repeatPassword !== formData.password) e.repeatPassword = isAr ? "كلمتا المرور غير متطابقتين" : "Passwords do not match";
@@ -97,7 +126,8 @@ export default function RegisterPage() {
   };
 
   const handleNext = async () => {
-    if (!validateStep(step)) return;
+    const isValid = await validateStep(step);
+    if (!isValid) return;
     if (step < TOTAL_STEPS) { setStep(step + 1); return; }
     await handleSubmit();
   };
@@ -354,7 +384,8 @@ export default function RegisterPage() {
                     placeholder={dict.passwordPlaceholder}
                     className={`w-full bg-white rounded-2xl ps-11 pe-11 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
                       errors.password ? "border-2 border-red-300" : "border-2 border-transparent focus:border-[#3d2e20]/20"
-                    }`}
+                    } ${isAr ? "text-right" : "text-left"}`}
+                    dir={isAr ? "rtl" : "ltr"}
                     autoFocus
                     suppressHydrationWarning
                   />
@@ -393,7 +424,8 @@ export default function RegisterPage() {
                   placeholder={dict.repeatPasswordPlaceholder}
                   className={`w-full bg-white rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
                     errors.repeatPassword ? "border-2 border-red-300" : "border-2 border-transparent focus:border-[#3d2e20]/20"
-                  }`}
+                  } ${isAr ? "text-right" : "text-left"}`}
+                  dir={isAr ? "rtl" : "ltr"}
                   autoFocus
                   suppressHydrationWarning
                 />
@@ -499,11 +531,11 @@ export default function RegisterPage() {
               ) : (
                 <>
                   <span>
-                    {step === TOTAL_STEPS
-                      ? dict.confirm
-                      : dict.next}
+                    {loading || isValidating
+                      ? <Loader2 className="w-5 h-5 animate-spin" />
+                      : (step === TOTAL_STEPS ? dict.confirm : dict.next)}
                   </span>
-                  {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                  {!loading && !isValidating && (isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />)}
                 </>
               )}
             </button>

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { User as UserIcon, Mail, Globe, Languages, Heart, LogOut, Camera, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { User as UserIcon, Mail, Globe, Languages, Heart, LogOut, Camera, ChevronLeft, ChevronRight, Loader2, Lock, X, Eye, EyeOff, LayoutDashboard } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { authService } from "@/services/authService";
 import { lawService } from "@/services/lawService";
@@ -25,8 +25,24 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
-  const [formValues, setFormValues] = useState({ name: "", email: "", country: "", language: "", currentPassword: "" });
+  const [formValues, setFormValues] = useState({ 
+    name: "", 
+    email: "", 
+    country: "", 
+    language: "", 
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
   const [isUpdating, setIsUpdating] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showForgotDialog, setShowForgotDialog] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [isSendingReset, setIsSendingReset] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,25 +81,66 @@ export default function ProfilePage() {
   const handleEditToggle = (field: string, currentValue: string) => {
     if (editingField === field) {
       setEditingField(null);
+      setErrors({});
+      setSuccessMessage(null);
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
     } else {
       setEditingField(field);
-      setFormValues({ ...formValues, [field]: currentValue, currentPassword: "" });
+      setErrors({});
+      setSuccessMessage(null);
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
+      setFormValues({ 
+        ...formValues, 
+        [field]: currentValue, 
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
     }
   };
 
   const handleUpdate = async (field: string) => {
     try {
+      setErrors({});
       setIsUpdating(true);
       let payload: any = {};
       
       if (field === 'name') {
-        if (!formValues.name) return alert(locale === 'ar' ? 'الاسم مطلوب' : 'Name is required');
-        if (!formValues.currentPassword) return alert(locale === 'ar' ? 'كلمة المرور مطلوبة' : 'Password is required');
-        payload = { full_name: formValues.name, current_password: formValues.currentPassword };
+        if (!formValues.name) {
+          setErrors({ name: locale === 'ar' ? 'الاسم مطلوب' : 'Name is required' });
+          setIsUpdating(false);
+          return;
+        }
+        payload = { full_name: formValues.name };
       } else if (field === 'email') {
-        if (!formValues.email) return alert(locale === 'ar' ? 'البريد مطلوب' : 'Email is required');
-        if (!formValues.currentPassword) return alert(locale === 'ar' ? 'كلمة المرور مطلوبة' : 'Password is required');
+        const newErrors: any = {};
+        if (!formValues.email) newErrors.email = locale === 'ar' ? 'البريد مطلوب' : 'Email is required';
+        if (!formValues.currentPassword) newErrors.currentPassword = locale === 'ar' ? 'كلمة المرور الحالية مطلوبة' : 'Current password is required';
+        
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          setIsUpdating(false);
+          return;
+        }
         payload = { email: formValues.email, current_password: formValues.currentPassword };
+      } else if (field === 'password') {
+        const newErrors: any = {};
+        if (!formValues.currentPassword) newErrors.currentPassword = locale === 'ar' ? 'كلمة المرور الحالية مطلوبة' : 'Current password is required';
+        if (!formValues.newPassword) newErrors.newPassword = locale === 'ar' ? 'كلمة المرور الجديدة مطلوبة' : 'New password is required';
+        if (formValues.newPassword && formValues.newPassword !== formValues.confirmPassword) {
+          newErrors.confirmPassword = locale === 'ar' ? 'كلمة المرور الجديدة غير متطابقة' : 'New passwords do not match';
+        }
+        
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          setIsUpdating(false);
+          return;
+        }
+        payload = { password: formValues.newPassword, current_password: formValues.currentPassword };
       } else if (field === 'country') {
         payload = { country: formValues.country };
       } else if (field === 'language') {
@@ -92,16 +149,21 @@ export default function ProfilePage() {
 
       const updatedUser = await authService.updateProfile(payload);
       setUser(updatedUser);
-      setEditingField(null);
+      setErrors({});
+      setSuccessMessage(locale === 'ar' ? 'تم التحديث بنجاح' : 'Updated successfully');
+      
+      // Clear success message and close editor after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+        setEditingField(null);
+      }, 3000);
       
       if (field === 'language' && formValues.language !== locale) {
         router.push(`/${formValues.language}/profile`);
-      } else {
-        alert(locale === 'ar' ? 'تم التحديث بنجاح' : 'Updated successfully');
       }
     } catch (error: any) {
       const msg = error.message || (locale === 'ar' ? 'حدث خطأ غير متوقع' : 'An unexpected error occurred');
-      alert(msg);
+      setErrors({ general: msg });
     } finally {
       setIsUpdating(false);
     }
@@ -121,6 +183,13 @@ export default function ProfilePage() {
       value: user?.email || 'N/A',
       icon: Mail,
       onClick: () => handleEditToggle('email', user?.email || '')
+    },
+    {
+      id: 'password',
+      label: locale === 'ar' ? 'تغيير كلمة المرور' : 'Change Password',
+      value: '••••••••',
+      icon: Lock,
+      onClick: () => handleEditToggle('password', '')
     },
     {
       id: 'country',
@@ -143,6 +212,13 @@ export default function ProfilePage() {
       icon: Heart,
       href: `/${locale}/profile/favorites`
     },
+    ...(user?.is_admin ? [{
+      id: 'admin',
+      label: locale === 'ar' ? 'لوحة التحكم' : 'Admin Panel',
+      value: locale === 'ar' ? 'إدارة النظام' : 'System Management',
+      icon: LayoutDashboard,
+      href: `/${locale}/admin`
+    }] : []),
   ];
 
   const handleLogout = () => {
@@ -244,21 +320,36 @@ export default function ProfilePage() {
                   {item.id && editingField === item.id && (
                     <div className="p-6 bg-[#f5f1eb]/30 rounded-2xl border border-[#f5f1eb] mt-2 space-y-5 animate-in fade-in slide-in-from-top-2 duration-300">
                       
+                      {successMessage && (
+                        <div className="bg-green-50 text-green-600 px-4 py-3 rounded-xl text-sm font-bold border border-green-100 flex items-center gap-2 animate-in zoom-in-95 duration-300">
+                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                          {successMessage}
+                        </div>
+                      )}
+
+                      {errors.general && (
+                        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-semibold border border-red-100">
+                          {errors.general}
+                        </div>
+                      )}
+
                       {item.id === 'name' && (
-                        <>
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-[#3d2e20]/70">
-                              {locale === 'ar' ? 'تغيير الاسم:' : 'Change Name:'}
-                            </label>
-                            <input type="text" value={formValues.name} onChange={e => setFormValues({...formValues, name: e.target.value})} className="w-full bg-white border border-[#3d2e20]/10 rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors" placeholder={locale === 'ar' ? 'أدخل الاسم الجديد' : 'Enter new name'} />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-[#3d2e20]/70">
-                              {locale === 'ar' ? 'كلمة المرور لتأكيد التغيير:' : 'Password to confirm change:'}
-                            </label>
-                            <input type="password" value={formValues.currentPassword} onChange={e => setFormValues({...formValues, currentPassword: e.target.value})} className="w-full bg-white border border-[#3d2e20]/10 rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors" placeholder="••••••••" />
-                          </div>
-                        </>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-[#3d2e20]/70">
+                            {locale === 'ar' ? 'تغيير الاسم:' : 'Change Name:'}
+                          </label>
+                          <input 
+                            type="text" 
+                            value={formValues.name} 
+                            onChange={e => {
+                              setFormValues({...formValues, name: e.target.value});
+                              if (errors.name) setErrors({...errors, name: ""});
+                            }} 
+                            className={`w-full bg-white border ${errors.name ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                            placeholder={locale === 'ar' ? 'أدخل الاسم الجديد' : 'Enter new name'} 
+                          />
+                          {errors.name && <p className="text-red-500 text-xs font-bold">{errors.name}</p>}
+                        </div>
                       )}
                       
                       {item.id === 'email' && (
@@ -267,13 +358,146 @@ export default function ProfilePage() {
                             <label className="text-sm font-medium text-[#3d2e20]/70">
                               {locale === 'ar' ? 'تغيير البريد الالكتروني:' : 'Change Email:'}
                             </label>
-                            <input type="email" value={formValues.email} onChange={e => setFormValues({...formValues, email: e.target.value})} className="w-full bg-white border border-[#3d2e20]/10 rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors" placeholder={locale === 'ar' ? 'أدخل البريد الجديد' : 'Enter new email'} />
+                            <input 
+                              type="email" 
+                              value={formValues.email} 
+                              onChange={e => {
+                                setFormValues({...formValues, email: e.target.value});
+                                if (errors.email) setErrors({...errors, email: ""});
+                              }} 
+                              className={`w-full bg-white border ${errors.email ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                              placeholder={locale === 'ar' ? 'أدخل البريد الجديد' : 'Enter new email'} 
+                            />
+                            {errors.email && <p className="text-red-500 text-xs font-bold">{errors.email}</p>}
                           </div>
                           <div className="space-y-2">
                             <label className="text-sm font-medium text-[#3d2e20]/70">
                               {locale === 'ar' ? 'كلمة المرور لتأكيد التغيير:' : 'Password to confirm change:'}
                             </label>
-                            <input type="password" value={formValues.currentPassword} onChange={e => setFormValues({...formValues, currentPassword: e.target.value})} className="w-full bg-white border border-[#3d2e20]/10 rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors" placeholder="••••••••" />
+                            <div className="relative">
+                              <input 
+                                type={showCurrentPassword ? "text" : "password"} 
+                                value={formValues.currentPassword} 
+                                onChange={e => {
+                                  setFormValues({...formValues, currentPassword: e.target.value});
+                                  if (errors.currentPassword) setErrors({...errors, currentPassword: ""});
+                                }} 
+                                className={`w-full bg-white border ${errors.currentPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                placeholder="••••••••" 
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                              >
+                                {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                              </button>
+                            </div>
+                            {errors.currentPassword && <p className="text-red-500 text-xs font-bold">{errors.currentPassword}</p>}
+                            <div className="flex justify-start">
+                              <button 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  setForgotEmail(user?.email || "");
+                                  setShowForgotDialog(true); 
+                                }}
+                                className="text-xs font-bold text-blue-600 hover:underline"
+                              >
+                                {locale === 'ar' ? 'نسيت كلمة المرور؟' : 'Forgot Password?'}
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {item.id === 'password' && (
+                        <>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                              {locale === 'ar' ? 'كلمة المرور الحالية:' : 'Current Password:'}
+                            </label>
+                            <div className="relative">
+                              <input 
+                                type={showCurrentPassword ? "text" : "password"} 
+                                value={formValues.currentPassword} 
+                                onChange={e => {
+                                  setFormValues({...formValues, currentPassword: e.target.value});
+                                  if (errors.currentPassword) setErrors({...errors, currentPassword: ""});
+                                }} 
+                                className={`w-full bg-white border ${errors.currentPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                placeholder="••••••••" 
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                              >
+                                {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                              </button>
+                            </div>
+                            {errors.currentPassword && <p className="text-red-500 text-xs font-bold">{errors.currentPassword}</p>}
+                            <div className="flex justify-start">
+                              <button 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  setForgotEmail(user?.email || "");
+                                  setShowForgotDialog(true); 
+                                }}
+                                className="text-xs font-bold text-blue-600 hover:underline"
+                              >
+                                {locale === 'ar' ? 'نسيت كلمة المرور؟' : 'Forgot Password?'}
+                              </button>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                              {locale === 'ar' ? 'كلمة المرور الجديدة:' : 'New Password:'}
+                            </label>
+                            <div className="relative">
+                              <input 
+                                type={showNewPassword ? "text" : "password"} 
+                                value={formValues.newPassword} 
+                                onChange={e => {
+                                  setFormValues({...formValues, newPassword: e.target.value});
+                                  if (errors.newPassword) setErrors({...errors, newPassword: ""});
+                                }} 
+                                className={`w-full bg-white border ${errors.newPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                placeholder="••••••••" 
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                              >
+                                {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                              </button>
+                            </div>
+                            {errors.newPassword && <p className="text-red-500 text-xs font-bold">{errors.newPassword}</p>}
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                              {locale === 'ar' ? 'تكرار كلمة المرور الجديدة:' : 'Confirm New Password:'}
+                            </label>
+                            <div className="relative">
+                              <input 
+                                type={showConfirmPassword ? "text" : "password"} 
+                                value={formValues.confirmPassword} 
+                                onChange={e => {
+                                  setFormValues({...formValues, confirmPassword: e.target.value});
+                                  if (errors.confirmPassword) setErrors({...errors, confirmPassword: ""});
+                                }} 
+                                className={`w-full bg-white border ${errors.confirmPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                placeholder="••••••••" 
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                              >
+                                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                              </button>
+                            </div>
+                            {errors.confirmPassword && <p className="text-red-500 text-xs font-bold">{errors.confirmPassword}</p>}
                           </div>
                         </>
                       )}
@@ -339,6 +563,86 @@ export default function ProfilePage() {
 
         </div>
       </div>
+
+      {/* Forgot Password Dialog */}
+      {showForgotDialog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2rem] w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-black text-[#3d2e20]">
+                  {locale === 'ar' ? 'إعادة تعيين كلمة المرور' : 'Reset Password'}
+                </h3>
+                <button 
+                  onClick={() => setShowForgotDialog(false)}
+                  className="p-2 hover:bg-[#f5f1eb] rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6 text-[#3d2e20]/40" />
+                </button>
+              </div>
+              
+              <p className="text-[#3d2e20]/60 mb-6">
+                {locale === 'ar' 
+                  ? 'سوف نقوم بإرسال رابط لإعادة تعيين كلمة المرور على بريدك المسجل.' 
+                  : 'We will send a password reset link to your registered email.'}
+              </p>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-[#3d2e20]">
+                    {locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none text-[#3d2e20]/30">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <input
+                      type="email"
+                      value={forgotEmail}
+                      readOnly
+                      placeholder="example@email.com"
+                      className="w-full bg-[#f5f1eb] border-2 border-transparent rounded-2xl ps-12 pe-4 py-4 text-[#3d2e20]/50 cursor-not-allowed focus:outline-none transition-all"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={async () => {
+                    setIsSendingReset(true);
+                    setErrors({});
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    setIsSendingReset(false);
+                    setSuccessMessage(locale === 'ar' 
+                      ? 'تم إرسال تعليمات إعادة تعيين كلمة المرور إلى بريدك الإلكتروني' 
+                      : 'Password reset instructions have been sent to your email');
+                    
+                    setTimeout(() => {
+                      setShowForgotDialog(false);
+                      setForgotEmail("");
+                      setSuccessMessage(null);
+                    }, 3000);
+                  }}
+                  disabled={isSendingReset}
+                  className="w-full py-4 rounded-2xl font-black text-white bg-[#3d2e20] hover:bg-[#3d2e20]/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isSendingReset ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    locale === 'ar' ? 'إرسال رابط التعيين' : 'Send Reset Link'
+                  )}
+                </button>
+                
+                {errors.forgot && <p className="text-red-500 text-xs font-bold text-center mt-2">{errors.forgot}</p>}
+                {successMessage && !editingField && (
+                  <p className="text-green-600 text-xs font-bold text-center mt-2">{successMessage}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -105,13 +105,6 @@ export default function AdminDashboardPage({
                   {isAr ? "إدارة المنصة والتحكم في المحتوى" : "Platform management and content control"}
                 </p>
               </div>
-              <div className="bg-[#3d2e20] px-5 py-3 rounded-2xl text-white hidden sm:flex items-center gap-3 shadow-xl shadow-[#3d2e20]/20">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold">A</div>
-                <div className="min-w-0 text-start">
-                  <p className="text-[10px] font-bold opacity-60 truncate">admin@tabayun.sa</p>
-                  <p className="text-xs font-black truncate">{isAr ? "المسؤول" : "Administrator"}</p>
-                </div>
-              </div>
             </div>
 
             {/* 4 Main Squares in Center */}

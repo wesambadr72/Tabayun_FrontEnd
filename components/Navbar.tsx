@@ -4,7 +4,7 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import ar from "../locales/ar/common.json";
 import en from "../locales/en/common.json";
-import { Menu, X, Globe, User as UserIcon, LogOut, ChevronRight, ChevronLeft, MessageSquare, Bell } from "lucide-react";
+import { Menu, X, Globe, User as UserIcon, LogOut, ChevronRight, ChevronLeft, MessageSquare, Bell, LayoutDashboard } from "lucide-react";
 
 import { authService } from "@/services/authService";
 
@@ -25,9 +25,31 @@ export default function Navbar() {
 
   // حالة تسجيل الدخول الفعلية
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    setIsLoggedIn(!!authService.getToken());
+    const token = authService.getToken();
+    setIsLoggedIn(!!token);
+    
+    const loadUser = async () => {
+      if (token) {
+        // Try to get cached user first
+        const cachedUser = authService.getUser();
+        if (cachedUser) setUser(cachedUser);
+        
+        try {
+          // Then fetch fresh user data to ensure admin status is correct
+          const freshUser = await authService.getMe();
+          setUser(freshUser);
+        } catch (err) {
+          console.error("Navbar: Failed to fetch fresh user data", err);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    loadUser();
   }, [pathname]);
 
   const [isLangOpen, setIsLangOpen] = useState(false);
@@ -192,6 +214,17 @@ export default function Navbar() {
                     <span>{dict.profile || "الملف الشخصي"}</span>
                   </Link>
 
+                  {user?.is_admin && (
+                    <Link
+                      href={`/${locale}/admin`}
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>{locale === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}</span>
+                    </Link>
+                  )}
+
                   <button
                     onClick={() => {
                       setIsProfileOpen(false);
@@ -321,6 +354,17 @@ export default function Navbar() {
                   <UserIcon className="w-5 h-5" />
                   <span>{dict.profile || "الملف الشخصي"}</span>
                 </Link>
+
+                {user?.is_admin && (
+                  <Link
+                    href={`/${locale}/admin`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold"
+                  >
+                    <LayoutDashboard className="w-5 h-5" />
+                    <span>{locale === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}</span>
+                  </Link>
+                )}
 
                 <Link
                   href={`/${locale}/notifications`}
