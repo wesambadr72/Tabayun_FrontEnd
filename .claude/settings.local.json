@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next *)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "PowerShell(Get-ChildItem -Path \"$env:USERPROFILE\\\\Downloads\" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 15 Name, LastWriteTime, Length)",
+      "PowerShell(Add-Type -AssemblyName System.Windows.Forms; $img = [System.Windows.Forms.Clipboard]::GetImage\\(\\); if \\($img\\) { $path = \"C:\\\\Users\\\\SULTAN1\\\\OneDrive - Umm Al-Qura University\\\\سطح المكتب\\\\تباين\\\\Tabayun_FrontEnd\\\\public\\\\image\\\\skyline.png\"; $img.Save\\($path, [System.Drawing.Imaging.ImageFormat]::Png\\); Write-Output \"SAVED: $path \\($\\(\\($img\\).Width\\)x$\\(\\($img\\).Height\\)\\)\"; } else { Write-Output \"NO_IMAGE_IN_CLIPBOARD\" })",
+      "PowerShell($cb = Get-Clipboard -Format FileDropList -ErrorAction SilentlyContinue; if \\($cb\\) { $cb | ForEach-Object { Write-Output $_ } } else { Write-Output \"NO_FILES_IN_CLIPBOARD\" }; Write-Output \"---\"; Get-Clipboard -Format Text -ErrorAction SilentlyContinue | Select-Object -First 5)",
+      "PowerShell($src = \"C:\\\\Users\\\\SULTAN1\\\\Downloads\\\\saudi_landmarks_line_art_transparent.png\"; $dest = \"C:\\\\Users\\\\SULTAN1\\\\OneDrive - Umm Al-Qura University\\\\سطح المكتب\\\\تباين\\\\Tabayun_FrontEnd\\\\public\\\\image\\\\skyline.png\"; Copy-Item -Path $src -Destination $dest -Force; if \\(Test-Path $dest\\) { $f = Get-Item $dest; Write-Output \"SAVED: $\\($f.FullName\\) - $\\([math]::Round\\($f.Length/1KB,1\\)\\) KB\" } else { Write-Output \"FAILED\" })"
+    ]
+  }
+}

@@ -1,9 +1,6 @@
-import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "../globals.css";
 import { getDirection } from "@/lib/dictionary";
-
-const inter = Inter({ subsets: ["latin"] });
 
 // تعريف الخطوط المخصصة - تم تصحيح المسار هنا
 const handicraftsBold = localFont({

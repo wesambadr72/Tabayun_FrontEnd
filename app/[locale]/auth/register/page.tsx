@@ -173,23 +173,31 @@ export default function RegisterPage() {
   const StepIcon = currentMeta.icon;
 
   return (
-    <main className="min-h-screen flex" dir={dir}>
+    <main className="min-h-screen flex overflow-x-hidden" dir={dir}>
 
       {/* ── Brand panel ── */}
       <div
-        className="hidden lg:flex flex-col justify-between w-[420px] xl:w-[480px] flex-shrink-0 relative overflow-hidden p-10"
-        style={{ background: "linear-gradient(160deg, #1a1410 0%, #2e2218 60%, #3d2e20 100%)" }}
+        className="hidden lg:flex flex-col justify-between w-[420px] xl:w-[500px] flex-shrink-0 relative overflow-hidden p-10"
+        style={{ background: "linear-gradient(160deg, #1a1410 0%, #2e2218 55%, #3d2e20 100%)" }}
       >
         <div className="absolute inset-0">
-          <Image src="/image/saudi.png" alt="" fill className="object-cover opacity-20" />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(26,20,16,0.9), rgba(61,46,32,0.85))" }} />
+          <Image src="/image/saudi.png" alt="" fill className="object-cover opacity-[0.15]" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(26,20,16,0.92), rgba(61,46,32,0.88))" }} />
         </div>
+        <div
+          className="absolute -bottom-32 -start-32 w-96 h-96 rounded-full opacity-10"
+          style={{ border: "80px solid #c4a882" }}
+        />
+        <div
+          className="absolute -top-20 -end-20 w-72 h-72 rounded-full opacity-5"
+          style={{ border: "60px solid #c4a882" }}
+        />
 
         {/* Logo */}
         <div className="relative z-10">
-          <Link href={`/${locale}`} className="inline-flex items-center gap-3">
+          <Link href={`/${locale}`} className="inline-flex items-center gap-3 group">
             <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center"
+              className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all group-hover:scale-105"
               style={{ background: "rgba(196,168,130,0.15)", border: "1px solid rgba(196,168,130,0.3)" }}
             >
               <Scale className="w-5 h-5" style={{ color: "#c4a882" }} />
@@ -256,10 +264,79 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Form panel ── */}
-      <div className="flex-1 bg-[#f5f1eb] flex flex-col justify-center items-center px-5 sm:px-10 py-16 min-h-screen overflow-y-auto">
+      <div
+        className="flex-1 relative flex flex-col justify-center items-center w-full px-0 sm:px-10 py-0 sm:py-10 min-h-screen overflow-x-hidden overflow-y-auto"
+        style={{ background: "linear-gradient(135deg, #fbf7ef 0%, #f3eadf 48%, #eadccd 100%)" }}
+      >
+        <div className="absolute inset-0 hidden sm:block pointer-events-none select-none overflow-hidden">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 36%, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.3) 32%, rgba(245,240,232,0.08) 68%), linear-gradient(180deg, rgba(251,247,239,0.86) 0%, rgba(251,247,239,0.52) 42%, rgba(245,240,232,0.22) 100%)",
+            }}
+          />
+        </div>
+
+        <div className="absolute inset-0 hidden sm:block pointer-events-none select-none overflow-hidden">
+          <Image
+            src="/image/skyline-cropped.png"
+            alt=""
+            fill
+            className="object-cover sm:object-contain object-bottom scale-100 sm:scale-[1.06] lg:scale-[1.16]"
+            style={{ opacity: 0.62, filter: "contrast(1.1) saturate(0.9)", transformOrigin: "bottom center" }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(251,247,239,0.66) 0%, rgba(251,247,239,0.14) 44%, rgba(251,247,239,0) 100%)",
+            }}
+          />
+        </div>
+
+        <div
+          className="auth-card-shell relative z-10 w-full min-h-screen sm:min-h-0 sm:w-full sm:max-w-md box-border overflow-hidden rounded-none sm:rounded-[2rem] px-8 py-12 sm:px-8 sm:py-8"
+          style={{
+            background: "linear-gradient(180deg, rgba(255,252,246,0.58) 0%, rgba(250,244,235,0.5) 100%)",
+            border: "1px solid rgba(255,255,255,0.82)",
+            boxShadow: "0 34px 90px rgba(45,31,20,0.18), 0 2px 16px rgba(45,31,20,0.06)",
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[58%] sm:hidden overflow-hidden"
+            style={{
+              backgroundImage: "url('/image/skyline-cropped.png')",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "680px auto",
+              backgroundPosition: "center bottom",
+              opacity: 0.42,
+            }}
+          >
+            <Image
+              src="/image/skyline-cropped.png"
+              alt=""
+              fill
+              className="object-contain object-bottom"
+              style={{
+                opacity: 0,
+                filter: "contrast(1.12) saturate(0.9)",
+                transform: "scale(1.8) translateY(-14%)",
+                transformOrigin: "bottom center",
+              }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(255,252,246,0.72) 0%, rgba(255,252,246,0.22) 42%, rgba(255,252,246,0) 100%)",
+              }}
+            />
+          </div>
 
         {/* Mobile logo */}
-        <div className="lg:hidden mb-6 self-stretch flex items-center justify-between">
+        <div className="relative z-10 lg:hidden mb-7 flex items-center justify-between">
           <Link href={`/${locale}`} className="inline-flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(61,46,32,0.08)" }}>
               <Scale className="w-4 h-4 text-[#3d2e20]" />
@@ -281,7 +358,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <div className="w-full max-w-md">
+        <div className="relative z-10 w-full">
 
           {/* Step header */}
           <div className={`mb-8 ${isAr ? "text-right" : "text-left"}`}>
@@ -332,8 +409,8 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder={dict.emailPlaceholder}
-                  className={`w-full bg-white rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
-                    errors.email ? "border-2 border-red-300" : "border-2 border-transparent focus:border-[#3d2e20]/20"
+                  className={`w-full bg-white/55 backdrop-blur-md rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
+                    errors.email ? "border-2 border-red-300" : "border-2 border-white/55 focus:border-[#3d2e20]/20"
                   }`}
                   dir="ltr"
                   autoFocus
@@ -357,8 +434,8 @@ export default function RegisterPage() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder={dict.namePlaceholder}
-                  className={`w-full bg-white rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
-                    errors.name ? "border-2 border-red-300" : "border-2 border-transparent focus:border-[#3d2e20]/20"
+                  className={`w-full bg-white/55 backdrop-blur-md rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
+                    errors.name ? "border-2 border-red-300" : "border-2 border-white/55 focus:border-[#3d2e20]/20"
                   }`}
                   autoFocus
                   suppressHydrationWarning
@@ -382,8 +459,8 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder={dict.passwordPlaceholder}
-                    className={`w-full bg-white rounded-2xl ps-11 pe-11 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
-                      errors.password ? "border-2 border-red-300" : "border-2 border-transparent focus:border-[#3d2e20]/20"
+                    className={`w-full bg-white/55 backdrop-blur-md rounded-2xl ps-11 pe-11 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
+                      errors.password ? "border-2 border-red-300" : "border-2 border-white/55 focus:border-[#3d2e20]/20"
                     } ${isAr ? "text-right" : "text-left"}`}
                     dir={isAr ? "rtl" : "ltr"}
                     autoFocus
@@ -422,8 +499,8 @@ export default function RegisterPage() {
                   value={formData.repeatPassword}
                   onChange={handleChange}
                   placeholder={dict.repeatPasswordPlaceholder}
-                  className={`w-full bg-white rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
-                    errors.repeatPassword ? "border-2 border-red-300" : "border-2 border-transparent focus:border-[#3d2e20]/20"
+                  className={`w-full bg-white/55 backdrop-blur-md rounded-2xl ps-11 pe-4 py-4 text-[#3d2e20] font-semibold placeholder:text-[#3d2e20]/25 focus:outline-none transition-all shadow-sm text-sm ${
+                    errors.repeatPassword ? "border-2 border-red-300" : "border-2 border-white/55 focus:border-[#3d2e20]/20"
                   } ${isAr ? "text-right" : "text-left"}`}
                   dir={isAr ? "rtl" : "ltr"}
                   autoFocus
@@ -542,12 +619,13 @@ export default function RegisterPage() {
           </div>
 
           {/* Mobile login link */}
-          <p className={`lg:hidden mt-6 text-xs text-[#3d2e20]/40 font-medium ${isAr ? "text-right" : "text-left"}`}>
+          <p className={`lg:hidden mt-6 text-xs text-[#3d2e20]/65 font-medium ${isAr ? "text-right" : "text-left"}`}>
             {isAr ? "لديك حساب؟" : "Have an account?"}{" "}
             <Link href={`/${locale}/auth/login`} className="font-bold text-[#3d2e20] hover:underline underline-offset-4">
               {isAr ? "سجّل دخولك" : "Sign in"}
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </main>
