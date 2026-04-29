@@ -228,7 +228,7 @@ export default function RegisterPage() {
               isAr ? "تأكيد المرور" : "Confirm",
               isAr ? "اختر دولتك" : "Country",
             ].map((label, i) => (
-              <div key={i} className={`flex items-center gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
+              <div key={i} className="flex items-center gap-3">
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 transition-all duration-300"
                   style={
@@ -363,7 +363,7 @@ export default function RegisterPage() {
           {/* Step header */}
           <div className={`mb-8 ${isAr ? "text-right" : "text-left"}`}>
             <div
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-4 ${isAr ? "flex-row-reverse" : ""}`}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-4"
               style={{ background: "rgba(61,46,32,0.07)", color: "rgba(61,46,32,0.5)" }}
             >
               <span>{isAr ? `الخطوة ${step} من ${TOTAL_STEPS}` : `Step ${step} of ${TOTAL_STEPS}`}</span>
@@ -509,7 +509,7 @@ export default function RegisterPage() {
               </div>
               {/* Match indicator */}
               {formData.repeatPassword && formData.password && (
-                <div className={`flex items-center gap-1.5 ps-1 text-xs font-semibold ${isAr ? "flex-row-reverse justify-end" : ""}`}>
+                <div className="flex items-center gap-1.5 ps-1 text-xs font-semibold">
                   {formData.repeatPassword === formData.password ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-green-500" />
@@ -579,7 +579,7 @@ export default function RegisterPage() {
           )}
 
           {/* Navigation */}
-          <div className={`flex gap-3 mt-8 ${isAr ? "flex-row-reverse" : ""}`}>
+          <div className="flex gap-3 mt-8">
             <button
               type="button"
               onClick={handleBack}

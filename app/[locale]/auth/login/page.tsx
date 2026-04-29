@@ -309,7 +309,7 @@ export default function LoginPage() {
 
             {/* Password field */}
             <div className="space-y-2">
-              <div className={`flex items-center justify-between ${isAr ? "flex-row-reverse" : ""}`}>
+              <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-[#2d1f14]/70 tracking-wide uppercase">
                   {dict.password || (isAr ? "كلمة المرور" : "Password")}
                 </label>
