@@ -4,8 +4,9 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
+  --background-start-rgb: 247, 242, 236; /* Match #F7F2EC */
   --background-end-rgb: 255, 255, 255;
+  --accessibility-font-multiplier: 1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,6 +17,48 @@
   }
 }
 
+/* Accessibility: Font Scaling */
+html[data-font-scale="large"] {
+  --accessibility-font-multiplier: 1.25;
+}
+
+html[data-font-scale="xlarge"] {
+  --accessibility-font-multiplier: 1.5;
+}
+
+html {
+  font-size: calc(16px * var(--accessibility-font-multiplier));
+  scroll-behavior: smooth;
+}
+
+/* Accessibility: Color Modes */
+html[data-color-mode="protanopia"] {
+  filter: saturate(1.1) contrast(1.1) hue-rotate(-5deg);
+}
+
+html[data-color-mode="deuteranopia"] {
+  filter: saturate(1.1) contrast(1.1) hue-rotate(5deg);
+}
+
+html[data-color-mode="tritanopia"] {
+  filter: saturate(1.1) contrast(1.1) hue-rotate(180deg);
+}
+
+html[data-color-mode="high-contrast"] {
+  filter: contrast(1.5) brightness(1.1);
+}
+
+html[data-color-mode="high-contrast"] body {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+html[data-color-mode="high-contrast"] .bg-white,
+html[data-color-mode="high-contrast"] .bg-\[#F7F2EC\] {
+  background-color: #1a1a1a !important;
+  color: #fff !important;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -24,11 +67,18 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -43,7 +93,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(61, 46, 32, 0.2); /* #3d2e20 with opacity */
+  background: rgba(61, 46, 32, 0.2);
   border-radius: 10px;
 }
 
@@ -51,28 +101,19 @@ body {
   background: rgba(61, 46, 32, 0.4);
 }
 
-/* Firefox support */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(61, 46, 32, 0.2) transparent;
-}
-
-/* For specific containers like chat that need it even thinner */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
+/* Mobile Auth Adjustments */
 @media (max-width: 639px) {
   .auth-card-shell {
-    background: linear-gradient(180deg, rgba(255, 252, 246, 0.5) 0%, rgba(250, 244, 235, 0.34) 100%) !important;
+    background: linear-gradient(180deg, rgba(255, 252, 246, 0.7) 0%, rgba(250, 244, 235, 0.5) 100%) !important;
     border: 0 !important;
     box-shadow: none !important;
-    backdrop-filter: none !important;
+    backdrop-filter: blur(10px) !important;
   }
 
   .auth-card-shell input {
-    background: rgba(255, 255, 255, 0.42) !important;
-    border-color: rgba(255, 255, 255, 0.42) !important;
-    box-shadow: 0 10px 28px rgba(61, 46, 32, 0.07) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 10px 28px rgba(61, 46, 32, 0.05) !important;
   }
 }
+
