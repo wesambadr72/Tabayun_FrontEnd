@@ -219,7 +219,7 @@ export default function LoginPage() {
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(255,252,246,0.72) 0%, rgba(255,252,246,0.22) 42%, rgba(255,252,246,0) 100%)",
+                  "linear-gradient(180deg, rgba(255,252,246,0.52) 0%, rgba(255,252,246,0.2) 34%, rgba(246,238,226,0.72) 78%, rgba(246,238,226,0.94) 100%)",
               }}
             />
           </div>
@@ -412,8 +412,9 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <div className="auth-bottom-copy relative z-10 mt-7 pt-5 pb-4">
           {/* Divider */}
-          <div className="relative z-10 flex items-center gap-3 my-7">
+          <div className="flex items-center gap-3 mb-7">
             <div className="flex-1 h-px bg-[#3d2e20]/10" />
             <span className="text-xs font-semibold text-[#3d2e20]/55">
               {isAr ? "أو" : "or"}
@@ -422,7 +423,7 @@ export default function LoginPage() {
           </div>
 
           {/* Register link */}
-          <p className={`relative z-10 text-sm text-[#3d2e20]/65 font-medium text-center`}>
+          <p className={`text-sm text-[#2d1f14] font-bold text-center`}>
             {isAr ? "ليس لديك حساب؟" : "Don't have an account?"}{" "}
             <Link
               href={`/${locale}/auth/register`}
@@ -433,9 +434,10 @@ export default function LoginPage() {
           </p>
 
           {/* Copyright */}
-          <p className="relative z-10 mt-8 text-center text-xs text-[#3d2e20]/45 font-medium">
+          <p className="mt-8 text-center text-xs text-[#3d2e20]/70 font-semibold">
             {dict.rights || (isAr ? "جميع الحقوق محفوظة لتباين ©" : "© All rights reserved Tabayun")}
           </p>
+          </div>
         </div>
       </div>
 
