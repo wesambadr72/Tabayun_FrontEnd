@@ -1,151 +1,239 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { useParams, useRouter, usePathname } from "next/navigation";
+
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import ar from "../locales/ar/common.json";
-import en from "../locales/en/common.json";
-import { Menu, X, Globe, User as UserIcon, LogOut, ChevronRight, ChevronLeft, MessageSquare, Bell, LayoutDashboard } from "lucide-react";
-
+import { useParams, usePathname, useRouter } from "next/navigation";
+import {
+  Bell,
+  BookOpen,
+  Globe2,
+  Heart,
+  Home,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  Menu,
+  MessageSquare,
+  Scale,
+  Search,
+  User,
+  X,
+} from "lucide-react";
 import { authService } from "@/services/authService";
+import AccessibilityControls from "@/components/AccessibilityControls";
 
-const dictionaries = { ar, en };
+const labels = {
+  ar: {
+    brand: "تباين",
+    home: "الرئيسية",
+    browse: "الأقسام",
+    search: "البحث",
+    assistant: "المساعد",
+    contact: "تواصل",
+    profile: "ملفي الشخصي",
+    favorites: "المفضلة",
+    notifications: "الإشعارات",
+    login: "دخول",
+    logout: "خروج",
+    admin: "لوحة التحكم",
+    menu: "القائمة",
+    language: "اللغة",
+    noNotifications: "لا توجد إشعارات جديدة حالياً",
+  },
+  en: {
+    brand: "Tabayun",
+    home: "Home",
+    browse: "Browse",
+    search: "Search",
+    assistant: "Assistant",
+    contact: "Contact",
+    profile: "Profile",
+    favorites: "Favorites",
+    notifications: "Notifications",
+    login: "Login",
+    logout: "Logout",
+    admin: "Admin",
+    menu: "Menu",
+    language: "Language",
+    noNotifications: "No new notifications right now",
+  },
+};
+
+const languages = [
+  { name: "العربية", code: "ar" },
+  { name: "English", code: "en" },
+];
 
 export default function Navbar() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
-  const locale = (params.locale as string) || "ar";
-  const dict = (dictionaries[locale as keyof typeof dictionaries] || ar).navbar;
+  const locale = params.locale === "en" ? "en" : "ar";
+  const dir = locale === "ar" ? "rtl" : "ltr";
+  const t = labels[locale];
+  const isAuthPage = pathname.includes("/auth/");
 
-  // الاتجاه يعتمد على اللغة المختارة
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
-
-  // فحص هل نحن في صفحات تسجيل الدخول أو التسجيل
-  const isAuthPage = pathname.includes('/auth/');
-
-  // حالة تسجيل الدخول الفعلية
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   useEffect(() => {
     const token = authService.getToken();
     setIsLoggedIn(!!token);
-    
+
     const loadUser = async () => {
-      if (token) {
-        // Try to get cached user first
-        const cachedUser = authService.getUser();
-        if (cachedUser) setUser(cachedUser);
-        
-        try {
-          // Then fetch fresh user data to ensure admin status is correct
-          const freshUser = await authService.getMe();
-          setUser(freshUser);
-        } catch (err) {
-          console.error("Navbar: Failed to fetch fresh user data", err);
-        }
-      } else {
+      if (!token) {
         setUser(null);
+        return;
+      }
+
+      const cachedUser = authService.getUser();
+      if (cachedUser) setUser(cachedUser);
+
+      try {
+        const freshUser = await authService.getMe();
+        setUser(freshUser);
+      } catch (error) {
+        console.error("Navbar: failed to refresh user", error);
       }
     };
 
     loadUser();
+    setIsMenuOpen(false);
+    setIsLangOpen(false);
+    setIsProfileOpen(false);
+    setIsNotificationsOpen(false);
   }, [pathname]);
 
-  const [isLangOpen, setIsLangOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const primaryHome = isLoggedIn ? `/${locale}/dashboard` : `/${locale}`;
+  const profileHref = isLoggedIn ? `/${locale}/profile` : `/${locale}/auth/login`;
+
+  const desktopLinks = useMemo(
+    () => [
+      { href: primaryHome, label: t.home, match: ["/dashboard"], exactHome: true },
+      { href: `/${locale}/categories`, label: t.browse, match: ["/categories", "/laws"] },
+      { href: `/${locale}/search`, label: t.search, match: ["/search"] },
+      { href: `/${locale}/chat`, label: t.assistant, match: ["/chat"] },
+      { href: `/${locale}/contact`, label: t.contact, match: ["/contact"] },
+    ],
+    [locale, primaryHome, t]
+  );
+
+  const bottomLinks = [
+    { href: primaryHome, label: t.home, icon: Home, match: ["/dashboard"], exactHome: true },
+    { href: `/${locale}/categories`, label: t.browse, icon: BookOpen, match: ["/categories", "/laws"] },
+    { href: `/${locale}/chat`, label: t.assistant, icon: MessageSquare, match: ["/chat"] },
+    { href: isLoggedIn ? `/${locale}/profile/favorites` : `/${locale}/auth/login`, label: t.favorites, icon: Heart, match: ["/profile/favorites"] },
+    { href: profileHref, label: isLoggedIn ? t.profile : t.login, icon: User, match: ["/profile", "/auth/login"] },
+  ];
 
   if (isAuthPage) return null;
 
-  const languages = [
-    { name: "العربية", code: "ar" },
-    { name: "English", code: "en" },
-  ];
-
-  const currentLangName = languages.find(l => l.code === locale)?.name || "العربية";
+  const isActive = (item: { href: string; match: string[]; exactHome?: boolean }) => {
+    if (item.exactHome && pathname === `/${locale}`) return item.href === `/${locale}`;
+    if (item.exactHome && pathname.includes("/dashboard")) return item.href.includes("/dashboard");
+    return item.match.some((segment) => pathname.includes(segment));
+  };
 
   const handleLangChange = (newLocale: string) => {
-    const segments = pathname.split('/');
+    const segments = pathname.split("/");
     segments[1] = newLocale;
-    const newPath = segments.join('/');
-    router.push(newPath);
-    setIsLangOpen(false);
-    setIsMobileMenuOpen(false);
+    router.push(segments.join("/"));
+  };
+
+  const logout = () => {
+    authService.logout();
+    setIsLoggedIn(false);
+    setUser(null);
+    router.push(`/${locale}/auth/login`);
   };
 
   return (
-    <div className="fixed top-4 md:top-6 left-0 right-0 z-50 flex justify-center px-4" dir={dir}>
-      <nav className="flex justify-between items-center w-full max-w-6xl bg-[#3d2e20]/95 md:backdrop-blur-md border border-white/10 px-4 md:px-8 py-2 md:py-3 rounded-full shadow-2xl text-white transition-all duration-300">
+    <>
+      <AccessibilityControls locale={locale} />
 
-        {/* القسم الأيمن (في RTL) / الأيسر (في LTR): اللوجو والروابط (للديسكتاب) */}
-        <div className="flex items-center gap-4 md:gap-12">
-          <span className="text-2xl md:text-3xl font-black tracking-wider uppercase cursor-default">
-            {dict.brand}
-          </span>
+      <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:hidden" dir={dir}>
+        <div className="mx-auto flex h-14 max-w-md items-center justify-between rounded-[22px] border border-white/75 bg-[#F7F2EC]/88 px-3 shadow-[0_14px_40px_rgba(44,22,15,0.12)] backdrop-blur-xl">
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-2xl text-[#2C160F] transition active:scale-95"
+            aria-label={t.menu}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
-          {/* روابط الديسكتاب فقط */}
-          <div className="hidden md:flex items-center gap-8 text-xl font-bold">
-            {isLoggedIn && (
-              <>
-                <Link
-                  href={`/${locale}/dashboard`}
-                  className={`hover:opacity-70 transition ${pathname.includes('/dashboard') && !pathname.includes('/categories') ? 'border-b-2 border-white' : ''} pb-0.5 font-bold`}
-                >
-                  {dict.home}
-                </Link>
-                <Link
-                  href={`/${locale}/categories`}
-                  className={`hover:opacity-70 transition ${pathname.includes('/categories') ? 'border-b-2 border-white' : ''} font-bold`}
-                >
-                  {dict.browse}
-                </Link>
-              </>
-            )}
+          <Link href={primaryHome} className="flex items-center gap-2">
+            <span className="text-2xl font-black leading-none text-[#2C160F]">{t.brand}</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2C160F] text-[#F7F2EC] shadow-lg shadow-[#2C160F]/15">
+              <Scale className="h-4 w-4" />
+            </span>
+          </Link>
 
-            <Link
-              href={`/${locale}/chat`}
-              className={`hover:opacity-70 transition ${pathname.includes('/chat') ? 'border-b-2 border-white' : ''} font-bold`}
-            >
-              {(dict as any).assistant}
-            </Link>
-
-            <Link
-              href={`/${locale}/contact`}
-              className={`hover:opacity-70 transition ${pathname === `/${locale}/contact` ? 'border-b-2 border-white' : ''} font-bold`}
-            >
-              {dict.contact}
-            </Link>
-          </div>
+          <Link
+            href={isLoggedIn ? `/${locale}/notifications` : `/${locale}/auth/login`}
+            className="relative flex h-10 w-10 items-center justify-center rounded-2xl text-[#2C160F] transition active:scale-95"
+            aria-label={t.notifications}
+          >
+            <Bell className="h-5 w-5" />
+            {isLoggedIn && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#8E2C1D]" />}
+          </Link>
         </div>
+      </header>
 
-        {/* القسم الأيسر للديسكتاب والهمبرغر للموبايل */}
-        <div className="flex items-center gap-2 md:gap-6">
+      <div className="fixed inset-x-0 top-6 z-50 hidden justify-center px-4 md:flex" dir={dir}>
+        <nav className="flex w-full max-w-6xl items-center justify-between rounded-full border border-white/15 bg-[#2C160F]/95 px-5 py-3 text-[#F7F2EC] shadow-2xl backdrop-blur-xl">
+          <Link href={primaryHome} className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C9B19C]/14 text-[#E6D7C8]">
+              <Scale className="h-5 w-5" />
+            </span>
+            <span className="text-2xl font-black">{t.brand}</span>
+          </Link>
 
-          {/* أزرار الديسكتاب فقط */}
-          <div className="hidden md:flex items-center gap-6">
-            {/* 1. زر اللغة */}
+          <div className="flex items-center gap-2 text-sm font-black">
+            {desktopLinks.map((item) => (
+              <Link
+                key={`${item.href}-${item.label}`}
+                href={item.href}
+                className={`rounded-full px-4 py-2 transition ${
+                  isActive(item)
+                    ? "bg-[#F7F2EC] text-[#2C160F]"
+                    : "text-[#F7F2EC]/72 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
             <div className="relative">
               <button
+                type="button"
                 onClick={() => {
-                  setIsLangOpen(!isLangOpen);
+                  setIsLangOpen((current) => !current);
                   setIsProfileOpen(false);
                   setIsNotificationsOpen(false);
                 }}
-                className="flex items-center justify-center gap-2 h-10 px-4 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/20 group"
+                className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 text-sm font-bold transition hover:bg-white/14"
               >
-                <Globe className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                <span className="text-sm font-bold">{currentLangName}</span>
+                <Globe2 className="h-4 w-4" />
+                {languages.find((lang) => lang.code === locale)?.name}
               </button>
 
               {isLangOpen && (
-                <div className={`absolute top-full mt-3 ${dir === 'rtl' ? 'left-0' : 'right-0'} w-32 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2`}>
+                <div className="absolute end-0 top-full mt-3 w-36 overflow-hidden rounded-2xl border border-[#E6D7C8] bg-[#F7F2EC] p-1 text-[#2C160F] shadow-2xl">
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
+                      type="button"
                       onClick={() => handleLangChange(lang.code)}
-                      className={`w-full text-center px-4 py-3 text-sm transition-colors border-b border-white/5 last:border-0 hover:bg-white/10 ${locale === lang.code ? 'text-white font-bold' : 'text-white/60'}`}
+                      className={`w-full rounded-xl px-3 py-2 text-sm font-black transition ${
+                        locale === lang.code ? "bg-[#2C160F] text-[#F7F2EC]" : "hover:bg-[#E6D7C8]/55"
+                      }`}
                     >
                       {lang.name}
                     </button>
@@ -154,244 +242,200 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* 1.5. أيقونة الإشعارات (تظهر فقط إذا كان مسجل الدخول) */}
             {isLoggedIn && (
               <div className="relative">
                 <button
+                  type="button"
                   onClick={() => {
-                    setIsNotificationsOpen(!isNotificationsOpen);
-                    setIsProfileOpen(false);
+                    setIsNotificationsOpen((current) => !current);
                     setIsLangOpen(false);
+                    setIsProfileOpen(false);
                   }}
-                  className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/20 transition cursor-pointer relative"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/8 transition hover:bg-white/14"
+                  aria-label={t.notifications}
                 >
-                  <Bell className="w-5 h-5 text-white" />
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                  <Bell className="h-4 w-4" />
+                  <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#E56B55]" />
                 </button>
 
                 {isNotificationsOpen && (
-                  <div className={`absolute top-full mt-3 ${dir === 'rtl' ? 'left-1/2 -translate-x-1/2' : 'right-1/2 translate-x-1/2'} w-64 md:w-80 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 p-4`}>
-                    <div className="text-white/60 text-sm text-center py-4 border-b border-white/10 mb-2">
-                       {locale === 'ar' ? 'لا توجد إشعارات جديدة حالياً' : 'No new notifications right now'}
-                    </div>
+                  <div className="absolute end-0 top-full mt-3 w-72 rounded-2xl border border-[#E6D7C8] bg-[#F7F2EC] p-4 text-[#2C160F] shadow-2xl">
+                    <p className="rounded-xl bg-[#E6D7C8]/45 px-4 py-5 text-center text-sm font-bold text-[#5B3422]/70">
+                      {t.noNotifications}
+                    </p>
                     <Link
                       href={`/${locale}/notifications`}
-                      onClick={() => setIsNotificationsOpen(false)}
-                      className="block w-full text-center px-4 py-2 mt-2 bg-white/10 hover:bg-white/20 rounded-xl text-white text-sm font-bold transition-colors"
+                      className="mt-3 block rounded-xl bg-[#2C160F] px-4 py-3 text-center text-sm font-black text-[#F7F2EC]"
                     >
-                      {locale === 'ar' ? 'عرض جميع الاشعارات' : 'View all notifications'}
+                      {t.notifications}
                     </Link>
                   </div>
                 )}
               </div>
             )}
 
-            {/* 2. أيقونة البروفايل */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => {
                   if (!isLoggedIn) {
                     router.push(`/${locale}/auth/login`);
-                  } else {
-                    setIsProfileOpen(!isProfileOpen);
-                    setIsLangOpen(false);
-                    setIsNotificationsOpen(false);
+                    return;
                   }
+                  setIsProfileOpen((current) => !current);
+                  setIsLangOpen(false);
+                  setIsNotificationsOpen(false);
                 }}
-                className="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center hover:bg-white/20 transition cursor-pointer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/8 transition hover:bg-white/14"
+                aria-label={isLoggedIn ? t.profile : t.login}
               >
-                <UserIcon className="w-6 h-6" />
+                {isLoggedIn ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
               </button>
 
               {isLoggedIn && isProfileOpen && (
-                <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-48 bg-[#1a1510]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
-                  <Link
-                    href={`/${locale}/profile`}
-                    onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    <span>{dict.profile || "الملف الشخصي"}</span>
+                <div className="absolute left-1/2 top-full mt-3 w-44 -translate-x-1/2 overflow-hidden rounded-2xl border border-[#E6D7C8] bg-[#F7F2EC] p-1 text-[#2C160F] shadow-2xl">
+                  <Link href={`/${locale}/profile`} className="flex items-center justify-center gap-3 rounded-xl px-3 py-3 text-sm font-black hover:bg-[#E6D7C8]/55" onClick={() => setIsProfileOpen(false)}>
+                    <User className="h-4 w-4" />
+                    {t.profile}
                   </Link>
-
                   {user?.is_admin && (
-                    <Link
-                      href={`/${locale}/admin`}
-                      onClick={() => setIsProfileOpen(false)}
-                      className="flex items-center gap-3 w-full px-4 py-3 text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5"
-                    >
-                      <LayoutDashboard className="w-4 h-4" />
-                      <span>{locale === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}</span>
+                    <Link href={`/${locale}/admin`} className="flex items-center justify-center gap-3 rounded-xl px-3 py-3 text-sm font-black hover:bg-[#E6D7C8]/55" onClick={() => setIsProfileOpen(false)}>
+                      <LayoutDashboard className="h-4 w-4" />
+                      {t.admin}
                     </Link>
                   )}
-
                   <button
+                    type="button"
                     onClick={() => {
+                      logout();
                       setIsProfileOpen(false);
-                      authService.logout();
-                      router.push(`/${locale}/auth/login`);
                     }}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
+                    className="flex w-full items-center justify-center gap-3 rounded-xl px-3 py-3 text-sm font-black text-[#8E2C1D] hover:bg-[#8E2C1D]/10"
                   >
-                    <LogOut className="w-4 h-4" />
-                    <span>{dict.logout || "تسجيل الخروج"}</span>
+                    <LogOut className="h-4 w-4" />
+                    {t.logout}
                   </button>
                 </div>
               )}
             </div>
           </div>
+        </nav>
+      </div>
 
-          {/* زر القائمة الجانبية للموبايل فقط */}
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="md:hidden p-2 rounded-full bg-white/10 border border-white/20 active:scale-90 transition-transform"
-          >
-            <Menu className="w-8 h-8 text-white" />
-          </button>
+      <nav
+        className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 md:hidden"
+        dir={dir}
+      >
+        <div className="mx-auto grid max-w-md grid-cols-5 gap-1 rounded-[24px] border border-white/80 bg-[#F7F2EC]/92 p-1.5 shadow-[0_-14px_40px_rgba(44,22,15,0.14)] backdrop-blur-xl">
+          {bottomLinks.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item);
+            return (
+              <Link
+                key={`${item.href}-${item.label}`}
+                href={item.href}
+                className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-[18px] px-1 py-2 text-[10px] font-black transition ${
+                  active ? "bg-[#2C160F] text-[#F7F2EC] shadow-lg shadow-[#2C160F]/16" : "text-[#5B3422]/62 active:bg-[#E6D7C8]/60"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="w-full truncate text-center">{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
-
       </nav>
 
-      {/* القائمة الجانبية للموبايل (Mobile Sidebar Overlay) */}
       <div
-        className={`fixed inset-0 z-50 md:hidden transition-all duration-500 bg-black/60 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-        onClick={() => setIsMobileMenuOpen(false)}
+        className={`fixed inset-0 z-[60] bg-[#1F1A17]/45 backdrop-blur-sm transition md:hidden ${
+          isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setIsMenuOpen(false)}
       >
-        <div
-          className={`absolute top-0 ${dir === 'rtl' ? 'left-0' : 'right-0'} w-[80%] max-w-[300px] h-full bg-[#1a1510] shadow-2xl transition-transform duration-500 flex flex-col p-6 ${isMobileMenuOpen ? 'translate-x-0' : (dir === 'rtl' ? '-translate-x-full' : 'translate-x-full')}`}
-          onClick={(e) => e.stopPropagation()}
+        <aside
+          className={`absolute top-0 h-full w-[82%] max-w-xs bg-[#F7F2EC] p-5 text-[#2C160F] shadow-2xl transition-transform duration-300 ${
+            dir === "rtl" ? "right-0" : "left-0"
+          } ${isMenuOpen ? "translate-x-0" : dir === "rtl" ? "translate-x-full" : "-translate-x-full"}`}
+          onClick={(event) => event.stopPropagation()}
+          dir={dir}
         >
-          {/* Header of Sidebar */}
-          <div className="flex items-center justify-between mb-10">
-            <span className="text-2xl font-black text-white cursor-default">{dict.brand}</span>
+          <div className="mb-7 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#2C160F] text-[#F7F2EC]">
+                <Scale className="h-5 w-5" />
+              </span>
+              <span className="text-2xl font-black">{t.brand}</span>
+            </div>
             <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 rounded-full bg-white/5 border border-white/10"
+              type="button"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E6D7C8]/60"
+              aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex flex-col gap-4 mb-auto text-white">
-            {isLoggedIn && (
-              <>
-                <Link
-                  href={`/${locale}/dashboard`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname.includes('/dashboard') && !pathname.includes('/categories') ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
-                >
-                  <span className="text-lg font-bold">{dict.home}</span>
-                  {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                </Link>
-                <Link
-                  href={`/${locale}/categories`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname.includes('/categories') ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
-                >
-                  <span className="text-lg font-bold">{dict.browse}</span>
-                  {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                </Link>
-              </>
-            )}
-
-            <Link
-              href={`/${locale}/chat`}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname.includes('/chat') ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
-            >
-              <span className="text-lg font-bold flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" />
-                {(dict as any).assistant}
-              </span>
-              {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-            </Link>
-
-            <Link
-              href={`/${locale}/contact`}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center justify-between p-4 rounded-2xl transition-colors ${pathname === `/${locale}/contact` ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5'}`}
-            >
-              <span className="text-lg font-bold">{dict.contact}</span>
-              {dir === 'rtl' ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-            </Link>
+          <div className="space-y-2">
+            {[
+              { href: `/${locale}/search`, label: t.search, icon: Search },
+              { href: `/${locale}/contact`, label: t.contact, icon: MessageSquare },
+              { href: isLoggedIn ? `/${locale}/notifications` : `/${locale}/auth/login`, label: t.notifications, icon: Bell },
+              ...(user?.is_admin ? [{ href: `/${locale}/admin`, label: t.admin, icon: LayoutDashboard }] : []),
+            ].map((item) => (
+              <Link
+                key={`${item.href}-${item.label}`}
+                href={item.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 text-sm font-black shadow-sm"
+              >
+                <item.icon className="h-4 w-4 text-[#5B3422]" />
+                {item.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Bottom Actions (Language & Profile) */}
-          <div className="mt-auto space-y-4 pt-6 border-t border-white/10">
-            {/* Language Selection */}
+          <div className="mt-7 rounded-3xl bg-[#E6D7C8]/45 p-3">
+            <p className="mb-2 px-1 text-xs font-black text-[#5B3422]/70">{t.language}</p>
             <div className="grid grid-cols-2 gap-2">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
+                  type="button"
                   onClick={() => handleLangChange(lang.code)}
-                  className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${locale === lang.code ? 'bg-white text-[#3d2e20]' : 'bg-white/5 text-white/40 border border-white/10'}`}
+                  className={`rounded-2xl px-3 py-3 text-sm font-black ${
+                    locale === lang.code ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-white/75 text-[#5B3422]"
+                  }`}
                 >
                   {lang.name}
                 </button>
               ))}
             </div>
+          </div>
 
-            {/* Profile & Logout */}
-            {!isLoggedIn ? (
+          <div className="absolute inset-x-5 bottom-5">
+            {isLoggedIn ? (
               <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  router.push(`/${locale}/auth/login`);
-                }}
-                className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold w-full text-right"
+                type="button"
+                onClick={logout}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#8E2C1D]/10 px-4 py-3 text-sm font-black text-[#8E2C1D]"
               >
-                <UserIcon className="w-5 h-5" />
-                <span>{(dict as any).login || (locale === 'ar' ? "تسجيل الدخول" : "Login")}</span>
+                <LogOut className="h-4 w-4" />
+                {t.logout}
               </button>
             ) : (
-              <>
-                <Link
-                  href={`/${locale}/profile`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold"
-                >
-                  <UserIcon className="w-5 h-5" />
-                  <span>{dict.profile || "الملف الشخصي"}</span>
-                </Link>
-
-                {user?.is_admin && (
-                  <Link
-                    href={`/${locale}/admin`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold"
-                  >
-                    <LayoutDashboard className="w-5 h-5" />
-                    <span>{locale === 'ar' ? 'لوحة التحكم' : 'Admin Panel'}</span>
-                  </Link>
-                )}
-
-                <Link
-                  href={`/${locale}/notifications`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold relative"
-                >
-                  <Bell className="w-5 h-5" />
-                  <span>{locale === 'ar' ? 'الإشعارات' : 'Notifications'}</span>
-                  <span className="w-2 h-2 bg-red-500 rounded-full ml-auto mr-auto"></span>
-                </Link>
-
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    authService.logout();
-                    router.push(`/${locale}/auth/login`);
-                  }}
-                  className="flex items-center gap-3 w-full p-4 rounded-xl bg-red-400/10 text-red-400 font-bold"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span>{dict.logout || "تسجيل الخروج"}</span>
-                </button>
-              </>
+              <Link
+                href={`/${locale}/auth/login`}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2C160F] px-4 py-3 text-sm font-black text-[#F7F2EC]"
+              >
+                <LogIn className="h-4 w-4" />
+                {t.login}
+              </Link>
             )}
           </div>
-        </div>
+        </aside>
       </div>
-    </div>
+    </>
   );
 }
