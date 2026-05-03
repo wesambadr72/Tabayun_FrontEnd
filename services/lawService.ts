@@ -4,14 +4,14 @@ import { Law, Category, Comparison, ComparisonDetail, Bookmark, SearchResult } f
 export const lawService = {
   getCategories: () => api.get<Category[]>('/laws/categories'),
 
-  search: (query: string) => 
-    api.get<SearchResult[]>(`/search/query?q=${encodeURIComponent(query)}`),
+  search: (query: string, lang?: string) => 
+    api.get<SearchResult[]>(`/search/query?q=${encodeURIComponent(query)}${lang ? `&lang=${lang}` : ''}`),
 
-  getLawsByCategory: (categoryId: number) => 
-    api.get<Comparison[]>(`/laws/by-category/${categoryId}`),
+  getLawsByCategory: (categoryId: number, lang?: string) => 
+    api.get<Comparison[]>(`/laws/by-category/${categoryId}${lang ? `?lang=${lang}` : ''}`),
 
-  getComparisonById: (comparisonId: number) => 
-    api.get<ComparisonDetail>(`/comparison/${comparisonId}`),
+  getComparisonById: (comparisonId: number, lang?: string) => 
+    api.get<ComparisonDetail>(`/comparison/${comparisonId}${lang ? `?lang=${lang}` : ''}`),
 
   subscribeToCategory: (categoryId: number) => 
     api.post<{ message: string }>(`/laws/subscribe/${categoryId}`),
