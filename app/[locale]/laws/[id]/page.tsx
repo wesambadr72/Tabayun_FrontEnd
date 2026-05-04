@@ -1,21 +1,24 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { lawService } from "@/services/lawService";
 import { ComparisonDetail } from "@/types/law";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Bookmark, 
-  ArrowLeft, 
+import {
+  AlertTriangle,
+  ArrowLeft,
   ArrowRight,
+  Bookmark,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
   Loader2,
   Scale,
-  ExternalLink
 } from "lucide-react";
-import Image from "next/image";
+import { PageShell, PrimaryButton, SectionHeader, StatePanel, StatusBadge, SurfaceCard } from "@/components/ui/tabayun";
 
 export default function ComparisonDetailPage() {
   const params = useParams();
@@ -51,7 +54,7 @@ export default function ComparisonDetailPage() {
     if (!comparison) return;
     try {
       await lawService.addBookmark(comparison.id);
-      setIsBookmarked(!isBookmarked);
+      setIsBookmarked(true);
     } catch (err) {
       console.error("Failed to bookmark:", err);
     }
@@ -66,157 +69,203 @@ export default function ComparisonDetailPage() {
       "uk": "/image/flags/uk.png",
       "united kingdom": "/image/flags/uk.png",
       "المملكة المتحدة": "/image/flags/uk.png",
+      "usa": "/image/flags/usa.png",
+      "united states": "/image/flags/usa.png",
       "sa": "/image/flags/saudi_arabia.png",
       "saudi arabia": "/image/flags/saudi_arabia.png",
       "السعودية": "/image/flags/saudi_arabia.png",
     };
-    return mapping[code] || "/image/flags/placeholder.png";
+    return mapping[code] || "/image/flags/saudi_arabia.png";
   };
 
   if (loading) {
     return (
-      <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>
+      <PageShell dir={dir}>
         <Navbar />
-        <div className="flex-grow flex items-center justify-center">
-          <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-tabayun-coffee" />
         </div>
-        <Footer />
-      </main>
+      </PageShell>
     );
   }
 
   if (error || !comparison) {
     return (
-      <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>
+      <PageShell dir={dir}>
         <Navbar />
-        <div className="flex-grow flex flex-col items-center justify-center space-y-4">
-          <p className="text-red-500 font-bold text-xl">{isAr ? 'خطأ في تحميل البيانات' : 'Error loading data'}</p>
-          <button onClick={() => router.back()} className="text-[#3d2e20] font-black underline">
-            {isAr ? 'العودة للخلف' : 'Go Back'}
-          </button>
-        </div>
-        <Footer />
-      </main>
+        <section className="tabayun-page-offset tabayun-container pb-20">
+          <StatePanel
+            type="error"
+            title={isAr ? "تعذر تحميل المقارنة" : "Could not load comparison"}
+            description={error || (isAr ? "البيانات غير متاحة حالياً." : "Data is not available right now.")}
+            action={isAr ? "العودة" : "Go back"}
+            onAction={() => router.back()}
+            locale={locale}
+          />
+        </section>
+      </PageShell>
     );
   }
 
+  const saudiText =
+    comparison.saudi_law.simplified_text ||
+    comparison.saudi_law.simplified_description ||
+    comparison.saudi_law.text;
+  const foreignText =
+    comparison.foreign_law.simplified_text ||
+    comparison.foreign_law.simplified_description ||
+    comparison.foreign_law.text;
+
   return (
-    <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>
+    <PageShell dir={dir}>
       <Navbar />
 
-      <div className="flex-grow w-full max-w-5xl mx-auto pt-32 md:pt-44 pb-24 px-6">
-        {/* Comparison Header */}
-        <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <h1 className="text-4xl md:text-6xl font-black text-[#3d2e20] leading-tight">
-            {comparison.title}
-          </h1>
-        </div>
+      <section className="tabayun-page-offset pb-16">
+        <div className="tabayun-container">
+          <button
+            onClick={() => router.back()}
+            className="mb-6 inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-black text-tabayun-coffee/55 transition hover:bg-tabayun-sand/45 hover:text-tabayun-coffee"
+          >
+            {isAr ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            {isAr ? "العودة" : "Back"}
+          </button>
 
-        {/* The Dual Comparison Card (Image 2 Style) */}
-        <div className="relative group animate-in fade-in zoom-in-95 duration-1000">
-          <div className="bg-white rounded-[3rem] border-4 border-[#3d2e20]/10 shadow-2xl overflow-hidden">
-            {/* Side-by-Side Comparison */}
-            <div className="grid grid-cols-1 md:grid-cols-2 divide-y-2 md:divide-y-0 md:divide-x-2 divide-[#3d2e20]/5 rtl:divide-x-reverse">
-              {/* Foreign Law (Left/Start) */}
-              <div className="bg-[#a37c5a] text-white p-8 md:p-12 relative group">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/20">
-                    <Image 
-                      src={getFlagPath(comparison.foreign_law.country)} 
-                      alt={comparison.foreign_law.country} 
-                      fill 
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-                <p className="text-xl md:text-2xl font-bold leading-relaxed">
-                  {comparison.foreign_law.simplified_text || comparison.foreign_law.simplified_description || comparison.foreign_law.text}
-                </p>
+          <div className="grid items-end gap-6 lg:grid-cols-[1fr_320px]">
+            <SectionHeader
+              align="start"
+              eyebrow={isAr ? "مقارنة قانونية" : "Legal comparison"}
+              icon={<Scale className="h-4 w-4" />}
+              title={comparison.title}
+              description={
+                comparison.simplified_description ||
+                (isAr ? "مقارنة مبسطة بين النظام السعودي ونظام بلد السائح." : "A simplified comparison between Saudi regulation and the visitor's country.")
+              }
+            />
 
-                {comparison.foreign_law.source_url && (
-                  <a 
-                    href={comparison.foreign_law.source_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-6 inline-flex items-center gap-2 text-sm font-black text-white/40 hover:text-white transition-colors border-t border-white/10 pt-4 w-full"
-                  >
-                    <span>{isAr ? 'المصدر الأصلي' : 'Original Source'}</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                )}
-              </div>
-
-              {/* Saudi Law (Right/End) */}
-              <div className="bg-white text-[#3d2e20] p-8 md:p-12 relative group flex flex-col justify-between">
+            <SurfaceCard className="p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-tabayun-danger/10 text-tabayun-danger">
+                  <AlertTriangle className="h-5 w-5" />
+                </span>
                 <div>
-                  <div className="flex items-center justify-end gap-3 mb-6">
-                    <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-[#3d2e20]/10">
-                      <Image 
-                        src={getFlagPath("saudi arabia")} 
-                        alt="Saudi Arabia" 
-                        fill 
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                  <p className="text-xl md:text-2xl font-bold leading-relaxed text-start">
-                    {comparison.saudi_law.simplified_text || comparison.saudi_law.simplified_description || comparison.saudi_law.text}
+                  <p className="text-xs font-black text-tabayun-clay/65">{isAr ? "تنبيه" : "Notice"}</p>
+                  <p className="text-sm font-bold leading-relaxed text-tabayun-coffee/62">
+                    {isAr ? "هذه خلاصة توعوية وليست استشارة قانونية." : "This is educational guidance, not legal advice."}
                   </p>
                 </div>
-
-                {comparison.saudi_law.source_url && (
-                  <a 
-                    href={comparison.saudi_law.source_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-6 inline-flex items-center gap-2 text-sm font-black text-[#3d2e20]/20 hover:text-[#3d2e20] transition-colors border-t border-[#3d2e20]/5 pt-4 w-full"
-                  >
-                    <span>{isAr ? 'المصدر الأصلي' : 'Original Source'}</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                )}
               </div>
+            </SurfaceCard>
+          </div>
+
+          <div className="mt-8 overflow-hidden rounded-[34px] border border-tabayun-sand bg-tabayun-pearl shadow-[0_24px_70px_rgba(44,22,15,0.12)]">
+            <div className="grid md:grid-cols-2">
+              <ComparisonSide
+                title={comparison.foreign_law.title}
+                country={comparison.foreign_law.country}
+                text={foreignText}
+                source={comparison.foreign_law.source_url}
+                flag={getFlagPath(comparison.foreign_law.country)}
+                isAr={isAr}
+                dark
+              />
+              <ComparisonSide
+                title={comparison.saudi_law.title}
+                country={isAr ? "المملكة العربية السعودية" : "Saudi Arabia"}
+                text={saudiText}
+                source={comparison.saudi_law.source_url}
+                flag={getFlagPath("saudi arabia")}
+                isAr={isAr}
+              />
             </div>
 
-            {/* Summary Section (The "الخلاصة" part) */}
-            <div className="bg-[#f5f1eb] p-8 md:p-12 border-t-4 border-[#3d2e20]/10 text-center">
-              <h4 className="text-2xl md:text-3xl font-black text-[#3d2e20] mb-4">
-                {isAr ? 'الخلاصة' : 'Summary'}
-              </h4>
-              <p className="text-[#3d2e20]/70 text-lg md:text-xl font-bold leading-relaxed italic max-w-3xl mx-auto">
-                {comparison.comparison_text || comparison.summary || (isAr ? 'لا يوجد خلاصة حالياً' : 'No summary available')}
-              </p>
+            <div className="border-t border-tabayun-sand bg-tabayun-paper p-6 md:p-9">
+              <div className="mx-auto max-w-4xl text-center">
+                <StatusBadge tone="info" className="mb-4">
+                  {isAr ? "الخلاصة العملية" : "Practical summary"}
+                </StatusBadge>
+                <h2 className="text-3xl font-black text-tabayun-coffee">{isAr ? "ما الذي يجب أن تتذكره؟" : "What should you remember?"}</h2>
+                <p className="mt-4 text-lg font-bold leading-relaxed text-tabayun-coffee/70">
+                  {comparison.comparison_text || comparison.summary || (isAr ? "لا يوجد خلاصة حالياً" : "No summary available")}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Bookmark Button (Floats outside/inside) */}
-          <button 
-            onClick={handleBookmark}
-            className={`absolute top-1/2 -translate-y-1/2 ${isAr ? '-left-12' : '-right-12'} hidden lg:flex bg-white p-4 rounded-2xl border-2 border-[#3d2e20]/5 shadow-xl hover:scale-110 active:scale-95 transition-all text-[#3d2e20]`}
-          >
-            <Bookmark className={`w-8 h-8 ${isBookmarked ? 'fill-[#3d2e20]' : ''}`} strokeWidth={2.5} />
-          </button>
-        </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              onClick={handleBookmark}
+              className="tabayun-focus inline-flex items-center justify-center gap-2 rounded-2xl border border-tabayun-sand bg-tabayun-pearl px-5 py-3 text-sm font-black text-tabayun-coffee transition hover:bg-tabayun-sand/45"
+            >
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-tabayun-coffee" : ""}`} />
+              {isBookmarked ? (isAr ? "تم الحفظ" : "Saved") : (isAr ? "حفظ المقارنة" : "Save comparison")}
+            </button>
 
-        {/* Navigation Actions (Previous / Next) */}
-        <div className="mt-16 flex items-center justify-center gap-6 md:gap-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <button 
-            onClick={() => router.back()} // Ideally navigate to the next comparison ID in the category
-            className="bg-white border-2 border-[#3d2e20]/10 text-[#3d2e20] px-10 md:px-16 py-4 md:py-5 rounded-full font-black text-xl md:text-2xl hover:bg-[#f5f1eb] transition shadow-lg flex items-center gap-3 active:scale-95"
-          >
-            {isAr ? 'السابق' : 'Previous'}
-          </button>
-
-          <button 
-            onClick={() => router.back()} // Ideally navigate to the next comparison ID in the category
-            className="bg-[#3d2e20] text-white px-10 md:px-16 py-4 md:py-5 rounded-full font-black text-xl md:text-2xl hover:bg-[#523e2b] transition shadow-lg flex items-center gap-3 active:scale-95"
-          >
-            {isAr ? 'التالي' : 'Next'}
-          </button>
+            <div className="flex gap-3">
+              <PrimaryButton variant="secondary" onClick={() => router.back()} locale={locale}>
+                {isAr ? "السابق" : "Previous"}
+              </PrimaryButton>
+              <PrimaryButton href={`/${locale}/chat`} locale={locale}>
+                {isAr ? "اسأل عن هذه المقارنة" : "Ask about this"}
+              </PrimaryButton>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
       <Footer />
-    </main>
+    </PageShell>
+  );
+}
+
+function ComparisonSide({
+  title,
+  country,
+  text,
+  source,
+  flag,
+  isAr,
+  dark = false,
+}: {
+  title: string;
+  country: string;
+  text?: string;
+  source?: string;
+  flag: string;
+  isAr: boolean;
+  dark?: boolean;
+}) {
+  return (
+    <article className={`${dark ? "bg-tabayun-coffee text-tabayun-paper" : "bg-tabayun-pearl text-tabayun-coffee"} p-6 md:p-9`}>
+      <div className="mb-7 flex items-start justify-between gap-4">
+        <div>
+          <StatusBadge tone={dark ? "warning" : "neutral"} className={dark ? "border-white/14 bg-white/10 text-tabayun-paper" : ""}>
+            {country}
+          </StatusBadge>
+          <h3 className="mt-4 text-2xl font-black leading-tight">{title}</h3>
+        </div>
+        <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/18 bg-white">
+          <Image src={flag} alt={country} fill className="object-cover" sizes="48px" />
+        </span>
+      </div>
+
+      <p className={`text-base font-semibold leading-relaxed md:text-lg ${dark ? "text-tabayun-paper/68" : "text-tabayun-coffee/64"}`}>
+        {text}
+      </p>
+
+      {source && (
+        <a
+          href={source}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`mt-8 inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-black transition ${
+            dark ? "bg-white/8 text-tabayun-paper/62 hover:text-tabayun-paper" : "bg-tabayun-sand/42 text-tabayun-coffee/62 hover:text-tabayun-coffee"
+          }`}
+        >
+          <span>{isAr ? "المصدر الأصلي" : "Original source"}</span>
+          {isAr ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+          <ExternalLink className="h-4 w-4" />
+        </a>
+      )}
+    </article>
   );
 }

@@ -56,8 +56,8 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f5f1eb]">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
-          <p className="text-[#3d2e20] font-medium">
+          <Loader2 className="w-12 h-12 text-[#2C160F] animate-spin" />
+          <p className="text-[#2C160F] font-medium">
             {locale === 'ar' ? 'جاري التحقق من الصلاحيات...' : 'Verifying permissions...'}
           </p>
         </div>

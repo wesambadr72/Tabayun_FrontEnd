@@ -1,11 +1,19 @@
 "use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ChevronRight, ChevronLeft, ArrowDown, Sparkles, Scale, GitCompare } from "lucide-react";
+import {
+  ArrowDown,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import ar from "../../locales/ar/common.json";
 import en from "../../locales/en/common.json";
+import { BrandMark } from "@/components/ui/tabayun";
 
 const dictionaries = { ar, en };
 
@@ -22,213 +30,97 @@ export default function Hero() {
 
   return (
     <section
-      className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#1a1612]"
+      className="relative flex min-h-[100svh] w-full items-center overflow-hidden bg-tabayun-coffee text-tabayun-paper"
       dir={dir}
     >
-      {/* Background image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0">
         <Image
-          src="/image/saudi.png"
-          alt="Saudi Background"
+          src="/image/tabayun-hero.png"
+          alt={isAr ? "مشهد سعودي يجمع الأصالة والحداثة" : "Saudi scene blending heritage and modernity"}
           fill
-          className="object-cover object-center opacity-50"
           priority
+          className="object-cover object-center"
+          sizes="100vw"
         />
-        {/* Multi-layer gradient for depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1612] via-[#1a1612]/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1a1612]/90 via-transparent to-[#1a1612]/40" style={{ direction: isAr ? "rtl" : "ltr" }} />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(44,22,15,0.18)_0%,rgba(44,22,15,0.2)_42%,rgba(44,22,15,0.68)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(44,22,15,0.02),rgba(44,22,15,0.72)_82%)]" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-20 w-full max-w-6xl mx-auto px-5 sm:px-8 pt-28 pb-20 flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+      <div className="pointer-events-none absolute left-1/2 top-[43%] h-[42rem] w-[42rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-tabayun-coffee/38 blur-[90px] tabayun-hero-glow" />
 
-        {/* — Text block — */}
-        <div className={`flex-1 flex flex-col ${isAr ? "items-end text-right" : "items-start text-left"} max-w-xl w-full`}>
-
-          {/* Badge */}
-          <div className="mb-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-              <span className="text-white font-bold text-xs tracking-wide">
-                {isAr ? "المنصة القانونية الأولى في السعودية" : "Saudi Arabia's #1 Legal Platform"}
-              </span>
-            </div>
+      <div className="tabayun-container relative z-10 flex min-h-[100svh] items-center pb-6 pt-20 md:pb-8 md:pt-32">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center text-center">
+          <div className="tabayun-hero-copy mb-5 hidden md:block">
+            <BrandMark locale={locale} inverted />
           </div>
 
-          {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.1] mb-5 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
-            {isAr ? (
-              <>
-                استكشف{" "}
-                <span className="relative inline-block">
-                  <span className="relative z-10 text-amber-300">القوانين</span>
-                  <span
-                    className="absolute -inset-1 -z-0 rounded-lg opacity-20 blur-sm"
-                    style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)" }}
-                  />
-                </span>
-                <br />
-                وافهم الفروقات
-              </>
-            ) : (
-              <>
-                Explore{" "}
-                <span className="text-amber-300">Legal</span>
-                <br />
-                Differences
-              </>
-            )}
-          </h1>
+          <div className="tabayun-hero-copy mb-3 inline-flex items-center gap-2 rounded-full border border-white/16 bg-tabayun-coffee/40 px-4 py-2 text-xs font-black text-tabayun-paper/88 shadow-[0_10px_30px_rgba(0,0,0,0.12)] backdrop-blur-md md:mb-4">
+            <Sparkles className="h-4 w-4 text-tabayun-gold" />
+            <span>{isAr ? "دليل قانوني ذكي للسائح في السعودية" : "Smart legal guide for visitors in Saudi Arabia"}</span>
+          </div>
 
-          {/* Description */}
-          <p className="text-sm sm:text-base lg:text-lg text-white/65 leading-relaxed mb-8 max-w-md animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+          <div className="relative w-full">
+            <div className="pointer-events-none absolute -start-2 top-1/2 hidden -translate-y-1/2 rounded-[28px] border border-white/14 bg-tabayun-coffee/44 px-5 py-4 text-start shadow-[0_18px_44px_rgba(0,0,0,0.2)] backdrop-blur-md tabayun-hero-float lg:block">
+              <p className="text-3xl font-black">+100</p>
+              <p className="mt-1 text-xs font-bold text-tabayun-paper/60">
+                {isAr ? "نظام وقانون" : "laws and regulations"}
+              </p>
+            </div>
+
+            <div className="pointer-events-none absolute -end-2 top-[58%] hidden rounded-[28px] border border-white/14 bg-tabayun-coffee/44 px-5 py-4 text-start shadow-[0_18px_44px_rgba(0,0,0,0.2)] backdrop-blur-md tabayun-hero-float lg:block [animation-delay:1.2s]">
+              <p className="text-3xl font-black">24/7</p>
+              <p className="mt-1 text-xs font-bold text-tabayun-paper/60">
+                {isAr ? "مساعد ذكي" : "AI assistant"}
+              </p>
+            </div>
+
+            <h1 className="tabayun-hero-word select-none text-[clamp(3.7rem,15vw,17rem)] font-black leading-[0.82] tracking-normal text-tabayun-paper">
+              {isAr ? "تبايــــــــن" : "TABAYUN"}
+            </h1>
+          </div>
+
+          <h2 className="tabayun-hero-copy mt-5 text-balance text-2xl font-black leading-tight text-tabayun-paper sm:text-3xl md:mt-7 md:text-5xl">
+            {isAr ? "اعرف حقوقك أينما كنت" : "Know your rights wherever you are"}
+          </h2>
+
+          <p className="tabayun-hero-copy mt-3 max-w-3xl text-sm font-semibold leading-relaxed text-tabayun-paper/78 sm:text-base md:mt-4 md:text-xl">
             {dict.description}
           </p>
 
-          {/* CTA Buttons */}
-          <div
-            className={`flex flex-col xs:flex-row gap-3 w-full xs:w-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300`}
-          >
-            <Link href={`/${locale}/auth/login`} className="w-full xs:w-auto">
-              <button className="w-full xs:w-auto group bg-white text-[#3d2e20] px-7 py-3.5 rounded-2xl font-bold text-base hover:bg-amber-50 transition-all hover:scale-[1.03] shadow-xl shadow-black/20 flex items-center justify-center gap-2 active:scale-95">
-                <span>{dict.cta}</span>
-                {isAr
-                  ? <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform flex-shrink-0" />
-                  : <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform flex-shrink-0" />
-                }
-              </button>
+          <div className="tabayun-hero-actions mt-5 flex w-full max-w-xl flex-col gap-3 sm:flex-row sm:justify-center md:mt-7">
+            <Link
+              href={`/${locale}/auth/login`}
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-tabayun-paper px-7 text-base font-black text-tabayun-coffee shadow-[0_18px_48px_rgba(0,0,0,0.18)] transition hover:bg-white active:scale-[0.98]"
+            >
+              <span>{dict.cta}</span>
+              {isAr ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Link>
-
             <button
               onClick={scrollToAbout}
-              className="w-full xs:w-auto px-7 py-3.5 rounded-2xl font-bold text-base text-white border border-white/25 hover:bg-white/10 hover:border-white/40 transition-all active:scale-95"
+              className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/24 bg-tabayun-coffee/35 px-7 text-base font-black text-tabayun-paper backdrop-blur-md transition hover:bg-tabayun-coffee/52 active:scale-[0.98]"
             >
-              {isAr ? "تعرف علينا" : "Learn More"}
+              {isAr ? "كيف يعمل؟" : "How it works"}
             </button>
           </div>
 
-          {/* Trust row */}
-          <div className={`flex items-center gap-4 mt-8 animate-in fade-in duration-700 delay-500`}>
-            <div className="flex -space-x-2 rtl:space-x-reverse">
-              {["🇸🇦", "🇩🇪", "🇬🇧", "🇫🇷"].map((flag, i) => (
-                <div
-                  key={i}
-                  className="w-8 h-8 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center text-sm backdrop-blur-sm"
-                >
-                  {flag}
-                </div>
-              ))}
-            </div>
-            <p className="text-white/50 text-xs font-medium">
-              {isAr ? "+١٠٠ نظام وقانون مقارن" : "100+ laws compared"}
-            </p>
-          </div>
-        </div>
-
-        {/* — UI Mockup Card (desktop only) — */}
-        <div className="hidden lg:flex flex-1 justify-center items-center max-w-sm w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400 fill-mode-backwards">
-          <div
-            className="w-full rounded-3xl overflow-hidden shadow-2xl"
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              backdropFilter: "blur(16px)",
-            }}
-          >
-            {/* Browser chrome */}
-            <div
-              className="flex items-center gap-2 px-4 py-3"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)" }}
-            >
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-400/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-green-400/50" />
-              </div>
-              <div
-                className="flex-1 mx-3 px-3 py-1 rounded-md text-xs text-center"
-                style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)" }}
-              >
-                tabayun.sa
-              </div>
-            </div>
-
-            {/* Mockup body */}
-            <div className="p-4 space-y-3" dir={dir}>
-              {/* Header row */}
-              <div
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold"
-                style={{ background: "rgba(245,200,100,0.12)", color: "#f5c842" }}
-              >
-                <GitCompare className="w-3.5 h-3.5 flex-shrink-0" />
-                <span>{isAr ? "مقارنة الأنظمة" : "Law Comparison"}</span>
-              </div>
-
-              {/* Cards */}
-              <div className="grid grid-cols-2 gap-2">
-                {/* KSA */}
-                <div
-                  className="rounded-2xl p-3 space-y-2"
-                  style={{ background: "rgba(245,200,100,0.08)", border: "1px solid rgba(245,200,100,0.2)" }}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm">🇸🇦</span>
-                    <span className="text-xs font-bold" style={{ color: "#f5c842" }}>
-                      {isAr ? "السعودية" : "KSA"}
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="h-1.5 rounded-full w-full" style={{ background: "rgba(245,200,100,0.3)" }} />
-                    <div className="h-1.5 rounded-full w-3/4" style={{ background: "rgba(245,200,100,0.15)" }} />
-                    <div className="h-1.5 rounded-full w-1/2" style={{ background: "rgba(245,200,100,0.1)" }} />
-                  </div>
-                </div>
-                {/* Foreign */}
-                <div
-                  className="rounded-2xl p-3 space-y-2"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm">🌍</span>
-                    <span className="text-xs font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
-                      {isAr ? "دولتك" : "Country"}
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="h-1.5 rounded-full w-full" style={{ background: "rgba(255,255,255,0.1)" }} />
-                    <div className="h-1.5 rounded-full w-3/4" style={{ background: "rgba(255,255,255,0.06)" }} />
-                    <div className="h-1.5 rounded-full w-1/2" style={{ background: "rgba(255,255,255,0.06)" }} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Result row */}
-              <div
-                className="rounded-2xl p-3 flex items-center gap-2"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-              >
-                <div
-                  className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: "rgba(245,200,100,0.12)" }}
-                >
-                  <Scale className="w-3.5 h-3.5" style={{ color: "#f5c842" }} />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <div className="h-1.5 rounded-full w-full" style={{ background: "rgba(255,255,255,0.08)" }} />
-                  <div className="h-1.5 rounded-full w-2/3" style={{ background: "rgba(255,255,255,0.05)" }} />
-                </div>
-              </div>
-            </div>
+          <div className="tabayun-hero-actions mt-7 flex flex-wrap items-center justify-center gap-2 text-xs font-black text-tabayun-paper/68 md:gap-3 md:text-sm">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-tabayun-coffee/38 px-4 py-2 backdrop-blur">
+              <ShieldCheck className="h-4 w-4 text-tabayun-gold" />
+              {isAr ? "خلاصة واضحة" : "Clear summaries"}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-tabayun-coffee/38 px-4 py-2 backdrop-blur">
+              {isAr ? "ثنائي اللغة" : "Bilingual"}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <button
         onClick={scrollToAbout}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center gap-1.5 opacity-40 hover:opacity-80 transition-opacity"
+        className="absolute bottom-5 left-1/2 z-10 hidden -translate-x-1/2 rounded-full border border-white/16 bg-tabayun-coffee/42 p-3 text-white/72 backdrop-blur transition hover:text-white md:block"
+        aria-label={isAr ? "الانتقال للقسم التالي" : "Go to next section"}
       >
-        <ArrowDown className="w-5 h-5 text-white animate-bounce" strokeWidth={2} />
+        <ArrowDown className="h-5 w-5 animate-bounce" />
       </button>
     </section>
   );

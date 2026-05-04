@@ -24,7 +24,7 @@ export const ComparisonDetailCard = ({ comparison, locale }: ComparisonDetailCar
       {/* Top Section: Side-by-Side Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Saudi Law Card (Dark) */}
-        <div className="bg-[#3d2e20] text-white rounded-[2.5rem] p-8 md:p-10 shadow-xl relative overflow-hidden group">
+        <div className="bg-[#2C160F] text-white rounded-[2.5rem] p-8 md:p-10 shadow-xl relative overflow-hidden group">
           <div className="flex justify-between items-start mb-6">
             <div className="bg-green-500/20 p-2 rounded-full border border-green-500/30">
               <CheckCircle2 className="w-5 h-5 text-green-400" />
@@ -58,13 +58,13 @@ export const ComparisonDetailCard = ({ comparison, locale }: ComparisonDetailCar
         </div>
 
         {/* Foreign Law Card (Light) */}
-        <div className="bg-white text-[#3d2e20] rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-[#3d2e20]/5 relative overflow-hidden group">
+        <div className="bg-white text-[#2C160F] rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-[#2C160F]/5 relative overflow-hidden group">
           <div className="flex justify-between items-start mb-6">
-            <div className="bg-[#f5f1eb] p-2 rounded-full border border-[#3d2e20]/5 text-[#3d2e20]/20">
+            <div className="bg-[#f5f1eb] p-2 rounded-full border border-[#2C160F]/5 text-[#2C160F]/20">
               <Info className="w-5 h-5" />
             </div>
             <div className="text-right">
-              <span className="text-[#3d2e20]/30 text-xs font-black uppercase tracking-widest block mb-1">
+              <span className="text-[#2C160F]/30 text-xs font-black uppercase tracking-widest block mb-1">
                 {foreign_law?.country}
               </span>
               <span className="text-2xl font-black">DE</span>
@@ -75,7 +75,7 @@ export const ComparisonDetailCard = ({ comparison, locale }: ComparisonDetailCar
             {foreign_law?.title}
           </h3>
           
-          <p className="text-[#3d2e20]/50 text-base md:text-lg font-medium leading-relaxed mb-8">
+          <p className="text-[#2C160F]/50 text-base md:text-lg font-medium leading-relaxed mb-8">
             {foreign_law?.simplified_text}
           </p>
 
@@ -84,7 +84,7 @@ export const ComparisonDetailCard = ({ comparison, locale }: ComparisonDetailCar
               href={foreign_law.source_url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-black text-[#3d2e20]/20 hover:text-[#3d2e20] transition-colors border-t border-[#3d2e20]/5 pt-4 w-full"
+              className="inline-flex items-center gap-2 text-sm font-black text-[#2C160F]/20 hover:text-[#2C160F] transition-colors border-t border-[#2C160F]/5 pt-4 w-full"
             >
               {isAr ? 'المصدر الأصلي' : 'Original Source'} <ExternalLink className="w-4 h-4" />
             </a>
@@ -93,19 +93,19 @@ export const ComparisonDetailCard = ({ comparison, locale }: ComparisonDetailCar
       </div>
 
       {/* Bottom Section: Comparison Text */}
-      <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-[#3d2e20]/10 shadow-lg relative overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-[#2C160F]/10 shadow-lg relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="space-y-4 flex-1">
-            <h4 className="text-2xl md:text-3xl font-black text-[#3d2e20]">
+            <h4 className="text-2xl md:text-3xl font-black text-[#2C160F]">
               {isAr ? 'ما هو التباين؟' : 'What is the difference?'}
             </h4>
-            <p className="text-[#3d2e20]/70 text-lg md:text-xl font-bold leading-relaxed italic">
+            <p className="text-[#2C160F]/70 text-lg md:text-xl font-bold leading-relaxed italic">
               {comparison_text}
             </p>
           </div>
           
           <div className="flex-shrink-0">
-            <div className="w-16 h-16 bg-[#3d2e20] rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3">
+            <div className="w-16 h-16 bg-[#2C160F] rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3">
               <Info className="w-8 h-8" strokeWidth={2.5} />
             </div>
           </div>
@@ -113,7 +113,7 @@ export const ComparisonDetailCard = ({ comparison, locale }: ComparisonDetailCar
 
         {/* Decorative Background Icon */}
         <div className="absolute top-1/2 -translate-y-1/2 end-10 opacity-[0.03] pointer-events-none">
-          <ScaleIcon className="w-64 h-64 text-[#3d2e20]" />
+          <ScaleIcon className="w-64 h-64 text-[#2C160F]" />
         </div>
       </div>
     </div>

@@ -1,22 +1,24 @@
 "use client";
+
 import React, { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { lawService } from "@/services/lawService";
 import { SearchResult } from "@/types/law";
-import { 
-  Search, 
-  ArrowLeft, 
-  ArrowRight, 
-  Loader2, 
-  Scale, 
-  Globe, 
+import {
   AlertCircle,
+  ArrowLeft,
+  ArrowRight,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Globe2,
+  Loader2,
+  Scale,
+  Search,
 } from "lucide-react";
 import Image from "next/image";
+import { PageShell, PrimaryButton, SectionHeader, SkeletonCard, StatePanel, StatusBadge, SurfaceCard } from "@/components/ui/tabayun";
 
 function SearchResultsContent() {
   const params = useParams();
@@ -41,14 +43,9 @@ function SearchResultsContent() {
       try {
         setLoading(true);
         const data = await lawService.search(query);
-        
-        // Deduplicate results based on type and id
         const uniqueResults = data.filter((item, index, self) =>
-          index === self.findIndex((t) => (
-            t.id === item.id && t.type === item.type
-          ))
+          index === self.findIndex((t) => t.id === item.id && t.type === item.type)
         );
-        
         setResults(uniqueResults);
       } catch (err: any) {
         setError(err.message);
@@ -75,152 +72,176 @@ function SearchResultsContent() {
       "المملكة المتحدة": "/image/flags/uk.png",
       "saudi arabia": "/image/flags/saudi_arabia.png",
       "السعودية": "/image/flags/saudi_arabia.png",
+      "usa": "/image/flags/usa.png",
+      "united states": "/image/flags/usa.png",
     };
-    return mapping[code] || "/image/flags/placeholder.png";
+    return mapping[code] || "/image/flags/saudi_arabia.png";
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#f5f1eb]" dir={dir}>
+    <PageShell dir={dir}>
       <Navbar />
 
-      <div className="flex-grow w-full max-w-5xl mx-auto pt-32 md:pt-44 pb-24 px-6">
-        
-        {/* Search Header & Re-search bar */}
-        <div className="mb-16 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="space-y-4">
-            <button
-              onClick={() => router.push(`/${locale}/dashboard`)}
-              className="flex items-center gap-2 text-[#3d2e20]/40 hover:text-[#3d2e20] transition-colors font-black text-sm uppercase tracking-widest"
-            >
-              {isAr ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-              {isAr ? "العودة للرئيسية" : "Back to Dashboard"}
-            </button>
-            <h1 className="text-4xl md:text-6xl font-black text-[#3d2e20]">
-              {isAr ? 'نتائج البحث' : 'Search Results'}
-            </h1>
-            <p className="text-[#3d2e20]/60 text-lg font-medium">
-              {isAr 
-                ? `تظهر نتائج البحث عن: "${query}"` 
-                : `Showing results for: "${query}"`}
-            </p>
-          </div>
+      <section className="tabayun-page-offset pb-16">
+        <div className="tabayun-container">
+          <button
+            onClick={() => router.push(`/${locale}/dashboard`)}
+            className="mb-6 inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-black text-tabayun-coffee/55 transition hover:bg-tabayun-sand/45 hover:text-tabayun-coffee"
+          >
+            {isAr ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            {isAr ? "العودة للوحة" : "Back to dashboard"}
+          </button>
 
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-white border border-[#3d2e20]/10 rounded-[2rem] shadow-xl p-2 focus-within:ring-4 focus-within:ring-[#3d2e20]/5 transition-all max-w-2xl">
-            <input
-              type="text"
-              value={searchInputValue}
-              onChange={(e) => setSearchQueryValue(e.target.value)}
-              placeholder={isAr ? "ابحث عن شيء آخر..." : "Search for something else..."}
-              className="w-full bg-transparent border-none py-4 px-6 text-lg text-[#3d2e20] placeholder-[#3d2e20]/30 focus:outline-none font-bold"
+          <div className="grid items-end gap-6 lg:grid-cols-[1fr_360px]">
+            <SectionHeader
+              align="start"
+              eyebrow={isAr ? "بحث موحد" : "Unified search"}
+              icon={<Search className="h-4 w-4" />}
+              title={isAr ? "ابحث عن قانون أو موقف" : "Search for a law or situation"}
+              description={
+                query
+                  ? (isAr ? `نتائج البحث عن: "${query}"` : `Showing results for: "${query}"`)
+                  : (isAr ? "اكتب ما تريد فهمه، وسنبحث في القوانين والمقارنات." : "Type what you need to understand, and we will search laws and comparisons.")
+              }
             />
-            <button type="submit" className="bg-[#3d2e20] hover:bg-[#523e2b] text-white p-4 rounded-xl transition-all shadow-lg active:scale-95">
-              <Search className="w-5 h-5" />
-            </button>
-          </form>
-        </div>
 
-        {/* Results Section */}
-        {loading ? (
-          <div className="py-32 flex flex-col items-center justify-center space-y-4">
-            <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
-            <p className="text-[#3d2e20]/40 font-bold animate-pulse">
-              {isAr ? 'جاري البحث...' : 'Searching...'}
-            </p>
-          </div>
-        ) : error ? (
-          <div className="py-20 text-center bg-red-50 rounded-[3rem] border-2 border-red-100 p-12">
-            <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-6" />
-            <h2 className="text-2xl font-black text-red-500 mb-2">{isAr ? 'حدث خطأ' : 'An error occurred'}</h2>
-            <p className="text-red-400 font-bold">{error}</p>
-          </div>
-        ) : results.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            {results.map((result) => (
-              <button
-                key={`${result.type}-${result.id}`}
-                onClick={() => router.push(`/${locale}/laws/${result.id}`)}
-                className="group w-full bg-white border border-[#3d2e20]/5 rounded-[2.5rem] p-8 md:p-10 text-right rtl:text-right ltr:text-left hover:border-[#3d2e20]/20 hover:shadow-2xl transition-all duration-500 flex flex-col md:flex-row md:items-center gap-8 relative overflow-hidden"
-              >
-                {/* Decorative background accent */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#3d2e20]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-[#3d2e20]/10 transition-colors" />
-
-                {/* Icon/Flag Section */}
-                <div className="flex-shrink-0 flex items-center justify-center">
-                  <div className="relative w-20 h-20 bg-[#f5f1eb] rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 border border-[#3d2e20]/5">
-                    {result.type === 'comparison' ? (
-                      <Scale className="w-10 h-10 text-[#3d2e20]" />
-                    ) : (
-                      <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[#3d2e20]/10">
-                        <Image 
-                          src={getFlagPath(result.country)} 
-                          alt={result.country} 
-                          fill 
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Text Content */}
-                <div className="flex-grow space-y-3">
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-[#3d2e20]/5 text-[#3d2e20] text-[10px] font-black uppercase tracking-widest rounded-full">
-                      {result.type === 'comparison' ? (isAr ? 'مقارنة' : 'Comparison') : (isAr ? 'قانون' : 'Law')}
-                    </span>
-                    <span className="text-[#3d2e20]/30 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                      <Globe className="w-3 h-3" />
-                      {result.country}
-                    </span>
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-black text-[#3d2e20] group-hover:text-[#523e2b] transition-colors line-clamp-1">
-                    {result.title}
-                  </h3>
-                  <p className="text-[#3d2e20]/60 text-lg font-medium line-clamp-2 leading-relaxed">
-                    {result.description}
+            <SurfaceCard className="p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-tabayun-sand/55 text-tabayun-coffee">
+                  <Globe2 className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-xs font-black text-tabayun-clay/65">{isAr ? "نصيحة بحث" : "Search tip"}</p>
+                  <p className="text-sm font-bold leading-relaxed text-tabayun-coffee/62">
+                    {isAr ? "استخدم كلمات مثل: مخالفة، قيادة، تصوير، إقامة." : "Use words like: fine, driving, filming, residency."}
                   </p>
                 </div>
+              </div>
+            </SurfaceCard>
+          </div>
 
-                {/* Arrow Action */}
-                <div className="flex-shrink-0 self-end md:self-center">
-                  <div className="w-14 h-14 bg-[#3d2e20] text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-[#523e2b] active:scale-95 transition-all">
-                    {isAr ? <ArrowLeft className="w-6 h-6" /> : <ArrowRight className="w-6 h-6" />}
-                  </div>
-                </div>
+          <form onSubmit={handleSearchSubmit} className="mt-8 max-w-3xl">
+            <div className="flex flex-col gap-3 rounded-[28px] border border-tabayun-sand bg-tabayun-pearl p-2 shadow-[0_14px_36px_rgba(44,22,15,0.08)] sm:flex-row sm:items-center">
+              <div className="flex min-h-14 flex-1 items-center gap-3 px-4">
+                <Search className="h-5 w-5 text-tabayun-clay" />
+                <input
+                  type="text"
+                  value={searchInputValue}
+                  onChange={(e) => setSearchQueryValue(e.target.value)}
+                  placeholder={isAr ? "ابحث عن شيء آخر..." : "Search for something else..."}
+                  className="min-w-0 flex-1 bg-transparent text-base font-bold text-tabayun-coffee placeholder:text-tabayun-coffee/35 focus:outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="min-h-14 rounded-2xl bg-tabayun-coffee px-6 text-sm font-black text-tabayun-paper transition hover:bg-tabayun-ink active:scale-[0.98]"
+              >
+                {isAr ? "بحث" : "Search"}
               </button>
-            ))}
-          </div>
-        ) : (
-          <div className="py-32 text-center bg-white/40 rounded-[3rem] border-2 border-dashed border-[#3d2e20]/5 animate-in fade-in duration-700">
-            <div className="w-24 h-24 bg-[#3d2e20]/5 rounded-full flex items-center justify-center mx-auto mb-8">
-              <Search className="w-10 h-10 text-[#3d2e20]/20" />
             </div>
-            <h2 className="text-3xl font-black text-[#3d2e20] mb-4">
-              {isAr ? 'لا توجد نتائج مطابقة' : 'No results found'}
-            </h2>
-            <p className="text-[#3d2e20]/40 text-xl font-bold max-w-md mx-auto leading-relaxed">
-              {isAr 
-                ? 'جرب البحث بكلمات أخرى أو تحقق من الأقسام المتاحة في المنصة.' 
-                : 'Try searching with different keywords or check the available categories.'}
-            </p>
-            <button
-              onClick={() => router.push(`/${locale}/categories`)}
-              className="mt-10 px-10 py-4 bg-[#3d2e20] text-white rounded-full font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#3d2e20]/20"
-            >
-              {isAr ? 'تصفح الأقسام' : 'Browse Categories'}
-            </button>
+          </form>
+
+          <div className="mt-8">
+            {loading ? (
+              <div className="grid gap-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <SkeletonCard key={index} className="min-h-[180px]" />
+                ))}
+              </div>
+            ) : error ? (
+              <StatePanel
+                type="error"
+                title={isAr ? "حدث خطأ أثناء البحث" : "Search failed"}
+                description={error}
+                locale={locale}
+              />
+            ) : results.length > 0 ? (
+              <div className="space-y-4">
+                <StatusBadge tone="neutral">
+                  {isAr ? `${results.length} نتيجة` : `${results.length} results`}
+                </StatusBadge>
+
+                <div className="grid gap-4">
+                  {results.map((result) => (
+                    <button
+                      key={`${result.type}-${result.id}`}
+                      onClick={() => router.push(`/${locale}/laws/${result.id}`)}
+                      className="group rounded-[30px] border border-tabayun-sand bg-tabayun-pearl p-5 text-start shadow-[0_14px_36px_rgba(44,22,15,0.07)] transition duration-300 hover:-translate-y-1 hover:border-tabayun-gold/60 hover:shadow-[0_26px_70px_rgba(44,22,15,0.14)] md:p-6"
+                    >
+                      <div className="flex flex-col gap-5 md:flex-row md:items-center">
+                        <div className="flex items-center gap-4">
+                          <span className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[22px] bg-tabayun-sand/52 text-tabayun-coffee">
+                            {result.type === "comparison" ? (
+                              <Scale className="h-8 w-8" />
+                            ) : (
+                              <Image src={getFlagPath(result.country)} alt={result.country} fill className="object-cover" sizes="64px" />
+                            )}
+                          </span>
+                          <div className="flex flex-wrap gap-2 md:hidden">
+                            <ResultBadges result={result} isAr={isAr} />
+                          </div>
+                        </div>
+
+                        <div className="min-w-0 flex-1 space-y-3">
+                          <div className="hidden flex-wrap gap-2 md:flex">
+                            <ResultBadges result={result} isAr={isAr} />
+                          </div>
+                          <h3 className="text-2xl font-black leading-tight text-tabayun-coffee md:text-3xl">
+                            {result.title}
+                          </h3>
+                          <p className="line-clamp-2 text-sm font-semibold leading-relaxed text-tabayun-coffee/58 md:text-base">
+                            {result.description}
+                          </p>
+                        </div>
+
+                        <span className="ms-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-tabayun-sand/52 text-tabayun-coffee transition group-hover:bg-tabayun-coffee group-hover:text-tabayun-paper">
+                          {isAr ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <StatePanel
+                title={isAr ? "لا توجد نتائج مطابقة" : "No results found"}
+                description={isAr ? "جرّب كلمات أخرى أو تصفح الفئات القانونية." : "Try different keywords or browse legal categories."}
+                action={isAr ? "تصفح الفئات" : "Browse categories"}
+                onAction={() => router.push(`/${locale}/categories`)}
+                locale={locale}
+              />
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
       <Footer />
-    </main>
+    </PageShell>
+  );
+}
+
+function ResultBadges({ result, isAr }: { result: SearchResult; isAr: boolean }) {
+  return (
+    <>
+      <StatusBadge tone={result.type === "comparison" ? "warning" : "info"}>
+        {result.type === "comparison" ? (isAr ? "مقارنة" : "Comparison") : (isAr ? "قانون" : "Law")}
+      </StatusBadge>
+      <StatusBadge tone="neutral">{result.country}</StatusBadge>
+    </>
   );
 }
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#f5f1eb] flex items-center justify-center"><Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <PageShell>
+          <div className="flex min-h-screen items-center justify-center">
+            <Loader2 className="h-12 w-12 animate-spin text-tabayun-coffee" />
+          </div>
+        </PageShell>
+      }
+    >
       <SearchResultsContent />
     </Suspense>
   );

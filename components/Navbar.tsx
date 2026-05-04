@@ -112,14 +112,20 @@ export default function Navbar() {
   const profileHref = isLoggedIn ? `/${locale}/profile` : `/${locale}/auth/login`;
 
   const desktopLinks = useMemo(
-    () => [
-      { href: primaryHome, label: t.home, match: ["/dashboard"], exactHome: true },
-      { href: `/${locale}/categories`, label: t.browse, match: ["/categories", "/laws"] },
-      { href: `/${locale}/search`, label: t.search, match: ["/search"] },
-      { href: `/${locale}/chat`, label: t.assistant, match: ["/chat"] },
-      { href: `/${locale}/contact`, label: t.contact, match: ["/contact"] },
-    ],
-    [locale, primaryHome, t]
+    () =>
+      isLoggedIn
+        ? [
+            { href: primaryHome, label: t.home, match: ["/dashboard"], exactHome: true },
+            { href: `/${locale}/categories`, label: t.browse, match: ["/categories", "/laws"] },
+            { href: `/${locale}/search`, label: t.search, match: ["/search"] },
+            { href: `/${locale}/chat`, label: t.assistant, match: ["/chat"] },
+            { href: `/${locale}/contact`, label: t.contact, match: ["/contact"] },
+          ]
+        : [
+            { href: `/${locale}`, label: t.home, match: [], exactHome: true },
+            { href: `/${locale}/contact`, label: t.contact, match: ["/contact"] },
+          ],
+    [isLoggedIn, locale, primaryHome, t]
   );
 
   const bottomLinks = [
@@ -176,9 +182,9 @@ export default function Navbar() {
           <Link
             href={isLoggedIn ? `/${locale}/notifications` : `/${locale}/auth/login`}
             className="relative flex h-10 w-10 items-center justify-center rounded-2xl text-[#2C160F] transition active:scale-95"
-            aria-label={t.notifications}
+            aria-label={isLoggedIn ? t.notifications : t.login}
           >
-            <Bell className="h-5 w-5" />
+            {isLoggedIn ? <Bell className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
             {isLoggedIn && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#8E2C1D]" />}
           </Link>
         </div>
@@ -260,7 +266,7 @@ export default function Navbar() {
 
                 {isNotificationsOpen && (
                   <div className="absolute end-0 top-full mt-3 w-72 rounded-2xl border border-[#E6D7C8] bg-[#F7F2EC] p-4 text-[#2C160F] shadow-2xl">
-                    <p className="rounded-xl bg-[#E6D7C8]/45 px-4 py-5 text-center text-sm font-bold text-[#5B3422]/70">
+                    <p className="rounded-xl bg-[#E6D7C8]/45 px-4 py-5 text-center text-sm font-bold text-[#2C160F]/70">
                       {t.noNotifications}
                     </p>
                     <Link
@@ -322,32 +328,34 @@ export default function Navbar() {
         </nav>
       </div>
 
-      <nav
-        className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 md:hidden"
-        dir={dir}
-      >
-        <div className="mx-auto grid max-w-md grid-cols-5 gap-1 rounded-[24px] border border-white/80 bg-[#F7F2EC]/92 p-1.5 shadow-[0_-14px_40px_rgba(44,22,15,0.14)] backdrop-blur-xl">
-          {bottomLinks.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item);
-            return (
-              <Link
-                key={`${item.href}-${item.label}`}
-                href={item.href}
-                className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-[18px] px-1 py-2 text-[10px] font-black transition ${
-                  active ? "bg-[#2C160F] text-[#F7F2EC] shadow-lg shadow-[#2C160F]/16" : "text-[#5B3422]/62 active:bg-[#E6D7C8]/60"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="w-full truncate text-center">{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      {isLoggedIn && (
+        <nav
+          className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 md:hidden"
+          dir={dir}
+        >
+          <div className="mx-auto grid max-w-md grid-cols-5 gap-1 rounded-[24px] border border-white/80 bg-[#F7F2EC]/92 p-1.5 shadow-[0_-14px_40px_rgba(44,22,15,0.14)] backdrop-blur-xl">
+            {bottomLinks.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item);
+              return (
+                <Link
+                  key={`${item.href}-${item.label}`}
+                  href={item.href}
+                  className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-[18px] px-1 py-2 text-[10px] font-black transition ${
+                    active ? "bg-[#2C160F] text-[#F7F2EC] shadow-lg shadow-[#2C160F]/16" : "text-[#2C160F]/62 active:bg-[#E6D7C8]/60"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="w-full truncate text-center">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      )}
 
       <div
-        className={`fixed inset-0 z-[60] bg-[#1F1A17]/45 backdrop-blur-sm transition md:hidden ${
+        className={`fixed inset-0 z-[60] bg-[#2C160F]/45 backdrop-blur-sm transition md:hidden ${
           isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={() => setIsMenuOpen(false)}
@@ -377,26 +385,29 @@ export default function Navbar() {
           </div>
 
           <div className="space-y-2">
-            {[
-              { href: `/${locale}/search`, label: t.search, icon: Search },
-              { href: `/${locale}/contact`, label: t.contact, icon: MessageSquare },
-              { href: isLoggedIn ? `/${locale}/notifications` : `/${locale}/auth/login`, label: t.notifications, icon: Bell },
-              ...(user?.is_admin ? [{ href: `/${locale}/admin`, label: t.admin, icon: LayoutDashboard }] : []),
-            ].map((item) => (
+            {(isLoggedIn
+              ? [
+                  { href: `/${locale}/search`, label: t.search, icon: Search },
+                  { href: `/${locale}/contact`, label: t.contact, icon: MessageSquare },
+                  { href: `/${locale}/notifications`, label: t.notifications, icon: Bell },
+                  ...(user?.is_admin ? [{ href: `/${locale}/admin`, label: t.admin, icon: LayoutDashboard }] : []),
+                ]
+              : [{ href: `/${locale}/contact`, label: t.contact, icon: MessageSquare }]
+            ).map((item) => (
               <Link
                 key={`${item.href}-${item.label}`}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 text-sm font-black shadow-sm"
               >
-                <item.icon className="h-4 w-4 text-[#5B3422]" />
+                <item.icon className="h-4 w-4 text-[#2C160F]" />
                 {item.label}
               </Link>
             ))}
           </div>
 
           <div className="mt-7 rounded-3xl bg-[#E6D7C8]/45 p-3">
-            <p className="mb-2 px-1 text-xs font-black text-[#5B3422]/70">{t.language}</p>
+            <p className="mb-2 px-1 text-xs font-black text-[#2C160F]/70">{t.language}</p>
             <div className="grid grid-cols-2 gap-2">
               {languages.map((lang) => (
                 <button
@@ -404,7 +415,7 @@ export default function Navbar() {
                   type="button"
                   onClick={() => handleLangChange(lang.code)}
                   className={`rounded-2xl px-3 py-3 text-sm font-black ${
-                    locale === lang.code ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-white/75 text-[#5B3422]"
+                    locale === lang.code ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-white/75 text-[#2C160F]"
                   }`}
                 >
                   {lang.name}

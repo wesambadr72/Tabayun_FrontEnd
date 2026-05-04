@@ -1,0 +1,6 @@
+
+[1m[33mwarn[39m[22m - The class `ease-[cubic-bezier(0.2,0.85,0.25,1)]` is ambiguous and matches multiple utilities.
+[1m[33mwarn[39m[22m - If this is content and not a class, replace it with `ease-&lsqb;cubic-bezier(0.2,0.85,0.25,1)&rsqb;` to silence this warning.
+
+[1m[33mwarn[39m[22m - The class `ease-[cubic-bezier(0.2,0.85,0.25,1)]` is ambiguous and matches multiple utilities.
+[1m[33mwarn[39m[22m - If this is content and not a class, replace it with `ease-&lsqb;cubic-bezier(0.2,0.85,0.25,1)&rsqb;` to silence this warning.

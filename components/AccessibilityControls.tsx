@@ -103,7 +103,7 @@ export default function AccessibilityControls({ locale }: { locale: "ar" | "en" 
 
           <div className="space-y-6">
             <section className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-black text-[#5B3422]/60 uppercase tracking-widest ps-1">
+              <div className="flex items-center gap-2 text-xs font-black text-[#2C160F]/60 uppercase tracking-widest ps-1">
                 <Type className="h-3.5 w-3.5" />
                 {t.font}
               </div>
@@ -116,7 +116,7 @@ export default function AccessibilityControls({ locale }: { locale: "ar" | "en" 
                     className={`rounded-2xl px-3 py-3 text-sm font-black transition-all ${
                       fontScale === option 
                         ? "bg-[#2C160F] text-[#F7F2EC] shadow-md shadow-[#2C160F]/20" 
-                        : "bg-white/60 text-[#5B3422] hover:bg-white border border-[#E6D7C8]/40"
+                        : "bg-white/60 text-[#2C160F] hover:bg-white border border-[#E6D7C8]/40"
                     }`}
                   >
                     {t[option]}
@@ -126,7 +126,7 @@ export default function AccessibilityControls({ locale }: { locale: "ar" | "en" 
             </section>
 
             <section className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-black text-[#5B3422]/60 uppercase tracking-widest ps-1">
+              <div className="flex items-center gap-2 text-xs font-black text-[#2C160F]/60 uppercase tracking-widest ps-1">
                 <Palette className="h-3.5 w-3.5" />
                 {t.color}
               </div>
@@ -139,7 +139,7 @@ export default function AccessibilityControls({ locale }: { locale: "ar" | "en" 
                     className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-black transition-all ${
                       colorMode === option.value 
                         ? "bg-[#2C160F] text-[#F7F2EC] shadow-md shadow-[#2C160F]/20" 
-                        : "bg-white/60 text-[#5B3422] hover:bg-white border border-[#E6D7C8]/40"
+                        : "bg-white/60 text-[#2C160F] hover:bg-white border border-[#E6D7C8]/40"
                     }`}
                   >
                     <span>{t[option.labelKey]}</span>

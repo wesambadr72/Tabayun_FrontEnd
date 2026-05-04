@@ -1,43 +1,66 @@
-import React from 'react';
-import { Comparison } from '@/types/law';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
+import { AlertTriangle, ArrowLeft, ArrowRight, Bookmark, Scale } from "lucide-react";
+import { Comparison } from "@/types/law";
+import { StatusBadge } from "@/components/ui/tabayun";
 
 interface LawCardProps {
   comparison: Comparison;
   locale: string;
+  compact?: boolean;
 }
 
-export const LawCard = ({ comparison, locale }: LawCardProps) => {
-  const isAr = locale === 'ar';
-  
+export const LawCard = ({ comparison, locale, compact = false }: LawCardProps) => {
+  const isAr = locale === "ar";
+  const title = comparison.title || comparison.foreign_law?.title || (isAr ? "مقارنة قانونية" : "Legal comparison");
+  const description =
+    comparison.simplified_description ||
+    comparison.summary ||
+    comparison.foreign_law?.simplified_description ||
+    comparison.foreign_law?.simplified_text ||
+    (isAr ? "اطلع على الفرق بين النظام السعودي والنظام المقارن." : "Review the difference between Saudi regulation and the comparison country.");
+
   return (
-    <Link 
+    <Link
       href={`/${locale}/laws/${comparison.id}`}
-      className="block w-full bg-[#a37c5a] hover:bg-[#8b6a4d] text-white rounded-[2rem] p-8 md:p-10 transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] shadow-lg hover:shadow-2xl relative overflow-hidden group"
+      className="group block rounded-[30px] border border-tabayun-sand bg-tabayun-pearl p-5 shadow-[0_14px_36px_rgba(44,22,15,0.07)] transition duration-300 hover:-translate-y-1 hover:border-tabayun-gold/50 hover:shadow-[0_26px_70px_rgba(44,22,15,0.14)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-tabayun-gold/25"
     >
-      {/* Decorative background circle */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
-      
-      <div className="relative z-10 space-y-4">
-        <h3 className="text-3xl md:text-4xl font-black leading-tight">
-          {comparison.title}
-        </h3>
-        
-        <p className="text-white/80 text-lg md:text-xl font-medium leading-relaxed max-w-3xl">
-          {comparison.simplified_description}
-        </p>
-      </div>
-      
-      {/* Optional: Add a small icon or arrow indicating it's clickable */}
-      <div className={`absolute bottom-8 ${isAr ? 'left-8' : 'right-8'} opacity-0 group-hover:opacity-100 transition-opacity`}>
-        <svg 
-          className={`w-8 h-8 ${isAr ? 'rotate-180' : ''}`} 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-        </svg>
+      <div className="flex h-full flex-col gap-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-tabayun-coffee text-tabayun-paper shadow-[0_12px_28px_rgba(44,22,15,0.2)]">
+              <Scale className="h-5 w-5" />
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge tone="warning">
+                <AlertTriangle className="h-3 w-3" />
+                {isAr ? "تحقق من التفاصيل" : "Check details"}
+              </StatusBadge>
+              {comparison.foreign_law?.country && (
+                <StatusBadge tone="neutral">{comparison.foreign_law.country}</StatusBadge>
+              )}
+            </div>
+          </div>
+          <Bookmark className="h-5 w-5 text-tabayun-coffee/24 transition group-hover:text-tabayun-coffee" />
+        </div>
+
+        <div className="space-y-3">
+          <h3 className={`${compact ? "text-xl" : "text-2xl md:text-3xl"} text-balance font-black leading-tight text-tabayun-coffee`}>
+            {title}
+          </h3>
+          <p className={`${compact ? "text-sm" : "text-base"} line-clamp-3 font-semibold leading-relaxed text-tabayun-coffee/58`}>
+            {description}
+          </p>
+        </div>
+
+        <div className="mt-auto flex items-center justify-between border-t border-tabayun-sand/70 pt-4">
+          <span className="text-sm font-black text-tabayun-clay">
+            {isAr ? "عرض المقارنة" : "View comparison"}
+          </span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-tabayun-sand/52 text-tabayun-coffee transition group-hover:bg-tabayun-coffee group-hover:text-tabayun-paper">
+            {isAr ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+          </span>
+        </div>
       </div>
     </Link>
   );

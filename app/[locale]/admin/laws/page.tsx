@@ -104,22 +104,22 @@ export default function AdminLawsPage({
           {/* Header & Breadcrumb */}
           <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <Link href={`/${locale}/admin`} className="inline-flex items-center gap-2 text-[#3d2e20]/50 hover:text-[#3d2e20] mb-2 transition-colors text-sm font-bold">
+              <Link href={`/${locale}/admin`} className="inline-flex items-center gap-2 text-[#2C160F]/50 hover:text-[#2C160F] mb-2 transition-colors text-sm font-bold">
                 {isAr ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
                 {isAr ? "العودة للوحة التحكم" : "Back to Dashboard"}
               </Link>
-              <h1 className="text-3xl font-black text-[#3d2e20] flex items-center gap-3">
-                <FileText className="w-8 h-8 text-[#3d2e20]/40" />
+              <h1 className="text-3xl font-black text-[#2C160F] flex items-center gap-3">
+                <FileText className="w-8 h-8 text-[#2C160F]/40" />
                 {isAr ? "إدارة القوانين" : "Laws Management"}
               </h1>
-              <p className="text-[#3d2e20]/50 font-medium text-sm mt-1">
+              <p className="text-[#2C160F]/50 font-medium text-sm mt-1">
                 {isAr ? "استعراض، إضافة، تعديل، وحذف القوانين في النظام" : "Browse, add, edit, and delete laws in the system"}
               </p>
             </div>
             
             <Link 
               href={`/${locale}/admin/laws/add`}
-              className="inline-flex items-center justify-center gap-2 bg-[#3d2e20] text-white px-6 py-3 rounded-2xl font-bold hover:bg-[#3d2e20]/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 bg-[#2C160F] text-white px-6 py-3 rounded-2xl font-bold hover:bg-[#2C160F]/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
               <PlusCircle className="w-5 h-5" />
               {isAr ? "إضافة قانون جديد" : "Add New Law"}
@@ -127,23 +127,23 @@ export default function AdminLawsPage({
           </div>
 
           {/* Filters & Search */}
-          <div className="bg-white p-4 rounded-3xl border border-[#3d2e20]/5 shadow-xl shadow-[#3d2e20]/5 mb-6 flex flex-col sm:flex-row gap-4">
+          <div className="bg-white p-4 rounded-3xl border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 mb-6 flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className={`w-5 h-5 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 ${isAr ? 'right-4' : 'left-4'}`} />
+              <Search className={`w-5 h-5 text-[#2C160F]/40 absolute top-1/2 -translate-y-1/2 ${isAr ? 'right-4' : 'left-4'}`} />
               <input 
                 type="text" 
                 placeholder={isAr ? "ابحث عن قانون..." : "Search for a law..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#3d2e20]/20 rounded-2xl py-3 px-12 text-[#3d2e20] outline-none transition-all font-medium`}
+                className={`w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#2C160F]/20 rounded-2xl py-3 px-12 text-[#2C160F] outline-none transition-all font-medium`}
               />
             </div>
             <div className="relative min-w-[200px]">
-              <Filter className={`w-5 h-5 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 ${isAr ? 'right-4' : 'left-4'}`} />
+              <Filter className={`w-5 h-5 text-[#2C160F]/40 absolute top-1/2 -translate-y-1/2 ${isAr ? 'right-4' : 'left-4'}`} />
               <select 
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className={`w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#3d2e20]/20 rounded-2xl py-3 px-12 text-[#3d2e20] outline-none transition-all font-bold appearance-none cursor-pointer`}
+                className={`w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#2C160F]/20 rounded-2xl py-3 px-12 text-[#2C160F] outline-none transition-all font-bold appearance-none cursor-pointer`}
               >
                 <option value="all">{isAr ? "جميع التصنيفات" : "All Categories"}</option>
                 <option value="labor">{isAr ? "عمالي" : "Labor"}</option>
@@ -156,11 +156,11 @@ export default function AdminLawsPage({
           </div>
 
           {/* Laws Table / List */}
-          <div className="bg-white rounded-3xl border border-[#3d2e20]/5 shadow-xl shadow-[#3d2e20]/5 overflow-hidden">
+          <div className="bg-white rounded-3xl border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse" dir={dir}>
                 <thead>
-                  <tr className="bg-[#f5f1eb]/50 border-b border-[#3d2e20]/5 text-[#3d2e20]/60 text-xs uppercase tracking-widest font-black">
+                  <tr className="bg-[#f5f1eb]/50 border-b border-[#2C160F]/5 text-[#2C160F]/60 text-xs uppercase tracking-widest font-black">
                     <th className="p-4 sm:p-6 text-start">{isAr ? "العنوان" : "Title"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "التصنيف" : "Category"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "تاريخ الإضافة" : "Date Added"}</th>
@@ -168,27 +168,27 @@ export default function AdminLawsPage({
                     <th className="p-4 sm:p-6 text-end">{isAr ? "الإجراءات" : "Actions"}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#3d2e20]/5">
+                <tbody className="divide-y divide-[#2C160F]/5">
                   {filteredLaws.length > 0 ? (
                     filteredLaws.map((law) => (
                       <tr key={law.id} className="hover:bg-[#f5f1eb]/20 transition-colors group">
                         <td className="p-4 sm:p-6">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#f5f1eb] flex items-center justify-center text-[#3d2e20]/40 group-hover:bg-[#3d2e20] group-hover:text-white transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-[#f5f1eb] flex items-center justify-center text-[#2C160F]/40 group-hover:bg-[#2C160F] group-hover:text-white transition-colors">
                               <FileText className="w-5 h-5" />
                             </div>
                             <div>
-                              <p className="font-bold text-[#3d2e20]">{isAr ? law.titleAr : law.titleEn}</p>
-                              <p className="text-xs text-[#3d2e20]/40 font-medium">ID: #{law.id}</p>
+                              <p className="font-bold text-[#2C160F]">{isAr ? law.titleAr : law.titleEn}</p>
+                              <p className="text-xs text-[#2C160F]/40 font-medium">ID: #{law.id}</p>
                             </div>
                           </div>
                         </td>
                         <td className="p-4 sm:p-6">
-                          <span className="inline-flex items-center bg-[#f5f1eb] text-[#3d2e20]/60 px-3 py-1 rounded-full text-xs font-bold">
+                          <span className="inline-flex items-center bg-[#f5f1eb] text-[#2C160F]/60 px-3 py-1 rounded-full text-xs font-bold">
                             {isAr ? law.categoryAr : law.categoryEn}
                           </span>
                         </td>
-                        <td className="p-4 sm:p-6 text-[#3d2e20]/60 font-medium text-sm">
+                        <td className="p-4 sm:p-6 text-[#2C160F]/60 font-medium text-sm">
                           {law.date}
                         </td>
                         <td className="p-4 sm:p-6">
@@ -227,7 +227,7 @@ export default function AdminLawsPage({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="p-12 text-center text-[#3d2e20]/40">
+                      <td colSpan={5} className="p-12 text-center text-[#2C160F]/40">
                         <FileText className="w-12 h-12 mx-auto mb-4 opacity-20" />
                         <p className="text-lg font-bold">{isAr ? "لا توجد قوانين مطابقة للبحث" : "No laws found matching your search"}</p>
                       </td>
@@ -242,9 +242,9 @@ export default function AdminLawsPage({
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && lawToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3d2e20]/40 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2C160F]/40 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
-            <button onClick={() => setShowDeleteModal(false)} className="absolute top-4 right-4 p-2 text-[#3d2e20]/40 hover:text-[#3d2e20] transition-colors rounded-full hover:bg-[#f5f1eb]">
+            <button onClick={() => setShowDeleteModal(false)} className="absolute top-4 right-4 p-2 text-[#2C160F]/40 hover:text-[#2C160F] transition-colors rounded-full hover:bg-[#f5f1eb]">
               <X className="w-5 h-5" />
             </button>
             
@@ -256,7 +256,7 @@ export default function AdminLawsPage({
               {isAr ? "حذف القانون" : "Delete Law"}
             </h3>
             
-            <p className="text-[#3d2e20]/60 font-medium mb-6 leading-relaxed">
+            <p className="text-[#2C160F]/60 font-medium mb-6 leading-relaxed">
               {isAr 
                 ? `هل أنت متأكد من رغبتك في حذف "${lawToDelete.titleAr}"؟ لا يمكن التراجع عن هذا الإجراء.` 
                 : `Are you sure you want to delete "${lawToDelete.titleEn}"? This action cannot be undone.`
@@ -272,7 +272,7 @@ export default function AdminLawsPage({
               </button>
               <button 
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 bg-[#f5f1eb] text-[#3d2e20] py-3 rounded-xl font-bold hover:bg-[#f5f1eb]/80 transition-colors"
+                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-3 rounded-xl font-bold hover:bg-[#f5f1eb]/80 transition-colors"
               >
                 {isAr ? "إلغاء" : "Cancel"}
               </button>

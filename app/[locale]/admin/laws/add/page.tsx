@@ -115,37 +115,37 @@ export default function AddLawPage({
             <div>
               <Link
                 href={`/${locale}/admin/laws`}
-                className="flex items-center gap-2 text-[#3d2e20]/50 hover:text-[#3d2e20] transition-colors mb-4 font-bold text-sm"
+                className="flex items-center gap-2 text-[#2C160F]/50 hover:text-[#2C160F] transition-colors mb-4 font-bold text-sm"
               >
                 {isAr ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
                 {isAr ? "العودة لإدارة القوانين" : "Back to Laws Management"}
               </Link>
-              <h1 className="text-3xl font-black text-[#3d2e20]">
+              <h1 className="text-3xl font-black text-[#2C160F]">
                 {isAr ? "إضافة محتوى قانوني جديد" : "Add New Legal Content"}
               </h1>
             </div>
-            <div className="bg-[#3d2e20] p-4 rounded-2xl text-white shadow-lg">
+            <div className="bg-[#2C160F] p-4 rounded-2xl text-white shadow-lg">
               <Gavel className="w-6 h-6" />
             </div>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-[2.5rem] shadow-xl shadow-[#3d2e20]/5 border border-[#3d2e20]/5 p-8 md:p-12 relative overflow-hidden">
+          <div className="bg-white rounded-[2.5rem] shadow-xl shadow-[#2C160F]/5 border border-[#2C160F]/5 p-8 md:p-12 relative overflow-hidden">
 
             {success && (
               <div className="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center animate-in fade-in duration-500">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                   <CheckCircle2 className="w-10 h-10 text-green-600" />
                 </div>
-                <h2 className="text-2xl font-black text-[#3d2e20] mb-2">
+                <h2 className="text-2xl font-black text-[#2C160F] mb-2">
                   {isAr ? "تم الحفظ بنجاح!" : "Saved Successfully!"}
                 </h2>
-                <p className="text-[#3d2e20]/60 font-bold mb-8 text-center">
+                <p className="text-[#2C160F]/60 font-bold mb-8 text-center">
                   {isAr ? "تمت إضافة القانون الجديد إلى قاعدة البيانات" : "The new law has been added to the database"}
                 </p>
                 <button
                   onClick={() => router.push(`/${locale}/admin/laws`)}
-                  className="bg-[#3d2e20] text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform"
+                  className="bg-[#2C160F] text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform"
                 >
                   {isAr ? "العودة للقائمة" : "Back to List"}
                 </button>
@@ -157,14 +157,14 @@ export default function AddLawPage({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Category Selection */}
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-[#3d2e20] font-black text-sm mb-2">
+                  <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
                     <LayoutGrid className="w-4 h-4 opacity-40" />
                     {isAr ? "تصنيف القانون" : "Law Category"}
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.category ? 'border-red-300' : 'border-transparent'} focus:border-[#3d2e20]/20 rounded-2xl p-4 text-[#3d2e20] font-bold outline-none transition-all appearance-none cursor-pointer`}
+                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.category ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all appearance-none cursor-pointer`}
                   >
                     <option value="">{isAr ? "اختر التصنيف..." : "Select Category..."}</option>
                     {categories.map(cat => (
@@ -176,7 +176,7 @@ export default function AddLawPage({
 
                 {/* Keywords */}
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-[#3d2e20] font-black text-sm mb-2">
+                  <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
                     <Tag className="w-4 h-4 opacity-40" />
                     {isAr ? "الكلمات المفتاحية" : "Keywords"}
                   </label>
@@ -185,14 +185,14 @@ export default function AddLawPage({
                     placeholder={isAr ? "مثال: سرعة، مخالفة، سياحة..." : "e.g. Speed, Violation, Tourism..."}
                     value={formData.keywords}
                     onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#3d2e20]/20 rounded-2xl p-4 text-[#3d2e20] font-bold outline-none transition-all"
+                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all"
                   />
                 </div>
               </div>
 
               {/* Saudi Law Text */}
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[#3d2e20] font-black text-sm mb-2">
+                <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
                   <BookOpen className="w-4 h-4 opacity-40" />
                   {isAr ? "نص القانون السعودي" : "Saudi Law Text"}
                 </label>
@@ -200,7 +200,7 @@ export default function AddLawPage({
                   rows={4}
                   value={formData.saudiLaw}
                   onChange={(e) => setFormData({ ...formData, saudiLaw: e.target.value })}
-                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.saudiLaw ? 'border-red-300' : 'border-transparent'} focus:border-[#3d2e20]/20 rounded-2xl p-4 text-[#3d2e20] font-bold outline-none transition-all resize-none`}
+                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.saudiLaw ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none`}
                   placeholder={isAr ? "اكتب نص القانون هنا..." : "Write the law text here..."}
                 />
                 {errors.saudiLaw && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.saudiLaw}</p>}
@@ -208,7 +208,7 @@ export default function AddLawPage({
 
               {/* Other Country Law Text */}
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[#3d2e20] font-black text-sm mb-2">
+                <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
                   <Globe className="w-4 h-4 opacity-40" />
                   {isAr ? "نص قانون الدولة الأخرى (اختياري)" : "Other Country Law Text (Optional)"}
                 </label>
@@ -216,7 +216,7 @@ export default function AddLawPage({
                   rows={4}
                   value={formData.otherLaw}
                   onChange={(e) => setFormData({ ...formData, otherLaw: e.target.value })}
-                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.otherLaw ? 'border-red-300' : 'border-transparent'} focus:border-[#3d2e20]/20 rounded-2xl p-4 text-[#3d2e20] font-bold outline-none transition-all resize-none`}
+                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.otherLaw ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none`}
                   placeholder={isAr ? "اكتب نص القانون المقارن هنا..." : "Write the comparative law text here..."}
                 />
                 {errors.otherLaw && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.otherLaw}</p>}
@@ -224,7 +224,7 @@ export default function AddLawPage({
 
               {/* Comparative Analysis */}
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[#3d2e20] font-black text-sm mb-2">
+                <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
                   <CheckCircle2 className="w-4 h-4 opacity-40" />
                   {isAr ? "التحليل المقارن" : "Comparative Analysis"}
                 </label>
@@ -232,7 +232,7 @@ export default function AddLawPage({
                   rows={6}
                   value={formData.comparativeAnalysis}
                   onChange={(e) => setFormData({ ...formData, comparativeAnalysis: e.target.value })}
-                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.comparativeAnalysis ? 'border-red-300' : 'border-transparent'} focus:border-[#3d2e20]/20 rounded-2xl p-4 text-[#3d2e20] font-bold outline-none transition-all resize-none`}
+                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.comparativeAnalysis ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none`}
                   placeholder={isAr ? "اشرح الفروقات والتحليلات القانونية هنا..." : "Explain differences and legal analysis here..."}
                 />
                 {errors.comparativeAnalysis && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.comparativeAnalysis}</p>}
@@ -243,7 +243,7 @@ export default function AddLawPage({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-[#3d2e20] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-[#3d2e20]/90 transition-all shadow-xl shadow-[#3d2e20]/10 disabled:opacity-50"
+                  className="flex-1 bg-[#2C160F] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-[#2C160F]/90 transition-all shadow-xl shadow-[#2C160F]/10 disabled:opacity-50"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -258,7 +258,7 @@ export default function AddLawPage({
                   type="button"
                   onClick={handleDraft}
                   disabled={loading}
-                  className="px-8 py-4 rounded-2xl font-black text-[#3d2e20]/60 border-2 border-[#3d2e20]/10 hover:text-[#3d2e20] hover:border-[#3d2e20]/30 hover:bg-[#f5f1eb] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="px-8 py-4 rounded-2xl font-black text-[#2C160F]/60 border-2 border-[#2C160F]/10 hover:text-[#2C160F] hover:border-[#2C160F]/30 hover:bg-[#f5f1eb] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Save className="w-5 h-5 opacity-60" />
                   {isAr ? "حفظ كمسودة" : "Save as Draft"}
@@ -270,21 +270,21 @@ export default function AddLawPage({
 
           {/* Tips Section */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#3d2e20]/5 p-6 rounded-3xl">
-              <h4 className="text-[#3d2e20] font-black text-sm mb-2">{isAr ? "نصيحة الحفظ" : "Saving Tip"}</h4>
-              <p className="text-[#3d2e20]/60 text-xs font-bold leading-relaxed">
+            <div className="bg-[#2C160F]/5 p-6 rounded-3xl">
+              <h4 className="text-[#2C160F] font-black text-sm mb-2">{isAr ? "نصيحة الحفظ" : "Saving Tip"}</h4>
+              <p className="text-[#2C160F]/60 text-xs font-bold leading-relaxed">
                 {isAr ? "تأكد من مراجعة نصوص القوانين بدقة قبل الحفظ لضمان صحة المعلومات القانونية." : "Double-check law texts carefully before saving to ensure legal accuracy."}
               </p>
             </div>
-            <div className="bg-[#3d2e20]/5 p-6 rounded-3xl">
-              <h4 className="text-[#3d2e20] font-black text-sm mb-2">{isAr ? "التصنيفات" : "Categories"}</h4>
-              <p className="text-[#3d2e20]/60 text-xs font-bold leading-relaxed">
+            <div className="bg-[#2C160F]/5 p-6 rounded-3xl">
+              <h4 className="text-[#2C160F] font-black text-sm mb-2">{isAr ? "التصنيفات" : "Categories"}</h4>
+              <p className="text-[#2C160F]/60 text-xs font-bold leading-relaxed">
                 {isAr ? "اختيار التصنيف الصحيح يساعد المساعد الذكي على تقديم إجابات أكثر دقة للمستخدمين." : "Choosing the correct category helps the AI assistant provide more accurate answers to users."}
               </p>
             </div>
-            <div className="bg-[#3d2e20]/5 p-6 rounded-3xl">
-              <h4 className="text-[#3d2e20] font-black text-sm mb-2">{isAr ? "الكلمات المفتاحية" : "Keywords"}</h4>
-              <p className="text-[#3d2e20]/60 text-xs font-bold leading-relaxed">
+            <div className="bg-[#2C160F]/5 p-6 rounded-3xl">
+              <h4 className="text-[#2C160F] font-black text-sm mb-2">{isAr ? "الكلمات المفتاحية" : "Keywords"}</h4>
+              <p className="text-[#2C160F]/60 text-xs font-bold leading-relaxed">
                 {isAr ? "استخدم كلمات مفتاحية بسيطة ودارجة لتسهيل عملية البحث على السياح." : "Use simple and common keywords to make searching easier for tourists."}
               </p>
             </div>

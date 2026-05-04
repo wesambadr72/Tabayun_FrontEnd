@@ -69,48 +69,48 @@ export default function SystemLogsPage({
             <div>
               <Link
                 href={`/${locale}/admin`}
-                className="inline-flex items-center gap-2 text-[#3d2e20]/50 hover:text-[#3d2e20] transition-colors mb-4 font-bold text-sm"
+                className="inline-flex items-center gap-2 text-[#2C160F]/50 hover:text-[#2C160F] transition-colors mb-4 font-bold text-sm"
               >
                 {isAr ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
                 {isAr ? "العودة للوحة التحكم" : "Back to Dashboard"}
               </Link>
-              <h1 className="text-3xl font-black text-[#3d2e20] flex items-center gap-3 mb-2">
-                <History className="w-8 h-8 text-[#3d2e20]/40" />
+              <h1 className="text-3xl font-black text-[#2C160F] flex items-center gap-3 mb-2">
+                <History className="w-8 h-8 text-[#2C160F]/40" />
                 {isAr ? "سجل نشاطات النظام" : "System Activity Log"}
               </h1>
-              <p className="text-[#3d2e20]/60 font-medium">
+              <p className="text-[#2C160F]/60 font-medium">
                 {isAr ? "سجل شامل ومفصل لجميع العمليات والتعديلات التي تمت في المنصة." : "A comprehensive and detailed log of all operations and modifications in the platform."}
               </p>
             </div>
 
-            <button className="bg-white border border-[#3d2e20]/10 text-[#3d2e20] px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#f5f1eb] transition-all shadow-sm">
+            <button className="bg-white border border-[#2C160F]/10 text-[#2C160F] px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#f5f1eb] transition-all shadow-sm">
               <Download className="w-4 h-4" />
               {isAr ? "تصدير السجل (CSV)" : "Export Log (CSV)"}
             </button>
           </div>
 
-          <div className="bg-white rounded-[2rem] border border-[#3d2e20]/5 shadow-xl shadow-[#3d2e20]/5 overflow-hidden">
+          <div className="bg-white rounded-[2rem] border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 overflow-hidden">
 
             {/* Toolbar */}
-            <div className="p-6 border-b border-[#3d2e20]/5 bg-[#f5f1eb]/20">
+            <div className="p-6 border-b border-[#2C160F]/5 bg-[#f5f1eb]/20">
               <div className="flex flex-col sm:flex-row gap-4 justify-between">
 
                 {/* Search */}
                 <div className="relative w-full sm:w-96">
-                  <Search className={`w-4 h-4 text-[#3d2e20]/40 absolute top-1/2 -translate-y-1/2 ${isAr ? 'right-4' : 'left-4'}`} />
+                  <Search className={`w-4 h-4 text-[#2C160F]/40 absolute top-1/2 -translate-y-1/2 ${isAr ? 'right-4' : 'left-4'}`} />
                   <input
                     type="text"
                     placeholder={isAr ? "ابحث في السجل (العملية، المسؤول)..." : "Search logs (Action, Admin)..."}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`w-full bg-white border border-[#3d2e20]/10 focus:border-[#3d2e20]/30 rounded-xl py-3 px-11 text-sm text-[#3d2e20] outline-none transition-all font-bold shadow-sm`}
+                    className={`w-full bg-white border border-[#2C160F]/10 focus:border-[#2C160F]/30 rounded-xl py-3 px-11 text-sm text-[#2C160F] outline-none transition-all font-bold shadow-sm`}
                   />
                 </div>
 
                 {/* Filters Toggle */}
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all border-2 ${showFilters || selectedCategory !== 'all' ? 'bg-[#3d2e20] text-white border-[#3d2e20]' : 'bg-white text-[#3d2e20] border-[#3d2e20]/10 hover:border-[#3d2e20]/30 shadow-sm'}`}
+                  className={`flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all border-2 ${showFilters || selectedCategory !== 'all' ? 'bg-[#2C160F] text-white border-[#2C160F]' : 'bg-white text-[#2C160F] border-[#2C160F]/10 hover:border-[#2C160F]/30 shadow-sm'}`}
                 >
                   <Filter className="w-4 h-4" />
                   {isAr ? "تصفية السجل" : "Filter Logs"}
@@ -120,10 +120,10 @@ export default function SystemLogsPage({
 
               {/* Filters Panel */}
               {showFilters && (
-                <div className="mt-4 p-5 bg-white rounded-2xl border border-[#3d2e20]/5 shadow-sm animate-in slide-in-from-top-2 flex flex-wrap gap-3">
+                <div className="mt-4 p-5 bg-white rounded-2xl border border-[#2C160F]/5 shadow-sm animate-in slide-in-from-top-2 flex flex-wrap gap-3">
                   <button
                     onClick={() => setSelectedCategory('all')}
-                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border ${selectedCategory === 'all' ? 'bg-[#3d2e20] text-white border-[#3d2e20]' : 'bg-[#f5f1eb] text-[#3d2e20]/60 border-transparent hover:bg-[#3d2e20]/10'}`}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border ${selectedCategory === 'all' ? 'bg-[#2C160F] text-white border-[#2C160F]' : 'bg-[#f5f1eb] text-[#2C160F]/60 border-transparent hover:bg-[#2C160F]/10'}`}
                   >
                     {isAr ? "الكل" : "All"}
                   </button>
@@ -160,7 +160,7 @@ export default function SystemLogsPage({
             </div>
 
             {/* Logs List */}
-            <div className="divide-y divide-[#3d2e20]/5">
+            <div className="divide-y divide-[#2C160F]/5">
               {filteredLogs.length > 0 ? (
                 filteredLogs.map((log) => (
                   <div key={log.id} className="p-4 sm:p-6 hover:bg-[#f5f1eb]/30 transition-colors flex flex-col md:flex-row md:items-center gap-4 sm:gap-6 group">
@@ -172,21 +172,21 @@ export default function SystemLogsPage({
 
                     {/* Action Details */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-black text-[#3d2e20] mb-1 truncate">
+                      <h3 className="text-lg font-black text-[#2C160F] mb-1 truncate">
                         {isAr ? log.actionAr : log.actionEn}
                       </h3>
                       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-[#3d2e20] text-white flex items-center justify-center text-[10px] font-bold">
+                          <div className="w-6 h-6 rounded-full bg-[#2C160F] text-white flex items-center justify-center text-[10px] font-bold">
                             {log.admin.charAt(0)}
                           </div>
                           <div>
-                            <span className="font-bold text-[#3d2e20]/80">@{log.admin}</span>
-                            <span className="text-[#3d2e20]/40 text-xs ml-2 hidden sm:inline-block">({log.email})</span>
+                            <span className="font-bold text-[#2C160F]/80">@{log.admin}</span>
+                            <span className="text-[#2C160F]/40 text-xs ml-2 hidden sm:inline-block">({log.email})</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5 text-[#3d2e20]/50 font-bold text-xs bg-[#f5f1eb] px-3 py-1 rounded-lg">
+                        <div className="flex items-center gap-1.5 text-[#2C160F]/50 font-bold text-xs bg-[#f5f1eb] px-3 py-1 rounded-lg">
                           <Clock className="w-3.5 h-3.5" />
                           {log.time}
                         </div>
@@ -194,7 +194,7 @@ export default function SystemLogsPage({
                     </div>
 
                     {/* Status / Category */}
-                    <div className="shrink-0 flex items-center justify-between md:justify-end gap-4 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#3d2e20]/5">
+                    <div className="shrink-0 flex items-center justify-between md:justify-end gap-4 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#2C160F]/5">
                       <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${log.bg} ${log.color}`}>
                         {log.category}
                       </span>
@@ -207,7 +207,7 @@ export default function SystemLogsPage({
                   </div>
                 ))
               ) : (
-                <div className="py-16 text-center text-[#3d2e20]/40">
+                <div className="py-16 text-center text-[#2C160F]/40">
                   <History className="w-16 h-16 mx-auto mb-4 opacity-20" />
                   <p className="text-xl font-black mb-2">{isAr ? "لا توجد سجلات مطابقة" : "No logs found"}</p>
                   <p className="text-sm font-medium">{isAr ? "حاول تغيير كلمات البحث أو الفلاتر المحددة." : "Try changing search terms or selected filters."}</p>

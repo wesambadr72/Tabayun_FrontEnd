@@ -8,6 +8,20 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        tabayun: {
+          ink: "#2C160F",
+          coffee: "#2C160F",
+          clay: "#2C160F",
+          gold: "#C49A6C",
+          sand: "#E8DDC9",
+          paper: "#F6F1E7",
+          pearl: "#FBF8F2",
+          danger: "#8E2C1D",
+          success: "#2F6B4F",
+          info: "#315E72",
+        },
+      },
       fontFamily: {
         bold: ["var(--font-handicrafts-bold)", "sans-serif"],
         regular: ["var(--font-handicrafts-regular)", "sans-serif"],

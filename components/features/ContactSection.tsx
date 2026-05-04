@@ -16,11 +16,11 @@ export default function ContactSection() {
     return (
         <section className="w-full py-24 bg-transparent" dir={dir}>
             <div className="container mx-auto px-4 md:px-8 max-w-5xl">
-                <div className="relative bg-[#3d2e20] text-white rounded-[3rem] p-12 md:p-24 overflow-hidden shadow-[0_40px_100px_-20px_rgba(61,46,32,0.3)] animate-in fade-in zoom-in duration-1000 ease-out fill-mode-backwards">
+                <div className="relative bg-[#2C160F] text-white rounded-[3rem] p-12 md:p-24 overflow-hidden shadow-[0_40px_100px_-20px_rgba(44,22,15,0.3)] animate-in fade-in zoom-in duration-1000 ease-out fill-mode-backwards">
 
                     {/* Artistic blobs */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#523e2b] rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 opacity-60" />
-                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#2a1f15] rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 opacity-60" />
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#2C160F] rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 opacity-60" />
+                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#2C160F] rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 opacity-60" />
 
                     <div className="relative z-10 flex flex-col items-center text-center space-y-10">
                         <div className="space-y-6">
@@ -39,7 +39,7 @@ export default function ContactSection() {
                                 placeholder={dict.contact.email}
                                 className="flex-1 bg-transparent border-none text-white placeholder-white/40 focus:outline-none h-12 md:h-14 text-lg"
                             />
-                            <button className="h-12 md:h-14 px-8 md:px-10 bg-white text-[#3d2e20] rounded-full font-bold hover:bg-[#f5f1eb] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg">
+                            <button className="h-12 md:h-14 px-8 md:px-10 bg-white text-[#2C160F] rounded-full font-bold hover:bg-[#f5f1eb] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg">
                                 <span>{dict.contact.send}</span>
                                 {locale === "ar" ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
                             </button>

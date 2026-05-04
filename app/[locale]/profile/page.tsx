@@ -230,7 +230,7 @@ export default function ProfilePage() {
     return (
       <main className="min-h-screen bg-[#f5f1eb] flex flex-col items-center justify-center">
         <Navbar />
-        <Loader2 className="w-12 h-12 text-[#3d2e20] animate-spin" />
+        <Loader2 className="w-12 h-12 text-[#2C160F] animate-spin" />
       </main>
     );
   }
@@ -243,16 +243,16 @@ export default function ProfilePage() {
 
         {/* Header Section */}
         <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <h1 className="text-4xl md:text-5xl font-black text-[#3d2e20] mb-4 font-bold tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-black text-[#2C160F] mb-4 font-bold tracking-tight">
             {profileDict.title || (locale === "ar" ? "الملف الشخصي" : "Profile")}
           </h1>
-          <p className="text-[#3d2e20]/60 text-lg font-regular">
+          <p className="text-[#2C160F]/60 text-lg font-regular">
             {locale === "ar" ? "إدارة معلومات حسابك الشخصي" : "Manage your personal account information"}
           </p>
         </div>
 
         {/* Profile Card */}
-        <div className="w-full max-w-2xl bg-white rounded-[2rem] shadow-xl shadow-[#3d2e20]/5 border border-[#3d2e20]/10 overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-700 delay-150 fill-mode-backwards p-8 md:p-12">
+        <div className="w-full max-w-2xl bg-white rounded-[2rem] shadow-xl shadow-[#2C160F]/5 border border-[#2C160F]/10 overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-700 delay-150 fill-mode-backwards p-8 md:p-12">
 
           {/* Profile Image Section */}
           <div className="flex flex-col items-center mb-12 relative group cursor-pointer">
@@ -269,7 +269,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <button className="flex items-center gap-2 text-[#3d2e20] font-bold text-sm md:text-base hover:text-[#3d2e20]/70 transition-colors bg-[#f5f1eb] px-4 py-2 rounded-full">
+            <button className="flex items-center gap-2 text-[#2C160F] font-bold text-sm md:text-base hover:text-[#2C160F]/70 transition-colors bg-[#f5f1eb] px-4 py-2 rounded-full">
               <Camera className="w-4 h-4" />
               {profileDict.changePhoto || "تغيير الصورة"}
             </button>
@@ -281,23 +281,23 @@ export default function ProfilePage() {
               const content = (
                 <>
                   <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-[#f5f1eb] text-[#3d2e20] group-hover:bg-[#3d2e20] group-hover:text-white transition-colors duration-300">
+                    <div className="p-3 rounded-xl bg-[#f5f1eb] text-[#2C160F] group-hover:bg-[#2C160F] group-hover:text-white transition-colors duration-300">
                       <item.icon className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm text-[#3d2e20]/50 font-medium">
+                      <span className="text-sm text-[#2C160F]/50 font-medium">
                         {item.label}
                       </span>
-                      <span className="text-lg md:text-xl font-bold text-[#3d2e20]">
+                      <span className="text-lg md:text-xl font-bold text-[#2C160F]">
                         {item.value}
                       </span>
                     </div>
                   </div>
 
                   {locale === "ar" ? (
-                    <ChevronLeft className="w-5 h-5 text-[#3d2e20]/30 group-hover:text-[#3d2e20] transition-colors" />
+                    <ChevronLeft className="w-5 h-5 text-[#2C160F]/30 group-hover:text-[#2C160F] transition-colors" />
                   ) : (
-                    <ChevronRight className="w-5 h-5 text-[#3d2e20]/30 group-hover:text-[#3d2e20] transition-colors" />
+                    <ChevronRight className="w-5 h-5 text-[#2C160F]/30 group-hover:text-[#2C160F] transition-colors" />
                   )}
                 </>
               );
@@ -335,7 +335,7 @@ export default function ProfilePage() {
 
                       {item.id === 'name' && (
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-[#3d2e20]/70">
+                          <label className="text-sm font-medium text-[#2C160F]/70">
                             {locale === 'ar' ? 'تغيير الاسم:' : 'Change Name:'}
                           </label>
                           <input 
@@ -345,7 +345,7 @@ export default function ProfilePage() {
                               setFormValues({...formValues, name: e.target.value});
                               if (errors.name) setErrors({...errors, name: ""});
                             }} 
-                            className={`w-full bg-white border ${errors.name ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                            className={`w-full bg-white border ${errors.name ? 'border-red-500' : 'border-[#2C160F]/10'} rounded-xl px-4 py-3 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors`} 
                             placeholder={locale === 'ar' ? 'أدخل الاسم الجديد' : 'Enter new name'} 
                           />
                           {errors.name && <p className="text-red-500 text-xs font-bold">{errors.name}</p>}
@@ -355,7 +355,7 @@ export default function ProfilePage() {
                       {item.id === 'email' && (
                         <>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                            <label className="text-sm font-medium text-[#2C160F]/70">
                               {locale === 'ar' ? 'تغيير البريد الالكتروني:' : 'Change Email:'}
                             </label>
                             <input 
@@ -365,13 +365,13 @@ export default function ProfilePage() {
                                 setFormValues({...formValues, email: e.target.value});
                                 if (errors.email) setErrors({...errors, email: ""});
                               }} 
-                              className={`w-full bg-white border ${errors.email ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                              className={`w-full bg-white border ${errors.email ? 'border-red-500' : 'border-[#2C160F]/10'} rounded-xl px-4 py-3 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors`} 
                               placeholder={locale === 'ar' ? 'أدخل البريد الجديد' : 'Enter new email'} 
                             />
                             {errors.email && <p className="text-red-500 text-xs font-bold">{errors.email}</p>}
                           </div>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                            <label className="text-sm font-medium text-[#2C160F]/70">
                               {locale === 'ar' ? 'كلمة المرور لتأكيد التغيير:' : 'Password to confirm change:'}
                             </label>
                             <div className="relative">
@@ -382,13 +382,13 @@ export default function ProfilePage() {
                                   setFormValues({...formValues, currentPassword: e.target.value});
                                   if (errors.currentPassword) setErrors({...errors, currentPassword: ""});
                                 }} 
-                                className={`w-full bg-white border ${errors.currentPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                className={`w-full bg-white border ${errors.currentPassword ? 'border-red-500' : 'border-[#2C160F]/10'} rounded-xl px-4 py-3 pe-12 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors`} 
                                 placeholder="••••••••" 
                               />
                               <button
                                 type="button"
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#2C160F]/30 hover:text-[#2C160F]/60 transition-colors`}
                               >
                                 {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                               </button>
@@ -413,7 +413,7 @@ export default function ProfilePage() {
                       {item.id === 'password' && (
                         <>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                            <label className="text-sm font-medium text-[#2C160F]/70">
                               {locale === 'ar' ? 'كلمة المرور الحالية:' : 'Current Password:'}
                             </label>
                             <div className="relative">
@@ -424,13 +424,13 @@ export default function ProfilePage() {
                                   setFormValues({...formValues, currentPassword: e.target.value});
                                   if (errors.currentPassword) setErrors({...errors, currentPassword: ""});
                                 }} 
-                                className={`w-full bg-white border ${errors.currentPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                className={`w-full bg-white border ${errors.currentPassword ? 'border-red-500' : 'border-[#2C160F]/10'} rounded-xl px-4 py-3 pe-12 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors`} 
                                 placeholder="••••••••" 
                               />
                               <button
                                 type="button"
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#2C160F]/30 hover:text-[#2C160F]/60 transition-colors`}
                               >
                                 {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                               </button>
@@ -450,7 +450,7 @@ export default function ProfilePage() {
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                            <label className="text-sm font-medium text-[#2C160F]/70">
                               {locale === 'ar' ? 'كلمة المرور الجديدة:' : 'New Password:'}
                             </label>
                             <div className="relative">
@@ -461,13 +461,13 @@ export default function ProfilePage() {
                                   setFormValues({...formValues, newPassword: e.target.value});
                                   if (errors.newPassword) setErrors({...errors, newPassword: ""});
                                 }} 
-                                className={`w-full bg-white border ${errors.newPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                className={`w-full bg-white border ${errors.newPassword ? 'border-red-500' : 'border-[#2C160F]/10'} rounded-xl px-4 py-3 pe-12 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors`} 
                                 placeholder="••••••••" 
                               />
                               <button
                                 type="button"
                                 onClick={() => setShowNewPassword(!showNewPassword)}
-                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#2C160F]/30 hover:text-[#2C160F]/60 transition-colors`}
                               >
                                 {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                               </button>
@@ -475,7 +475,7 @@ export default function ProfilePage() {
                             {errors.newPassword && <p className="text-red-500 text-xs font-bold">{errors.newPassword}</p>}
                           </div>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-[#3d2e20]/70">
+                            <label className="text-sm font-medium text-[#2C160F]/70">
                               {locale === 'ar' ? 'تكرار كلمة المرور الجديدة:' : 'Confirm New Password:'}
                             </label>
                             <div className="relative">
@@ -486,13 +486,13 @@ export default function ProfilePage() {
                                   setFormValues({...formValues, confirmPassword: e.target.value});
                                   if (errors.confirmPassword) setErrors({...errors, confirmPassword: ""});
                                 }} 
-                                className={`w-full bg-white border ${errors.confirmPassword ? 'border-red-500' : 'border-[#3d2e20]/10'} rounded-xl px-4 py-3 pe-12 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors`} 
+                                className={`w-full bg-white border ${errors.confirmPassword ? 'border-red-500' : 'border-[#2C160F]/10'} rounded-xl px-4 py-3 pe-12 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors`} 
                                 placeholder="••••••••" 
                               />
                               <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#3d2e20]/30 hover:text-[#3d2e20]/60 transition-colors`}
+                                className={`absolute inset-y-0 ${locale === 'ar' ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center text-[#2C160F]/30 hover:text-[#2C160F]/60 transition-colors`}
                               >
                                 {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                               </button>
@@ -504,10 +504,10 @@ export default function ProfilePage() {
 
                       {item.id === 'country' && (
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-[#3d2e20]/70">
+                          <label className="text-sm font-medium text-[#2C160F]/70">
                             {locale === 'ar' ? 'اختر الدولة الجديدة:' : 'Select new Country:'}
                           </label>
-                          <select value={formValues.country} onChange={e => setFormValues({...formValues, country: e.target.value})} className="w-full bg-white border border-[#3d2e20]/10 rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors appearance-none">
+                          <select value={formValues.country} onChange={e => setFormValues({...formValues, country: e.target.value})} className="w-full bg-white border border-[#2C160F]/10 rounded-xl px-4 py-3 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors appearance-none">
                             {availableCountries.map(c => (
                               <option key={c} value={c}>{c === 'sa' ? (locale === 'ar' ? 'السعودية' : 'Saudi Arabia') : c.toUpperCase()}</option>
                             ))}
@@ -517,10 +517,10 @@ export default function ProfilePage() {
 
                       {item.id === 'language' && (
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-[#3d2e20]/70">
+                          <label className="text-sm font-medium text-[#2C160F]/70">
                             {locale === 'ar' ? 'اختر اللغة الجديدة:' : 'Select new Language:'}
                           </label>
-                          <select value={formValues.language} onChange={e => setFormValues({...formValues, language: e.target.value})} className="w-full bg-white border border-[#3d2e20]/10 rounded-xl px-4 py-3 text-[#3d2e20] focus:outline-none focus:border-[#3d2e20]/30 transition-colors appearance-none">
+                          <select value={formValues.language} onChange={e => setFormValues({...formValues, language: e.target.value})} className="w-full bg-white border border-[#2C160F]/10 rounded-xl px-4 py-3 text-[#2C160F] focus:outline-none focus:border-[#2C160F]/30 transition-colors appearance-none">
                             <option value="ar">العربية (Arabic)</option>
                             <option value="en">English (الإنجليزية)</option>
                           </select>
@@ -528,17 +528,17 @@ export default function ProfilePage() {
                       )}
 
                       {/* Action buttons */}
-                      <div className="flex items-center gap-3 justify-end pt-2 border-t border-[#3d2e20]/5 mt-4">
+                      <div className="flex items-center gap-3 justify-end pt-2 border-t border-[#2C160F]/5 mt-4">
                         <button 
                           onClick={(e) => { e.stopPropagation(); setEditingField(null); }}
-                          className="px-6 py-2.5 rounded-xl font-bold text-[#3d2e20]/70 bg-white border border-[#3d2e20]/10 hover:bg-[#f5f1eb] transition-colors mt-4"
+                          className="px-6 py-2.5 rounded-xl font-bold text-[#2C160F]/70 bg-white border border-[#2C160F]/10 hover:bg-[#f5f1eb] transition-colors mt-4"
                         >
                           {locale === 'ar' ? 'إلغاء' : 'Cancel'}
                         </button>
                         <button 
                           onClick={(e) => { e.stopPropagation(); handleUpdate(item.id || ''); }}
                           disabled={isUpdating}
-                          className="px-6 py-2.5 rounded-xl font-bold text-white bg-[#3d2e20] hover:bg-[#3d2e20]/90 transition-colors mt-4 disabled:opacity-50"
+                          className="px-6 py-2.5 rounded-xl font-bold text-white bg-[#2C160F] hover:bg-[#2C160F]/90 transition-colors mt-4 disabled:opacity-50"
                         >
                           {isUpdating ? (locale === 'ar' ? 'جاري التحديث...' : 'Updating...') : (locale === 'ar' ? 'تنفيذ وتأكيد التغيير' : 'Confirm Change')}
                         </button>
@@ -570,18 +570,18 @@ export default function ProfilePage() {
           <div className="bg-white rounded-[2rem] w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
             <div className="p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-black text-[#3d2e20]">
+                <h3 className="text-2xl font-black text-[#2C160F]">
                   {locale === 'ar' ? 'إعادة تعيين كلمة المرور' : 'Reset Password'}
                 </h3>
                 <button 
                   onClick={() => setShowForgotDialog(false)}
                   className="p-2 hover:bg-[#f5f1eb] rounded-full transition-colors"
                 >
-                  <X className="w-6 h-6 text-[#3d2e20]/40" />
+                  <X className="w-6 h-6 text-[#2C160F]/40" />
                 </button>
               </div>
               
-              <p className="text-[#3d2e20]/60 mb-6">
+              <p className="text-[#2C160F]/60 mb-6">
                 {locale === 'ar' 
                   ? 'سوف نقوم بإرسال رابط لإعادة تعيين كلمة المرور على بريدك المسجل.' 
                   : 'We will send a password reset link to your registered email.'}
@@ -589,11 +589,11 @@ export default function ProfilePage() {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-[#3d2e20]">
+                  <label className="text-sm font-bold text-[#2C160F]">
                     {locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none text-[#3d2e20]/30">
+                    <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none text-[#2C160F]/30">
                       <Mail className="w-5 h-5" />
                     </div>
                     <input
@@ -601,7 +601,7 @@ export default function ProfilePage() {
                       value={forgotEmail}
                       readOnly
                       placeholder="example@email.com"
-                      className="w-full bg-[#f5f1eb] border-2 border-transparent rounded-2xl ps-12 pe-4 py-4 text-[#3d2e20]/50 cursor-not-allowed focus:outline-none transition-all"
+                      className="w-full bg-[#f5f1eb] border-2 border-transparent rounded-2xl ps-12 pe-4 py-4 text-[#2C160F]/50 cursor-not-allowed focus:outline-none transition-all"
                       dir="ltr"
                     />
                   </div>
@@ -625,7 +625,7 @@ export default function ProfilePage() {
                     }, 3000);
                   }}
                   disabled={isSendingReset}
-                  className="w-full py-4 rounded-2xl font-black text-white bg-[#3d2e20] hover:bg-[#3d2e20]/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-4 rounded-2xl font-black text-white bg-[#2C160F] hover:bg-[#2C160F]/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isSendingReset ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
