@@ -43,6 +43,8 @@ function SearchResultsContent() {
       try {
         setLoading(true);
         const data = await lawService.search(query);
+        
+        // Deduplicate results based on type and id
         const uniqueResults = data.filter((item, index, self) =>
           index === self.findIndex((t) => t.id === item.id && t.type === item.type)
         );

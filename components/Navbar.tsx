@@ -96,8 +96,13 @@ export default function Navbar() {
       try {
         const freshUser = await authService.getMe();
         setUser(freshUser);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Navbar: failed to refresh user", error);
+        // If credentials failed, update the UI state immediately
+        if (error.message === 'Could not validate credentials') {
+          setIsLoggedIn(false);
+          setUser(null);
+        }
       }
     };
 

@@ -38,7 +38,7 @@ export default function ComparisonDetailPage() {
       if (!comparisonId) return;
       try {
         setLoading(true);
-        const data = await lawService.getComparisonById(Number(comparisonId));
+        const data = await lawService.getComparisonById(Number(comparisonId), locale);
         setComparison(data);
       } catch (err: any) {
         setError(err.message);

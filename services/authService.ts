@@ -45,9 +45,17 @@ export const authService = {
   },
 
   getMe: async (): Promise<User> => {
-    const user = await api.get<User>('/auth/me');
-    authService.setUser(user);
-    return user;
+    try {
+      const user = await api.get<User>('/auth/me');
+      authService.setUser(user);
+      return user;
+    } catch (error: any) {
+      // If the token is invalid or expired, logout automatically
+      if (error.message === 'Could not validate credentials' || error.message.includes('unauthorized')) {
+        authService.logout();
+      }
+      throw error;
+    }
   },
 
   updateProfile: async (data: any): Promise<User> => {
