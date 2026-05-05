@@ -73,7 +73,7 @@ export default function AdminDashboardPage({
       icon: MessageSquare,
       color: "bg-purple-600",
       stats: "98% Accuracy",
-      href: "#"
+      href: `/${locale}/admin/ai-settings`
     },
     {
       title: isAr ? "قاعدة البيانات" : "Database Admin",
