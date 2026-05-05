@@ -146,3 +146,18 @@
  GET /ar/auth/undefined/laws/countries 404 in 31ms
  GET /ar/auth/register 200 in 94ms
  GET /ar/auth/login 200 in 94ms
+ GET /ar/auth/login 200 in 126ms
+ GET /ar/auth/register 200 in 91ms
+ GET /ar/auth/undefined/laws/countries 404 in 33ms
+ ✓ Compiled in 329ms (346 modules)
+ GET /ar/auth/login 200 in 81ms
+ GET /ar/auth/register 200 in 83ms
+ GET /ar/auth/login 200 in 58ms
+ GET /ar/auth/register 200 in 60ms
+ GET /ar/auth/login 200 in 24ms
+ GET /ar 200 in 54ms
+ GET /favicon.ico 200 in 133ms
+ GET /ar/contact 200 in 55ms
+ GET /favicon.ico 200 in 123ms
+ GET /ar 200 in 31ms
+ GET /favicon.ico 200 in 113ms
