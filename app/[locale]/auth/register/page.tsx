@@ -306,7 +306,7 @@ export default function RegisterPage() {
             onChange={handleChange}
             placeholder={currentMeta.placeholder}
             error={errors.email}
-            dir="ltr"
+            dir={isAr ? "rtl" : "ltr"}
             autoComplete="email"
             autoFocus
           />

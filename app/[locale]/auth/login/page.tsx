@@ -109,7 +109,7 @@ export default function LoginPage() {
           onChange={handleChange}
           placeholder="example@email.com"
           error={errors.email}
-          dir="ltr"
+          dir={isAr ? "rtl" : "ltr"}
           autoComplete="email"
         />
 
@@ -122,7 +122,7 @@ export default function LoginPage() {
           onChange={handleChange}
           placeholder="••••••••"
           error={errors.password}
-          dir="ltr"
+          dir={isAr ? "rtl" : "ltr"}
           autoComplete="current-password"
           labelAction={
             <button
@@ -214,7 +214,7 @@ export default function LoginPage() {
                   value={forgotEmail}
                   onChange={(event) => setForgotEmail(event.target.value)}
                   placeholder="example@email.com"
-                  dir="ltr"
+                  dir={isAr ? "rtl" : "ltr"}
                 />
                 <AuthPrimaryButton type="button" onClick={sendResetLink} disabled={isSendingReset || !forgotEmail}>
                   {isSendingReset ? <Loader2 className="h-5 w-5 animate-spin" /> : isAr ? "إرسال رابط الاستعادة" : "Send reset link"}
