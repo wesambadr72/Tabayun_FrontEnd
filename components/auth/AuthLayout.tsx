@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Globe2, Scale, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
 import { CountUp } from "@/components/ui/motion";
 import { cn } from "@/lib/utils";
+import { kashidaTitle } from "@/lib/typography";
 
 type Locale = "ar" | "en" | string;
 
@@ -58,7 +59,7 @@ export function AuthShell({
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-tabayun-gold/24 bg-tabayun-gold/12 text-tabayun-gold shadow-[0_18px_44px_rgba(0,0,0,0.18)]">
               <Scale className="h-6 w-6" />
             </span>
-            <span className="text-2xl font-black">{isAr ? "تباين" : "Tabayun"}</span>
+            <span className="tabayun-display text-2xl font-black">{isAr ? "تبايــن" : "Tabayun"}</span>
           </Link>
 
           <div className="relative z-10 max-w-xl space-y-7">
@@ -73,8 +74,8 @@ export function AuthShell({
                 : "A structured start for visitors in Saudi Arabia"}
             </div>
             <div>
-              <h2 className="max-w-[12ch] text-balance text-5xl font-black leading-[0.95] xl:text-7xl">
-                {title}
+              <h2 className="tabayun-display max-w-[12ch] text-balance text-5xl font-black leading-[0.95] xl:text-7xl">
+                {isAr ? kashidaTitle(title) : title}
               </h2>
               <p className="mt-5 max-w-lg text-base font-semibold leading-relaxed text-tabayun-paper/64 xl:text-lg">
                 {description}
@@ -101,7 +102,7 @@ export function AuthShell({
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-tabayun-coffee text-tabayun-paper shadow-[0_16px_36px_rgba(44,22,15,0.18)]">
                   <Scale className="h-5 w-5" />
                 </span>
-                <span className="text-2xl font-black">{isAr ? "تباين" : "Tabayun"}</span>
+                <span className="tabayun-display text-2xl font-black">{isAr ? "تبايــن" : "Tabayun"}</span>
               </Link>
               {mobileAccessory}
             </div>
@@ -149,7 +150,9 @@ export function AuthHeader({
         </span>
       )}
       <div>
-        <h1 className="text-balance text-4xl font-black leading-tight text-tabayun-coffee sm:text-5xl">{title}</h1>
+        <h1 className="tabayun-display text-balance text-4xl font-black leading-tight text-tabayun-coffee sm:text-5xl">
+          {kashidaTitle(title)}
+        </h1>
         <p className="mt-2 text-sm font-bold leading-relaxed text-tabayun-coffee/55 sm:text-base">{description}</p>
       </div>
     </div>
@@ -191,7 +194,7 @@ export function AuthTextField({
         <input
           {...inputProps}
           className={cn(
-            "min-h-14 w-full bg-transparent py-3 ps-12 text-sm font-black text-tabayun-coffee outline-none placeholder:text-tabayun-coffee/28",
+            "min-h-14 w-full bg-transparent py-3 ps-12 text-start text-sm font-black text-tabayun-coffee outline-none placeholder:text-tabayun-coffee/28",
             trailing ? "pe-12" : "pe-4",
             inputClassName
           )}
