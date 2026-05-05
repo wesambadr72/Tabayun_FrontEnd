@@ -73,6 +73,7 @@ html[data-color-mode="high-contrast"] .bg-\[#F7F2EC\] {
 }
 
 body {
+  font-family: var(--font-thmanyah-body), sans-serif;
   color: var(--tabayun-coffee);
   background:
     radial-gradient(circle at 18% 8%, rgba(196, 154, 108, 0.18), transparent 28rem),
@@ -81,6 +82,26 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-thmanyah-body), sans-serif;
+}
+
+h1,
+.tabayun-display,
+.tabayun-hero-word {
+  font-family: var(--font-thmanyah-display), serif;
+}
+
+h2,
+h3,
+h4,
+.tabayun-title {
+  font-family: var(--font-thmanyah-title), serif;
 }
 
 ::selection {

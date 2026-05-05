@@ -79,6 +79,7 @@ export default function Navbar() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [navSurface, setNavSurface] = useState<"light" | "dark">("dark");
 
   useEffect(() => {
     const token = authService.getToken();
@@ -111,6 +112,38 @@ export default function Navbar() {
     setIsLangOpen(false);
     setIsProfileOpen(false);
     setIsNotificationsOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const sampleSurface = () => {
+      const navElements = Array.from(document.querySelectorAll<HTMLElement>("[data-adaptive-nav]"));
+      const previousPointerEvents = navElements.map((element) => element.style.pointerEvents);
+
+      navElements.forEach((element) => {
+        element.style.pointerEvents = "none";
+      });
+
+      const probeX = Math.round(window.innerWidth / 2);
+      const probeY = window.innerWidth < 768 ? 28 : 44;
+      const elements = document.elementsFromPoint(probeX, probeY);
+      const toneElement = elements.find((element) => element instanceof HTMLElement && element.dataset.navTone) as
+        | HTMLElement
+        | undefined;
+
+      navElements.forEach((element, index) => {
+        element.style.pointerEvents = previousPointerEvents[index] || "";
+      });
+
+      setNavSurface(toneElement?.dataset.navTone === "dark" ? "dark" : "light");
+    };
+
+    sampleSurface();
+    window.addEventListener("scroll", sampleSurface, { passive: true });
+    window.addEventListener("resize", sampleSurface);
+    return () => {
+      window.removeEventListener("scroll", sampleSurface);
+      window.removeEventListener("resize", sampleSurface);
+    };
   }, [pathname]);
 
   const primaryHome = isLoggedIn ? `/${locale}/dashboard` : `/${locale}`;
@@ -162,31 +195,39 @@ export default function Navbar() {
     router.push(`/${locale}/auth/login`);
   };
 
+  const isLightSurface = navSurface === "light";
+  const navShellClass = isLightSurface
+    ? "border-white/80 bg-[#F7F2EC]/94 text-[#2C160F] shadow-[0_18px_50px_rgba(44,22,15,0.12)]"
+    : "border-[#F7F2EC]/20 bg-[#2C160F]/96 text-[#F7F2EC] shadow-[0_22px_60px_rgba(0,0,0,0.34)] ring-1 ring-black/20";
+  const navMutedClass = isLightSurface ? "text-[#2C160F]/72 hover:bg-[#2C160F]/8 hover:text-[#2C160F]" : "text-[#F7F2EC]/86 hover:bg-white/10 hover:text-white";
+  const navActiveClass = isLightSurface ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-[#F7F2EC] text-[#2C160F]";
+  const iconPillClass = isLightSurface ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-[#F7F2EC] text-[#2C160F]";
+
   return (
     <>
       <AccessibilityControls locale={locale} />
 
-      <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:hidden" dir={dir}>
-        <div className="mx-auto flex h-14 max-w-md items-center justify-between rounded-[22px] border border-white/75 bg-[#F7F2EC]/88 px-3 shadow-[0_14px_40px_rgba(44,22,15,0.12)] backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:hidden" dir={dir} data-adaptive-nav>
+        <div className={`mx-auto flex h-14 max-w-md items-center justify-between rounded-[22px] border px-3 backdrop-blur-xl transition-colors duration-300 ${navShellClass}`}>
           <button
             type="button"
             onClick={() => setIsMenuOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-2xl text-[#2C160F] transition active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-2xl transition active:scale-95"
             aria-label={t.menu}
           >
             <Menu className="h-5 w-5" />
           </button>
 
           <Link href={primaryHome} className="flex items-center gap-2">
-            <span className="text-2xl font-black leading-none text-[#2C160F]">{t.brand}</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2C160F] text-[#F7F2EC] shadow-lg shadow-[#2C160F]/15">
+            <span className="tabayun-display text-2xl font-black leading-none">{locale === "ar" ? "تبايــن" : t.brand}</span>
+            <span className={`flex h-8 w-8 items-center justify-center rounded-xl shadow-lg shadow-[#2C160F]/15 ${iconPillClass}`}>
               <Scale className="h-4 w-4" />
             </span>
           </Link>
 
           <Link
             href={isLoggedIn ? `/${locale}/notifications` : `/${locale}/auth/login`}
-            className="relative flex h-10 w-10 items-center justify-center rounded-2xl text-[#2C160F] transition active:scale-95"
+            className="relative flex h-10 w-10 items-center justify-center rounded-2xl transition active:scale-95"
             aria-label={isLoggedIn ? t.notifications : t.login}
           >
             {isLoggedIn ? <Bell className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
@@ -195,13 +236,13 @@ export default function Navbar() {
         </div>
       </header>
 
-      <div className="fixed inset-x-0 top-6 z-50 hidden justify-center px-4 md:flex" dir={dir}>
-        <nav className="flex w-full max-w-6xl items-center justify-between rounded-full border border-white/15 bg-[#2C160F]/95 px-5 py-3 text-[#F7F2EC] shadow-2xl backdrop-blur-xl">
+      <div className="fixed inset-x-0 top-6 z-50 hidden justify-center px-4 md:flex" dir={dir} data-adaptive-nav>
+        <nav className={`flex w-full max-w-6xl items-center justify-between rounded-full border px-5 py-3 backdrop-blur-xl transition-colors duration-300 ${navShellClass}`}>
           <Link href={primaryHome} className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C9B19C]/14 text-[#E6D7C8]">
+            <span className={`flex h-10 w-10 items-center justify-center rounded-full ${iconPillClass}`}>
               <Scale className="h-5 w-5" />
             </span>
-            <span className="text-2xl font-black">{t.brand}</span>
+            <span className="tabayun-display text-2xl font-black">{locale === "ar" ? "تبايــن" : t.brand}</span>
           </Link>
 
           <div className="flex items-center gap-2 text-sm font-black">
@@ -210,9 +251,7 @@ export default function Navbar() {
                 key={`${item.href}-${item.label}`}
                 href={item.href}
                 className={`rounded-full px-4 py-2 transition ${
-                  isActive(item)
-                    ? "bg-[#F7F2EC] text-[#2C160F]"
-                    : "text-[#F7F2EC]/72 hover:bg-white/10 hover:text-white"
+                  isActive(item) ? navActiveClass : navMutedClass
                 }`}
               >
                 {item.label}
@@ -229,7 +268,9 @@ export default function Navbar() {
                   setIsProfileOpen(false);
                   setIsNotificationsOpen(false);
                 }}
-                className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 text-sm font-bold transition hover:bg-white/14"
+                className={`flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-bold transition ${
+                  isLightSurface ? "border-[#2C160F]/12 bg-[#2C160F]/6 hover:bg-[#2C160F]/10" : "border-white/15 bg-white/8 hover:bg-white/14"
+                }`}
               >
                 <Globe2 className="h-4 w-4" />
                 {languages.find((lang) => lang.code === locale)?.name}
@@ -297,7 +338,9 @@ export default function Navbar() {
                   setIsLangOpen(false);
                   setIsNotificationsOpen(false);
                 }}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/8 transition hover:bg-white/14"
+                className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
+                  isLightSurface ? "border-[#2C160F]/12 bg-[#2C160F]/6 hover:bg-[#2C160F]/10" : "border-white/25 bg-white/8 hover:bg-white/14"
+                }`}
                 aria-label={isLoggedIn ? t.profile : t.login}
               >
                 {isLoggedIn ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}

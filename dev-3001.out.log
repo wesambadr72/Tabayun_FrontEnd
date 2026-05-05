@@ -4,178 +4,131 @@
 
    ▲ Next.js 15.5.9
    - Local:        http://localhost:3001
-   - Network:      http://192.168.68.55:3001
+   - Network:      http://192.168.68.52:3001
 
  ✓ Starting...
- ✓ Ready in 1899ms
- ✓ Compiled /middleware in 97ms (114 modules)
+ ✓ Ready in 9.8s
+ ✓ Compiled /middleware in 210ms (114 modules)
  ○ Compiling /[locale] ...
- ✓ Compiled /[locale] in 2.1s (796 modules)
- ✓ Compiled in 250ms (322 modules)
- GET /ar 200 in 2912ms
- GET /ar 200 in 81ms
- ✓ Compiled /[locale]/categories in 288ms (783 modules)
- GET /ar/categories 200 in 1060ms
- GET /ar 200 in 236ms
- ○ Compiling /[locale]/auth/login ...
- ✓ Compiled /[locale]/auth/login in 1296ms (820 modules)
- GET /ar/categories 200 in 1433ms
- GET /ar/chat 200 in 2131ms
- GET /ar/auth/login 200 in 1898ms
- GET /ar/search 200 in 2134ms
- GET /ar 200 in 304ms
- GET /favicon.ico 200 in 124ms
- ✓ Compiled in 1115ms (800 modules)
- GET /ar 200 in 183ms
- GET /ar 200 in 186ms
- GET /ar 200 in 279ms
- GET /ar 200 in 131ms
- ✓ Compiled in 251ms (344 modules)
- GET /ar 200 in 59ms
- GET /ar 200 in 59ms
- GET /ar 200 in 75ms
- GET /ar 200 in 81ms
- GET /en 200 in 123ms
- GET /favicon.ico 200 in 140ms
- GET /ar 200 in 34ms
+ ✓ Compiled /[locale] in 3.1s (785 modules)
+ ✓ Compiled in 441ms (326 modules)
+ GET /ar 200 in 4145ms
+ GET /ar 200 in 129ms
+ GET /ar 200 in 86ms
+ GET /ar 200 in 124ms
+ GET /favicon.ico 200 in 132ms
+ GET /ar 200 in 117ms
+ ✓ Compiled in 511ms (785 modules)
+ GET /ar 200 in 142ms
+ GET /ar 200 in 143ms
+ GET /ar 200 in 264ms
+ GET /en 200 in 84ms
+ GET /ar 200 in 120ms
+ GET /favicon.ico 200 in 148ms
+ GET /ar 200 in 123ms
+ GET /favicon.ico 200 in 130ms
+ GET /ar 200 in 122ms
+ GET /favicon.ico 200 in 116ms
+ GET /ar 200 in 157ms
+ GET /favicon.ico 200 in 141ms
+ GET /ar 200 in 150ms
+ GET /favicon.ico 200 in 184ms
+ ✓ Compiled in 486ms (785 modules)
+ ✓ Compiled in 158ms (326 modules)
+ GET /ar 200 in 208ms
+ GET /ar 200 in 210ms
+ GET /ar 200 in 47ms
+ GET /ar 200 in 48ms
+ ✓ Compiled in 635ms (783 modules)
+ GET /ar 200 in 175ms
+ GET /ar 200 in 178ms
+ GET /ar 200 in 297ms
+ GET /ar 200 in 127ms
+ GET /favicon.ico 200 in 132ms
+ GET /ar 200 in 115ms
+ GET /favicon.ico 200 in 116ms
+ GET /ar 200 in 126ms
+ GET /favicon.ico 200 in 129ms
+ GET /ar 200 in 113ms
  GET /favicon.ico 200 in 117ms
- ✓ Compiled /[locale]/auth/login in 229ms (466 modules)
- GET /ar/auth/login 200 in 410ms
- GET /ar 200 in 94ms
- GET /ar 200 in 94ms
- GET /ar/auth/login 200 in 98ms
- GET /favicon.ico 200 in 284ms
- ✓ Compiled in 321ms (344 modules)
- GET /ar 200 in 93ms
- GET /ar 200 in 93ms
- GET /ar/auth/login 200 in 95ms
- ✓ Compiled in 952ms (810 modules)
- GET /ar 200 in 187ms
- GET /ar 200 in 189ms
- GET /ar/auth/login 200 in 190ms
- ✓ Compiled in 264ms (344 modules)
- ✓ Compiled in 184ms (344 modules)
- GET /ar 200 in 153ms
- GET /ar 200 in 153ms
- GET /ar/auth/login 200 in 157ms
- GET /ar 200 in 67ms
- GET /ar 200 in 68ms
- GET /ar/auth/login 200 in 69ms
- ✓ Compiled in 633ms (816 modules)
- GET /ar 200 in 88ms
- GET /ar 200 in 90ms
- GET /ar 200 in 162ms
- GET /ar 200 in 71ms
- GET /ar/auth/login 200 in 25ms
- ✓ Compiled /[locale]/auth/register in 297ms (812 modules)
- GET /ar/auth/register 200 in 811ms
- ✓ Compiled /_not-found in 180ms (817 modules)
- GET /ar/auth/undefined/laws/countries 404 in 285ms
- GET /ar/auth/undefined/laws/countries 404 in 19ms
- GET /ar/auth/login 200 in 26ms
- ✓ Compiled in 433ms (826 modules)
- GET /ar/auth/login 200 in 155ms
- GET /ar 200 in 156ms
- GET /ar/auth/register 200 in 29ms
- ✓ Compiled /_not-found in 174ms (817 modules)
- GET /ar/auth/undefined/laws/countries 404 in 298ms
- GET /ar/auth/undefined/laws/countries 404 in 26ms
- GET /ar/auth/undefined/auth/check-email?email=s%40gmial.com 404 in 32ms
- GET /ar/auth/undefined/auth/check-email?email=s%40gmial.com 404 in 24ms
- GET /ar 200 in 214ms
- GET /favicon.ico 200 in 131ms
- GET /ar 200 in 130ms
- GET /favicon.ico 200 in 126ms
- ✓ Compiled /[locale]/categories in 462ms (486 modules)
- GET /ar/categories 200 in 648ms
- GET /ar/auth/register 200 in 79ms
- GET /ar/categories 200 in 79ms
- GET /favicon.ico 200 in 436ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 588ms (827 modules)
- GET /ar/undefined/laws/categories 404 in 775ms
- GET /ar/undefined/laws/categories 404 in 35ms
- GET /ar/categories 200 in 146ms
- GET /ar/undefined/laws/categories 404 in 171ms
- GET /favicon.ico 200 in 196ms
- ✓ Compiled /[locale]/search in 285ms (493 modules)
- GET /ar/search 200 in 410ms
- GET /ar/auth/register 200 in 67ms
- GET /ar/search 200 in 70ms
- GET /favicon.ico 200 in 229ms
- GET /ar/search 200 in 36ms
- ✓ Compiled /[locale]/chat in 214ms (500 modules)
- GET /ar/chat 200 in 339ms
- GET /ar/auth/register 200 in 62ms
- GET /ar/chat 200 in 66ms
- GET /favicon.ico 200 in 228ms
- GET /favicon.ico 200 in 127ms
- ○ Compiling /[locale]/contact ...
- ✓ Compiled /[locale]/contact in 716ms (852 modules)
- GET /ar/auth/login 200 in 42ms
- GET /ar/contact 200 in 1385ms
- GET /favicon.ico 200 in 256ms
- GET /ar/auth/register 200 in 47ms
- GET /ar/auth/undefined/laws/countries 404 in 165ms
- GET /favicon.ico 200 in 191ms
- GET /ar/auth/undefined/laws/countries 404 in 40ms
- GET /ar/auth/login 200 in 24ms
- ✓ Compiled in 474ms (852 modules)
- GET /ar/auth/login 200 in 122ms
- GET /ar/auth/register 200 in 123ms
- GET /ar/auth/undefined/laws/countries 404 in 75ms
- GET /ar/auth/undefined/laws/countries 404 in 20ms
- GET /ar/auth/undefined/laws/countries 404 in 26ms
- GET /ar/auth/undefined/laws/countries 404 in 23ms
- GET /ar/categories 200 in 103ms
- GET /ar/undefined/laws/categories 404 in 26ms
- GET /ar 200 in 90ms
- GET /ar 200 in 69ms
- ✓ Compiled /[locale]/contact in 112ms (502 modules)
- GET /ar/contact 200 in 198ms
- GET /ar 200 in 22ms
- GET /ar/contact 200 in 22ms
- GET /ar 200 in 16ms
- GET /favicon.ico 200 in 260ms
- GET /favicon.ico 200 in 121ms
- ✓ Compiled /[locale]/search in 239ms (508 modules)
- GET /ar/search 200 in 506ms
- GET /favicon.ico 200 in 133ms
- GET /ar 200 in 28ms
- GET /favicon.ico 200 in 153ms
- GET /ar/contact 200 in 46ms
- GET /favicon.ico 200 in 120ms
- GET /ar 200 in 28ms
- GET /favicon.ico 200 in 121ms
- GET /en/.well-known/appspecific/com.chrome.devtools.json 404 in 49ms
- GET /ar/auth/login 200 in 94ms
- GET /ar/auth/register 200 in 85ms
- GET /ar/auth/login 200 in 70ms
- GET /ar 200 in 108ms
- GET /ar/auth/register 200 in 90ms
- GET /ar/auth/undefined/laws/countries 404 in 154ms
- GET /ar 200 in 173ms
- ✓ Compiled in 779ms (847 modules)
- GET /ar 200 in 166ms
- GET /ar 200 in 167ms
- GET /ar 200 in 265ms
- GET /ar/auth/login 200 in 115ms
- ✓ Compiled /[locale]/auth/register in 314ms (500 modules)
- GET /ar/auth/register 200 in 590ms
  GET /ar 200 in 121ms
- GET /ar/auth/login 200 in 30ms
- GET /ar/auth/register 200 in 22ms
+ GET /favicon.ico 200 in 133ms
+ GET /ar 200 in 87ms
+ ✓ Compiled /_not-found in 477ms (788 modules)
+ GET /en/.well-known/appspecific/com.chrome.devtools.json 404 in 729ms
+ GET /ar 200 in 76ms
+ GET /ar 200 in 79ms
+ GET /ar 200 in 203ms
+ GET /en/.well-known/appspecific/com.chrome.devtools.json 404 in 58ms
+ GET /favicon.ico 200 in 148ms
+ GET /ar 200 in 140ms
+ GET /favicon.ico 200 in 172ms
+ ○ Compiling /[locale]/contact ...
+ ✓ Compiled /[locale]/contact in 646ms (783 modules)
+ GET /ar/contact 200 in 1274ms
+ GET /favicon.ico 200 in 317ms
+ ○ Compiling /[locale]/auth/login ...
+ ✓ Compiled /[locale]/auth/login in 524ms (802 modules)
+ GET /ar/auth/login 200 in 1144ms
+ GET /favicon.ico 200 in 268ms
+ GET /ar 200 in 39ms
+ GET /favicon.ico 200 in 135ms
+ GET /ar 200 in 121ms
+ GET /ar/contact 200 in 52ms
+ GET /favicon.ico 200 in 104ms
+ GET /ar 200 in 30ms
+ GET /favicon.ico 200 in 110ms
+ GET /ar/auth/login 200 in 35ms
+ GET /favicon.ico 200 in 121ms
+ ○ Compiling /[locale]/auth/register ...
+ ✓ Compiled /[locale]/auth/register in 674ms (813 modules)
+ GET /ar/auth/register 200 in 1232ms
+ GET /favicon.ico 200 in 382ms
  ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 536ms (858 modules)
- GET /ar/auth/undefined/laws/countries 404 in 659ms
- GET /ar/auth/undefined/laws/countries 404 in 75ms
- GET /ar 200 in 112ms
- GET /ar/auth/register 200 in 113ms
- GET /ar/auth/login 200 in 32ms
- GET /ar/auth/register 200 in 22ms
- GET /ar/auth/undefined/laws/countries 404 in 31ms
- GET /ar/auth/undefined/laws/countries 404 in 26ms
- GET /ar/auth/login 200 in 25ms
- GET /ar/auth/register 200 in 24ms
- GET /ar/auth/undefined/laws/countries 404 in 38ms
- GET /ar/auth/undefined/laws/countries 404 in 38ms
+ ✓ Compiled /_not-found in 594ms (818 modules)
+ GET /ar/auth/undefined/laws/countries 404 in 815ms
+ GET /ar/auth/undefined/laws/countries 404 in 45ms
+ ✓ Compiled in 562ms (827 modules)
+ GET /ar 200 in 128ms
+ GET /ar/auth/register 200 in 129ms
+ GET /ar 200 in 178ms
+ GET /ar/auth/login 200 in 44ms
+ GET /favicon.ico 200 in 109ms
+ GET /ar/auth/register 200 in 32ms
+ GET /favicon.ico 200 in 482ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 735ms (832 modules)
+ GET /ar/auth/undefined/laws/countries 404 in 987ms
+ GET /ar/auth/undefined/laws/countries 404 in 99ms
+ GET /ar/auth/register 200 in 145ms
+ GET /ar 200 in 146ms
+ GET /ar 200 in 38ms
+ GET /favicon.ico 200 in 163ms
+ GET /ar 200 in 132ms
+ GET /favicon.ico 200 in 155ms
+ GET /ar 200 in 117ms
+ GET /favicon.ico 200 in 165ms
+ GET /ar 200 in 147ms
+ GET /ar 200 in 151ms
+ GET /favicon.ico 200 in 167ms
+ GET /en 200 in 25ms
+ GET /en 200 in 21ms
+ GET /ar 200 in 23ms
+ GET /ar/contact 200 in 41ms
+ GET /ar 200 in 19ms
+ GET /ar/contact 200 in 22ms
+ GET /ar 200 in 20ms
+ ✓ Compiled in 477ms (827 modules)
+ ✓ Compiled in 125ms (342 modules)
+ GET /ar 200 in 153ms
+ GET /ar 200 in 152ms
+ GET /ar 200 in 27ms
+ GET /ar 200 in 28ms
+ GET /ar 200 in 260ms
+ GET /favicon.ico 200 in 110ms
+ GET /ar/auth/login 200 in 45ms
+ GET /favicon.ico 200 in 114ms
+ GET /ar/auth/login 200 in 89ms
+ GET /favicon.ico 200 in 127ms
+ GET /ar/auth/login 200 in 78ms
+ GET /favicon.ico 200 in 128ms

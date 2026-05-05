@@ -12,6 +12,7 @@ import {
   Scale,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { kashidaTitle } from "@/lib/typography";
 
 type Locale = "ar" | "en" | string;
 
@@ -42,11 +43,11 @@ export function BrandMark({
       {!compact && (
         <span
           className={cn(
-            "text-2xl font-black leading-none",
+            "tabayun-display text-2xl font-black leading-none",
             inverted ? "text-tabayun-paper" : "text-tabayun-coffee"
           )}
         >
-          {isAr ? "تباين" : "Tabayun"}
+          {isAr ? "تبايــن" : "Tabayun"}
         </span>
       )}
     </div>
@@ -103,8 +104,8 @@ export function SectionHeader({
           {eyebrow}
         </div>
       )}
-      <h1 className="text-balance text-4xl font-black leading-tight text-tabayun-coffee md:text-6xl">
-        {title}
+      <h1 className="tabayun-display text-balance text-4xl font-black leading-tight text-tabayun-coffee md:text-6xl">
+        {typeof title === "string" ? kashidaTitle(title) : title}
       </h1>
       {description && (
         <p className="mx-auto max-w-2xl text-base font-semibold leading-relaxed text-tabayun-coffee/62 md:text-xl">

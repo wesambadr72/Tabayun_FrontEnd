@@ -23,8 +23,11 @@ const config: Config = {
         },
       },
       fontFamily: {
-        bold: ["var(--font-handicrafts-bold)", "sans-serif"],
-        regular: ["var(--font-handicrafts-regular)", "sans-serif"],
+        display: ["var(--font-thmanyah-display)", "serif"],
+        title: ["var(--font-thmanyah-title)", "serif"],
+        body: ["var(--font-thmanyah-body)", "sans-serif"],
+        bold: ["var(--font-thmanyah-display)", "serif"],
+        regular: ["var(--font-thmanyah-body)", "sans-serif"],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

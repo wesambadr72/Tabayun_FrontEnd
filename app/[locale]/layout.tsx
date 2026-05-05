@@ -2,15 +2,25 @@ import localFont from "next/font/local";
 import "../globals.css";
 import { getDirection } from "@/lib/dictionary";
 
-// تعريف الخطوط المخصصة - تم تصحيح المسار هنا
-const handicraftsBold = localFont({
-  src: "../../public/fonts/Handicrafts-Bold.otf",
-  variable: "--font-handicrafts-bold",
+const thmanyahDisplay = localFont({
+  src: "../../public/fonts/thmanyahserifdisplay-Black.woff2",
+  variable: "--font-thmanyah-display",
+  weight: "900",
+  display: "swap",
 });
 
-const handicraftsRegular = localFont({
-  src: "../../public/fonts/Handicrafts-Regular.otf",
-  variable: "--font-handicrafts-regular",
+const thmanyahTitle = localFont({
+  src: "../../public/fonts/thmanyahseriftext-Medium.woff2",
+  variable: "--font-thmanyah-title",
+  weight: "500",
+  display: "swap",
+});
+
+const thmanyahBody = localFont({
+  src: "../../public/fonts/thmanyahsans-Regular.woff2",
+  variable: "--font-thmanyah-body",
+  weight: "400",
+  display: "swap",
 });
 
 export default async function LocaleLayout({
@@ -24,8 +34,12 @@ export default async function LocaleLayout({
   const dir = getDirection(locale);
 
   return (
-    <html lang={locale} dir={dir} className={`${handicraftsBold.variable} ${handicraftsRegular.variable}`}>
-      <body className="font-regular antialiased text-[#2C160F]" suppressHydrationWarning>{children}</body>
+    <html
+      lang={locale}
+      dir={dir}
+      className={`${thmanyahDisplay.variable} ${thmanyahTitle.variable} ${thmanyahBody.variable}`}
+    >
+      <body className="font-body antialiased text-[#2C160F]" suppressHydrationWarning>{children}</body>
     </html>
   );
 }
