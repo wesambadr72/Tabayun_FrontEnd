@@ -50,6 +50,7 @@ export default function AccessibilityControls({ locale }: { locale: "ar" | "en" 
   const [fontScale, setFontScale] = useState<FontScale>("normal");
   const [colorMode, setColorMode] = useState<ColorMode>("default");
   const t = labels[locale];
+  const isRtl = locale === "ar";
 
   useEffect(() => {
     const savedFont = (localStorage.getItem("tabayun-font-scale") as FontScale | null) || "normal";
@@ -147,7 +148,7 @@ export default function AccessibilityControls({ locale }: { locale: "ar" | "en" 
                     <div 
                       className="absolute h-6 w-6 bg-[#2C160F] rounded-full border-4 border-[#F7F2EC] shadow-lg transition-all duration-200 pointer-events-none"
                       style={{ 
-                        left: `calc(${((["normal", "large", "xlarge"] as FontScale[]).indexOf(fontScale) / 2) * 100}% - 12px)` 
+                        [isRtl ? 'right' : 'left']: `calc(${((["normal", "large", "xlarge"] as FontScale[]).indexOf(fontScale) / 2) * 100}% - 12px)` 
                       }}
                     />
                   </div>
