@@ -197,8 +197,8 @@ export default function Navbar() {
 
   const isLightSurface = navSurface === "light";
   const navShellClass = isLightSurface
-    ? "border-white/80 bg-[#F7F2EC]/94 text-[#2C160F] shadow-[0_18px_50px_rgba(44,22,15,0.12)]"
-    : "border-[#F7F2EC]/20 bg-[#2C160F]/96 text-[#F7F2EC] shadow-[0_22px_60px_rgba(0,0,0,0.34)] ring-1 ring-black/20";
+    ? "border-white/40 bg-white/45 text-[#2C160F] shadow-[0_8px_32px_rgba(44,22,15,0.08)] backdrop-blur-[18px]"
+    : "border-white/10 bg-[rgba(32,11,5,0.45)] text-[#F7F2EC] shadow-[0_12px_40px_rgba(0,0,0,0.25)] backdrop-blur-[18px]";
   const navMutedClass = isLightSurface ? "text-[#2C160F]/72 hover:bg-[#2C160F]/8 hover:text-[#2C160F]" : "text-[#F7F2EC]/86 hover:bg-white/10 hover:text-white";
   const navActiveClass = isLightSurface ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-[#F7F2EC] text-[#2C160F]";
   const iconPillClass = isLightSurface ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-[#F7F2EC] text-[#2C160F]";
