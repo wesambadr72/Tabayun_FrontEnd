@@ -81,7 +81,6 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
 }
 
 button,
@@ -95,6 +94,7 @@ h1,
 .tabayun-display,
 .tabayun-hero-word {
   font-family: var(--font-thmanyah-display), serif;
+  letter-spacing: 0 !important;
 }
 
 h2,
