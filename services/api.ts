@@ -46,6 +46,13 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
+  patch: <T>(endpoint: string, body: any, options?: RequestInit) =>
+    fetcher<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    }),
+
   delete: <T>(endpoint: string, options?: RequestInit) =>
     fetcher<T>(endpoint, { ...options, method: 'DELETE' }),
 };

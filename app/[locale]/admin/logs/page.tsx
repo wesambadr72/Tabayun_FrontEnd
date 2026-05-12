@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState } from "react";
+import React, { use, useState, useEffect } from "react";
 import {
   History,
   ArrowLeft,
@@ -17,22 +17,13 @@ import {
   PlusCircle,
   Clock,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-
-// Mock Detailed Logs
-const MOCK_LOGS = [
-  { id: 101, actionAr: "تعديل قانون المرور", actionEn: "Edit Traffic Law", category: "laws", admin: "Faisal", email: "faisal@tabayun.sa", time: "2024-04-25 10:15 AM", icon: Edit3, color: "text-blue-500", bg: "bg-blue-50" },
-  { id: 102, actionAr: "إضافة قانون جديد (نظام العمل)", actionEn: "Add New Law (Labor Law)", category: "laws", admin: "Ahmed", email: "ahmed@tabayun.sa", time: "2024-04-25 09:30 AM", icon: PlusCircle, color: "text-green-500", bg: "bg-green-50" },
-  { id: 103, actionAr: "حذف مستخدم (Mohammed Ali)", actionEn: "Delete User (Mohammed Ali)", category: "users", admin: "Sara", email: "sara@tabayun.sa", time: "2024-04-24 04:45 PM", icon: Trash2, color: "text-red-500", bg: "bg-red-50" },
-  { id: 104, actionAr: "إرسال إشعار (تحديث الصيانة)", actionEn: "Send Notification (Maintenance Update)", category: "notifications", admin: "System", email: "system@tabayun.sa", time: "2024-04-24 02:00 PM", icon: Bell, color: "text-purple-500", bg: "bg-purple-50" },
-  { id: 105, actionAr: "تحديث صلاحيات (John Smith) إلى مشرف", actionEn: "Update Permissions (John Smith) to Admin", category: "users", admin: "Faisal", email: "faisal@tabayun.sa", time: "2024-04-24 11:20 AM", icon: ShieldCheck, color: "text-orange-500", bg: "bg-orange-50" },
-  { id: 106, actionAr: "تسجيل دخول للنظام", actionEn: "System Login", category: "system", admin: "Ahmed", email: "ahmed@tabayun.sa", time: "2024-04-24 08:00 AM", icon: UserCog, color: "text-gray-500", bg: "bg-gray-100" },
-  { id: 107, actionAr: "تعديل سياسة الخصوصية", actionEn: "Edit Privacy Policy", category: "laws", admin: "Sara", email: "sara@tabayun.sa", time: "2024-04-23 03:10 PM", icon: Edit3, color: "text-blue-500", bg: "bg-blue-50" },
-  { id: 108, actionAr: "تصدير قاعدة بيانات المستخدمين", actionEn: "Export Users Database", category: "system", admin: "Faisal", email: "faisal@tabayun.sa", time: "2024-04-23 01:45 PM", icon: Download, color: "text-gray-500", bg: "bg-gray-100" },
-];
+import { adminService } from "@/services/adminService";
+import { AdminActivityLog } from "@/types/admin";
 
 export default function SystemLogsPage({
   params,
@@ -43,19 +34,55 @@ export default function SystemLogsPage({
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
 
+  const [logs, setLogs] = useState<AdminActivityLog[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  const filteredLogs = MOCK_LOGS.filter(log => {
-    const matchesSearch = log.actionAr.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.actionEn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.admin.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        setLoading(true);
+        const data = await adminService.getActivityLogs();
+        setLogs(data);
+      } catch (err) {
+        console.error("Failed to fetch logs", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogs();
+  }, []);
 
-    const matchesCategory = selectedCategory === "all" || log.category === selectedCategory;
-
+  const filteredLogs = logs.filter(log => {
+    const matchesSearch = (log.action || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || log.target_type === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const getLogMeta = (action: string) => {
+    let Icon = History;
+    let bg = "bg-gray-50";
+    let text = "text-gray-500";
+
+    if (action.includes("law")) Icon = Gavel;
+    else if (action.includes("user")) Icon = UserCog;
+    else if (action.includes("notification")) Icon = Bell;
+
+    if (action.includes("delete")) {
+      bg = "bg-red-50";
+      text = "text-red-500";
+    } else if (action.includes("add") || action.includes("create")) {
+      bg = "bg-green-50";
+      text = "text-green-500";
+    } else if (action.includes("update") || action.includes("edit")) {
+      bg = "bg-blue-50";
+      text = "text-blue-500";
+    }
+
+    return { Icon, bg, text };
+  };
 
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
@@ -161,51 +188,55 @@ export default function SystemLogsPage({
 
             {/* Logs List */}
             <div className="divide-y divide-[#2C160F]/5">
-              {filteredLogs.length > 0 ? (
-                filteredLogs.map((log) => (
-                  <div key={log.id} className="p-4 sm:p-6 hover:bg-[#f5f1eb]/30 transition-colors flex flex-col md:flex-row md:items-center gap-4 sm:gap-6 group">
+              {loading ? (
+                <div className="py-20 text-center">
+                  <Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" />
+                </div>
+              ) : filteredLogs.length > 0 ? (
+                filteredLogs.map((log) => {
+                  const { Icon, bg, text } = getLogMeta(log.action);
+                  return (
+                    <div key={log.id} className="p-4 sm:p-6 hover:bg-[#f5f1eb]/30 transition-colors flex flex-col md:flex-row md:items-center gap-4 sm:gap-6 group">
+                      {/* Icon */}
+                      <div className={`w-12 h-12 rounded-2xl ${bg} ${text} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
 
-                    {/* Icon */}
-                    <div className={`w-12 h-12 rounded-2xl ${log.bg} ${log.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm`}>
-                      <log.icon className="w-5 h-5" />
-                    </div>
-
-                    {/* Action Details */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-black text-[#2C160F] mb-1 truncate">
-                        {isAr ? log.actionAr : log.actionEn}
-                      </h3>
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-[#2C160F] text-white flex items-center justify-center text-[10px] font-bold">
-                            {log.admin.charAt(0)}
+                      {/* Action Details */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-black text-[#2C160F] mb-1 truncate">
+                          {log.action}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-[#2C160F] text-white flex items-center justify-center text-[10px] font-bold">
+                              A
+                            </div>
+                            <div>
+                              <span className="font-bold text-[#2C160F]/80">Admin #{log.admin_id}</span>
+                            </div>
                           </div>
-                          <div>
-                            <span className="font-bold text-[#2C160F]/80">@{log.admin}</span>
-                            <span className="text-[#2C160F]/40 text-xs ml-2 hidden sm:inline-block">({log.email})</span>
-                          </div>
-                        </div>
 
-                        <div className="flex items-center gap-1.5 text-[#2C160F]/50 font-bold text-xs bg-[#f5f1eb] px-3 py-1 rounded-lg">
-                          <Clock className="w-3.5 h-3.5" />
-                          {log.time}
+                          <div className="flex items-center gap-1.5 text-[#2C160F]/50 font-bold text-xs bg-[#f5f1eb] px-3 py-1 rounded-lg">
+                            <Clock className="w-3.5 h-3.5" />
+                            {new Date(log.created_at).toLocaleString(locale === 'ar' ? 'ar-SA' : 'en-US')}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Status / Category */}
-                    <div className="shrink-0 flex items-center justify-between md:justify-end gap-4 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#2C160F]/5">
-                      <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${log.bg} ${log.color}`}>
-                        {log.category}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-black">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                        {isAr ? "مكتمل" : "Success"}
-                      </span>
+                      {/* Status / Category */}
+                      <div className="shrink-0 flex items-center justify-between md:justify-end gap-4 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#2C160F]/5">
+                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${bg} ${text}`}>
+                          {log.target_type}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-black">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                          {isAr ? "مكتمل" : "Success"}
+                        </span>
+                      </div>
                     </div>
-
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="py-16 text-center text-[#2C160F]/40">
                   <History className="w-16 h-16 mx-auto mb-4 opacity-20" />

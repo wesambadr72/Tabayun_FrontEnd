@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState } from "react";
+import React, { use, useState, useEffect } from "react";
 import {
   Bell,
   ArrowLeft,
@@ -11,18 +11,11 @@ import {
   AlertCircle,
   X,
   Mail,
-  Clock
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-
-// Mock Log Data
-const MOCK_LOGS = [
-  { id: 1, titleAr: "تحديث شروط الاستخدام", titleEn: "Terms of Use Update", target: "all", date: "2024-04-20 10:30 AM", sentBy: "Faisal", status: "success" },
-  { id: 2, titleAr: "صيانة مجدولة للنظام", titleEn: "Scheduled System Maintenance", target: "users", date: "2024-04-18 02:15 PM", sentBy: "System", status: "success" },
-  { id: 3, titleAr: "اجتماع طارئ للمشرفين", titleEn: "Urgent Admin Meeting", target: "admins", date: "2024-04-15 09:00 AM", sentBy: "Ahmed", status: "success" },
-  { id: 4, titleAr: "إضافة قوانين مرورية جديدة", titleEn: "New Traffic Laws Added", target: "all", date: "2024-04-10 11:45 AM", sentBy: "Sara", status: "success" },
-];
+import { adminService } from "@/services/adminService";
 
 export default function NotificationsAdminPage({
   params,
@@ -37,15 +30,22 @@ export default function NotificationsAdminPage({
   const [formData, setFormData] = useState({
     title: "",
     message: "",
-    target: "all"
+    target: "all",
+    target_user_id: ""
   });
 
-  const [logs, setLogs] = useState(MOCK_LOGS);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(true);
 
   // UI States
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    // We can fetch recent admin logs or notifications here if backend supports it
+    setLoadingLogs(false);
+  }, []);
 
   const isFormValid = formData.title.trim() !== "" && formData.message.trim() !== "";
 
@@ -55,34 +55,32 @@ export default function NotificationsAdminPage({
     }
   };
 
-  const confirmSend = () => {
-    setIsSubmitting(true);
+  const confirmSend = async () => {
+    try {
+      setIsSubmitting(true);
 
-    // Simulate API request
-    setTimeout(() => {
+      const payload = {
+        title: formData.title,
+        content: formData.message,
+        target_user_id: formData.target === "all" ? null : Number(formData.target_user_id)
+      };
+
+      await adminService.sendNotification(payload);
+
       setIsSubmitting(false);
       setShowConfirmModal(false);
       setShowSuccessToast(true);
 
-      // Add to logs
-      const newLog = {
-        id: Date.now(),
-        titleAr: formData.title,
-        titleEn: formData.title, // Just using the same for mock
-        target: formData.target,
-        date: new Date().toLocaleString('en-US', { hour12: true, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
-        sentBy: "Admin",
-        status: "success"
-      };
-
-      setLogs([newLog, ...logs]);
-
       // Reset form
-      setFormData({ title: "", message: "", target: "all" });
+      setFormData({ title: "", message: "", target: "all", target_user_id: "" });
 
       // Hide toast after 3s
       setTimeout(() => setShowSuccessToast(false), 3000);
-    }, 1500);
+    } catch (err) {
+      console.error("Failed to send notification", err);
+      alert(isAr ? "فشل إرسال الإشعار" : "Failed to send notification");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -138,7 +136,7 @@ export default function NotificationsAdminPage({
                     <label className="block text-sm font-bold text-[#2C160F] mb-2">
                       {isAr ? "الجمهور المستهدف" : "Target Audience"}
                     </label>
-                    <div className="relative">
+                    <div className="relative mb-4">
                       <Users className={`w-4 h-4 text-[#2C160F]/40 absolute top-1/2 -translate-y-1/2 pointer-events-none ${isAr ? 'right-4' : 'left-4'}`} />
                       <select
                         value={formData.target}
@@ -146,10 +144,21 @@ export default function NotificationsAdminPage({
                         className={`w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#2C160F]/20 rounded-xl py-3 ${isAr ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-sm text-[#2C160F] outline-none appearance-none cursor-pointer font-bold`}
                       >
                         <option value="all">{isAr ? "جميع المستخدمين" : "All Users"}</option>
-                        <option value="users">{isAr ? "المستخدمين العاديين فقط" : "Regular Users Only"}</option>
-                        <option value="admins">{isAr ? "المشرفين (Admins) فقط" : "Admins Only"}</option>
+                        <option value="specific">{isAr ? "مستخدم محدد (User ID)" : "Specific User (ID)"}</option>
                       </select>
                     </div>
+
+                    {formData.target === "specific" && (
+                      <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                        <input
+                          type="number"
+                          placeholder={isAr ? "أدخل ID المستخدم..." : "Enter User ID..."}
+                          value={formData.target_user_id}
+                          onChange={(e) => setFormData({ ...formData, target_user_id: e.target.value })}
+                          className="w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#2C160F]/20 rounded-xl py-3 px-4 text-sm text-[#2C160F] outline-none transition-all font-bold"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div>

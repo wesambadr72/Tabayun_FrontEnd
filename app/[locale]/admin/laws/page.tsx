@@ -10,19 +10,14 @@ import {
   ArrowRight,
   FileText,
   AlertTriangle,
-  X
+  X,
+  Loader2,
+  Globe
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-
-// Initial Mock data
-const MOCK_LAWS = [
-  { id: 1, titleAr: "قانون العمل", titleEn: "Labor Law", categoryAr: "عمالي", categoryEn: "Labor", date: "2024-01-15", status: "active" },
-  { id: 2, titleAr: "نظام المرور", titleEn: "Traffic Law", categoryAr: "مروري", categoryEn: "Traffic", date: "2023-11-20", status: "active" },
-  { id: 3, titleAr: "نظام الشركات", titleEn: "Companies Law", categoryAr: "تجاري", categoryEn: "Commercial", date: "2024-02-05", status: "draft" },
-  { id: 4, titleAr: "نظام المعاملات المدنية", titleEn: "Civil Transactions Law", categoryAr: "مدني", categoryEn: "Civil", date: "2023-06-18", status: "active" },
-  { id: 5, titleAr: "نظام حماية البيانات الشخصية", titleEn: "Personal Data Protection Law", categoryAr: "تقني", categoryEn: "Technology", date: "2024-03-10", status: "active" },
-];
+import { adminService } from "@/services/adminService";
+import { Law } from "@/types/law";
 
 export default function AdminLawsPage({
   params,
@@ -33,67 +28,71 @@ export default function AdminLawsPage({
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
 
-  const [laws, setLaws] = useState<any[]>([]);
-  const [isClient, setIsClient] = useState(false);
+  const [laws, setLaws] = useState<Law[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [skip, setSkip] = useState(0);
+  const limit = 25; // Updated to 25 per page as requested
+
+  const [totalCount, setTotalCount] = useState(0); // For pagination UI
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [lawToDelete, setLawToDelete] = useState<any>(null);
+  const [lawToDelete, setLawToDelete] = useState<Law | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Load laws from localStorage
-  useEffect(() => {
-    setIsClient(true);
-    const saved = localStorage.getItem('tabayun_laws');
-    if (saved) {
-      let parsedLaws = JSON.parse(saved);
-      // Migrate any existing 'review' statuses to 'active'
-      let migrated = false;
-      parsedLaws = parsedLaws.map((l: any) => {
-        if (l.status === 'review') {
-          migrated = true;
-          return { ...l, status: 'active' };
-        }
-        return l;
-      });
-      if (migrated) {
-        localStorage.setItem('tabayun_laws', JSON.stringify(parsedLaws));
-      }
-      setLaws(parsedLaws);
-    } else {
-      setLaws(MOCK_LAWS);
-      localStorage.setItem('tabayun_laws', JSON.stringify(MOCK_LAWS));
-    }
-  }, []);
-
-  // Filter logic
-  const filteredLaws = laws.filter(law => {
-    const matchesSearch = isAr 
-      ? law.titleAr.includes(searchTerm) || law.categoryAr.includes(searchTerm)
-      : law.titleEn.toLowerCase().includes(searchTerm.toLowerCase()) || law.categoryEn.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = filterCategory === "all" || law.categoryEn.toLowerCase() === filterCategory.toLowerCase();
-
-    return matchesSearch && matchesCategory;
-  });
-
-  const handleDeleteClick = (law: any) => {
+  const handleDeleteClick = (law: Law) => {
     setLawToDelete(law);
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = () => {
-    if (lawToDelete) {
-      const updatedLaws = laws.filter(l => l.id !== lawToDelete.id);
-      setLaws(updatedLaws);
-      localStorage.setItem('tabayun_laws', JSON.stringify(updatedLaws));
-      setShowDeleteModal(false);
-      setLawToDelete(null);
+  const fetchLaws = async () => {
+    try {
+      setLoading(true);
+      const [lawsData, statsData] = await Promise.all([
+        adminService.getLaws(skip, limit, searchTerm),
+        adminService.getStats()
+      ]);
+      setLaws(lawsData);
+      setTotalCount(statsData.total_laws);
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch laws");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!isClient) return null; // Prevent hydration mismatch
+  const totalPages = Math.ceil(totalCount / limit);
+  const currentPage = Math.floor(skip / limit) + 1;
+
+  const goToPage = (page: number) => {
+    setSkip((page - 1) * limit);
+  };
+
+  useEffect(() => {
+    setSkip(0); // Reset pagination when searching
+  }, [searchTerm, filterCategory]);
+
+  useEffect(() => {
+    fetchLaws();
+  }, [skip, searchTerm]);
+
+  const confirmDelete = async () => {
+    if (!lawToDelete) return;
+    try {
+      setIsDeleting(true);
+      await adminService.deleteLaw(lawToDelete.id);
+      setLaws(laws.filter(l => l.id !== lawToDelete.id));
+      setShowDeleteModal(false);
+      setLawToDelete(null);
+    } catch (err: any) {
+      alert(isAr ? "فشل حذف القانون" : "Failed to delete law");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
@@ -169,8 +168,14 @@ export default function AdminLawsPage({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2C160F]/5">
-                  {filteredLaws.length > 0 ? (
-                    filteredLaws.map((law) => (
+                  {loading ? (
+                    <tr>
+                      <td colSpan={5} className="p-12 text-center">
+                        <Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" />
+                      </td>
+                    </tr>
+                  ) : laws.length > 0 ? (
+                    laws.map((law) => (
                       <tr key={law.id} className="hover:bg-[#f5f1eb]/20 transition-colors group">
                         <td className="p-4 sm:p-6">
                           <div className="flex items-center gap-3">
@@ -178,32 +183,25 @@ export default function AdminLawsPage({
                               <FileText className="w-5 h-5" />
                             </div>
                             <div>
-                              <p className="font-bold text-[#2C160F]">{isAr ? law.titleAr : law.titleEn}</p>
+                              <p className="font-bold text-[#2C160F]">{law.title}</p>
                               <p className="text-xs text-[#2C160F]/40 font-medium">ID: #{law.id}</p>
                             </div>
                           </div>
                         </td>
                         <td className="p-4 sm:p-6">
-                          <span className="inline-flex items-center bg-[#f5f1eb] text-[#2C160F]/60 px-3 py-1 rounded-full text-xs font-bold">
-                            {isAr ? law.categoryAr : law.categoryEn}
+                          <span className="inline-flex items-center gap-2 bg-[#f5f1eb] text-[#2C160F]/60 px-3 py-1 rounded-full text-xs font-bold">
+                            <Globe className="w-3 h-3" />
+                            {law.country}
                           </span>
                         </td>
                         <td className="p-4 sm:p-6 text-[#2C160F]/60 font-medium text-sm">
-                          {law.date}
+                          {law.article_number || "-"}
                         </td>
                         <td className="p-4 sm:p-6">
-                          {law.status === 'active' && (
-                            <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-600 px-3 py-1.5 rounded-full text-xs font-bold">
-                              <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>
-                              {isAr ? "نشط" : "Active"}
-                            </span>
-                          )}
-                          {law.status === 'draft' && (
-                            <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-600 px-3 py-1.5 rounded-full text-xs font-bold">
-                              <span className="w-1.5 h-1.5 rounded-full bg-orange-600"></span>
-                              {isAr ? "مسودة" : "Draft"}
-                            </span>
-                          )}
+                          <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-600 px-3 py-1.5 rounded-full text-xs font-bold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                            {isAr ? "نشط" : "Active"}
+                          </span>
                         </td>
                         <td className="p-4 sm:p-6">
                           <div className={`flex items-center gap-2 ${isAr ? 'justify-end' : 'justify-end'}`}>
@@ -236,6 +234,65 @@ export default function AdminLawsPage({
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            <div className="p-4 sm:p-6 bg-[#f5f1eb]/30 border-t border-[#2C160F]/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs font-bold text-[#2C160F]/40 uppercase tracking-widest">
+                {isAr 
+                  ? `عرض ${laws.length} من أصل ${totalCount} قانون` 
+                  : `Showing ${laws.length} of ${totalCount} laws`}
+              </p>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1 || loading}
+                  className="p-2 rounded-xl bg-white border border-[#2C160F]/10 text-[#2C160F] hover:bg-[#2C160F] hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-[#2C160F]"
+                >
+                  {isAr ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
+                </button>
+
+                <div className="flex items-center gap-1 overflow-x-auto max-w-[200px] sm:max-w-none px-2 py-1 no-scrollbar">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (totalPages <= 5) pageNum = i + 1;
+                    else if (currentPage <= 3) pageNum = i + 1;
+                    else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                    else pageNum = currentPage - 2 + i;
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => goToPage(pageNum)}
+                        className={`min-w-[40px] h-10 rounded-xl font-black text-sm transition-all border ${
+                          currentPage === pageNum
+                            ? "bg-[#2C160F] text-white border-[#2C160F] shadow-lg scale-110 z-10"
+                            : "bg-white text-[#2C160F] border-[#2C160F]/10 hover:border-[#2C160F]/30 hover:scale-105"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages || loading}
+                  className="p-2 rounded-xl bg-white border border-[#2C160F]/10 text-[#2C160F] hover:bg-[#2C160F] hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-[#2C160F]"
+                >
+                  {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                </button>
+              </div>
+
+              {totalPages > 5 && (
+                <div className="hidden lg:block">
+                  <p className="text-[10px] font-black text-[#2C160F]/30 uppercase tracking-tighter">
+                    {isAr ? `صفحة ${currentPage} من ${totalPages}` : `Page ${currentPage} of ${totalPages}`}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -258,8 +315,8 @@ export default function AdminLawsPage({
             
             <p className="text-[#2C160F]/60 font-medium mb-6 leading-relaxed">
               {isAr 
-                ? `هل أنت متأكد من رغبتك في حذف "${lawToDelete.titleAr}"؟ لا يمكن التراجع عن هذا الإجراء.` 
-                : `Are you sure you want to delete "${lawToDelete.titleEn}"? This action cannot be undone.`
+                ? `هل أنت متأكد من رغبتك في حذف "${lawToDelete.title}"؟ لا يمكن التراجع عن هذا الإجراء.` 
+                : `Are you sure you want to delete "${lawToDelete.title}"? This action cannot be undone.`
               }
             </p>
             
@@ -280,6 +337,16 @@ export default function AdminLawsPage({
           </div>
         </div>
       )}
+
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </main>
   );
 }

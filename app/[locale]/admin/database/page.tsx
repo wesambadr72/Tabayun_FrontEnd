@@ -19,51 +19,14 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
-  Check
+  Check,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
-// Mock Data
-const STATS_DATA = {
-  "6months": [
-    { label: "Jan", arLabel: "يناير", users: 120 },
-    { label: "Feb", arLabel: "فبراير", users: 250 },
-    { label: "Mar", arLabel: "مارس", users: 400 },
-    { label: "Apr", arLabel: "أبريل", users: 380 },
-    { label: "May", arLabel: "مايو", users: 500 },
-    { label: "Jun", arLabel: "يونيو", users: 700 },
-  ],
-  "1year": [
-    { label: "Jul", arLabel: "يوليو", users: 80 },
-    { label: "Aug", arLabel: "أغسطس", users: 150 },
-    { label: "Sep", arLabel: "سبتمبر", users: 200 },
-    { label: "Oct", arLabel: "أكتوبر", users: 250 },
-    { label: "Nov", arLabel: "نوفمبر", users: 300 },
-    { label: "Dec", arLabel: "ديسمبر", users: 350 },
-    { label: "Jan", arLabel: "يناير", users: 420 },
-    { label: "Feb", arLabel: "فبراير", users: 480 },
-    { label: "Mar", arLabel: "مارس", users: 550 },
-    { label: "Apr", arLabel: "أبريل", users: 600 },
-    { label: "May", arLabel: "مايو", users: 750 },
-    { label: "Jun", arLabel: "يونيو", users: 900 },
-  ],
-  "allTime": [
-    { label: "2024", arLabel: "2024", users: 1200 },
-    { label: "2025", arLabel: "2025", users: 3500 },
-    { label: "2026", arLabel: "2026", users: 8400 },
-    { label: "2027", arLabel: "2027", users: 15200 },
-  ]
-};
-
-const MOCK_USERS = [
-  { id: 1, name: "أحمد عبدالله", email: "ahmed@example.com", nationalityAr: "سعودي", nationalityEn: "Saudi", role: "user", joinDate: "2026-01-10", active: true },
-  { id: 2, name: "John Smith", email: "john@example.com", nationalityAr: "أمريكي", nationalityEn: "American", role: "user", joinDate: "2026-02-15", active: true },
-  { id: 3, name: "سارة محمد", email: "sara@example.com", nationalityAr: "مصري", nationalityEn: "Egyptian", role: "admin", joinDate: "2027-11-05", active: true },
-  { id: 4, name: "Arjun Kumar", email: "arjun@example.com", nationalityAr: "هندي", nationalityEn: "Indian", role: "user", joinDate: "2028-03-20", active: false },
-  { id: 5, name: "Oliver Brown", email: "oliver@example.com", nationalityAr: "بريطاني", nationalityEn: "British", role: "user", joinDate: "2026-04-02", active: true },
-  { id: 6, name: "Pierre Dubois", email: "pierre@example.com", nationalityAr: "فرنسي", nationalityEn: "French", role: "admin", joinDate: "2029-05-12", active: true },
-];
+import { adminService } from "@/services/adminService";
+import { AdminStats, UserAdmin } from "@/types/admin";
 
 // Reusable Checkbox Component
 const Checkbox = ({ label, checked, onChange, isAr }: { label: string, checked: boolean, onChange: () => void, isAr: boolean }) => (
@@ -86,12 +49,31 @@ export default function DatabasePage({
   const dir = isAr ? "rtl" : "ltr";
 
   // Data States
-  const [users, setUsers] = useState(MOCK_USERS);
+  const [users, setUsers] = useState<UserAdmin[]>([]);
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [loading, setLoading] = useState(true);
   const [statsPeriod, setStatsPeriod] = useState<"6months" | "1year" | "allTime">("6months");
-
-  // UI States
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [statsData, usersData] = await Promise.all([
+          adminService.getStats(),
+          adminService.getUsers(0, 100)
+        ]);
+        setStats(statsData);
+        setUsers(usersData);
+      } catch (err) {
+        console.error("Failed to fetch database stats", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Draft Filter States (Before clicking Apply)
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -108,16 +90,23 @@ export default function DatabasePage({
   const [appliedMaxYear, setAppliedMaxYear] = useState<number>(2100);
 
   // Unique lists for dynamic filters
-  const uniqueNationalities = Array.from(new Set(MOCK_USERS.map(u => isAr ? u.nationalityAr : u.nationalityEn)));
+  const uniqueNationalities = Array.from(new Set(users.map(u => u.country)));
 
   // Modal states
-  const [actionUser, setActionUser] = useState<typeof MOCK_USERS[0] | null>(null);
+  const [actionUser, setActionUser] = useState<UserAdmin | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Stats calculation based on selected period
-  const currentStats = STATS_DATA[statsPeriod];
-  const maxUsers = Math.max(...currentStats.map(s => s.users));
+  // For now, we'll use a simplified version since we don't have historical data in AdminStats
+  const currentStats = [
+    { label: "Laws", arLabel: "القوانين", users: stats?.total_laws || 0 },
+    { label: "Users", arLabel: "المستخدمين", users: stats?.total_users || 0 },
+    { label: "Categories", arLabel: "التصنيفات", users: stats?.total_categories || 0 },
+  ];
+
+  const maxUsers = Math.max(...currentStats.map(s => s.users), 1);
 
   const toggleSelection = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => {
     setter(prev => prev.includes(value) ? prev.filter(item => item !== value) : [...prev, value]);
@@ -149,16 +138,14 @@ export default function DatabasePage({
   const filteredUsers = users.filter(u => {
     const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.nationalityAr.includes(searchTerm) ||
-      u.nationalityEn.toLowerCase().includes(searchTerm.toLowerCase());
+      u.country.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = appliedRoles.length === 0 || appliedRoles.includes(u.role);
-    const matchesStatus = appliedStatuses.length === 0 || appliedStatuses.includes(u.active ? 'active' : 'inactive');
+    const matchesStatus = appliedStatuses.length === 0 || appliedStatuses.includes(u.is_active ? 'active' : 'inactive');
 
-    const uNationality = isAr ? u.nationalityAr : u.nationalityEn;
-    const matchesNationality = appliedNationalities.length === 0 || appliedNationalities.includes(uNationality);
+    const matchesNationality = appliedNationalities.length === 0 || appliedNationalities.includes(u.country);
 
-    const uYear = Number(u.joinDate.split("-")[0]);
+    const uYear = Number(new Date(u.created_at).getFullYear());
     const matchesYear = uYear >= appliedMinYear && uYear <= appliedMaxYear;
 
     return matchesSearch && matchesRole && matchesStatus && matchesNationality && matchesYear;
@@ -166,23 +153,39 @@ export default function DatabasePage({
 
   const activeFiltersCount = appliedRoles.length + appliedStatuses.length + appliedNationalities.length + (appliedMinYear > 2026 || appliedMaxYear < 2100 ? 1 : 0);
 
-  const handleDeleteConfirm = () => {
-    if (actionUser) {
+  const handleDeleteConfirm = async () => {
+    if (!actionUser) return;
+    try {
+      setIsProcessing(true);
+      await adminService.deleteUser(actionUser.id);
       setUsers(users.filter(u => u.id !== actionUser.id));
       setShowDeleteModal(false);
       setActionUser(null);
+    } catch (err) {
+      alert(isAr ? "فشل حذف المستخدم" : "Failed to delete user");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleRoleConfirm = () => {
-    if (actionUser) {
+  const handleRoleConfirm = async () => {
+    if (!actionUser) return;
+    try {
+      setIsProcessing(true);
+      const newRole = actionUser.role === 'admin' ? 'user' : 'admin';
+      await adminService.updateUserRole(actionUser.id, newRole);
       setUsers(users.map(u =>
         u.id === actionUser.id
-          ? { ...u, role: u.role === 'admin' ? 'user' : 'admin' }
+          ? { ...u, role: newRole }
           : u
       ));
       setShowRoleModal(false);
       setActionUser(null);
+    } catch (err) {
+      console.error("Failed to update role", err);
+      alert(isAr ? "فشل تحديث الصلاحية" : "Failed to update role");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -460,12 +463,12 @@ export default function DatabasePage({
                           <div className="flex items-center gap-3">
                             <div className="relative">
                               <div className="w-10 h-10 rounded-full bg-[#f5f1eb] border-2 border-white shadow-sm flex items-center justify-center text-[#2C160F] font-black text-sm">
-                                {user.name.charAt(0)}
+                                {(user.name || user.username || "?").charAt(0)}
                               </div>
-                              <span className={`absolute bottom-0 ${isAr ? 'left-0' : 'right-0'} w-3 h-3 rounded-full border-2 border-white ${user.active ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                              <span className={`absolute bottom-0 ${isAr ? 'left-0' : 'right-0'} w-3 h-3 rounded-full border-2 border-white ${user.is_active ? 'bg-green-500' : 'bg-red-500'}`}></span>
                             </div>
                             <div>
-                              <p className="font-bold text-[#2C160F]">{user.name}</p>
+                              <p className="font-bold text-[#2C160F]">{user.name || user.username}</p>
                               <p className="text-xs text-[#2C160F]/50 font-medium flex items-center gap-1">
                                 <Mail className="w-3 h-3" /> {user.email}
                               </p>
@@ -473,10 +476,10 @@ export default function DatabasePage({
                           </div>
                         </td>
                         <td className="p-4 sm:p-6">
-                          <div className="flex items-center gap-2">
-                            <Globe2 className="w-4 h-4 text-[#2C160F]/40" />
+                          <div className="flex items-center gap-2 bg-[#f5f1eb] px-3 py-1 rounded-full border border-[#2C160F]/5">
+                            <Globe2 className="w-3.5 h-3.5 text-[#2C160F]/40" />
                             <span className="text-[#2C160F] font-bold text-sm">
-                              {isAr ? user.nationalityAr : user.nationalityEn}
+                              {user.country}
                             </span>
                           </div>
                         </td>
@@ -494,7 +497,7 @@ export default function DatabasePage({
                           )}
                         </td>
                         <td className="p-4 sm:p-6 text-[#2C160F]/60 font-medium text-sm">
-                          {user.joinDate}
+                          {new Date(user.created_at).toLocaleDateString()}
                         </td>
                         <td className="p-4 sm:p-6">
                           <div className={`flex items-center gap-2 ${isAr ? 'justify-end' : 'justify-end'}`}>
@@ -552,21 +555,23 @@ export default function DatabasePage({
 
             <p className="text-[#2C160F]/60 font-medium mb-6 leading-relaxed">
               {isAr
-                ? `هل أنت متأكد من تحويل ${actionUser.name} إلى ${actionUser.role === 'admin' ? 'مستخدم عادي' : 'مشرف (Admin)'}؟`
-                : `Are you sure you want to change ${actionUser.name}'s role to ${actionUser.role === 'admin' ? 'User' : 'Admin'}?`
+                ? `هل أنت متأكد من تحويل ${actionUser.name || actionUser.username} إلى ${actionUser.role === 'admin' ? 'مستخدم عادي' : 'مشرف (Admin)'}؟`
+                : `Are you sure you want to change ${actionUser.name || actionUser.username}'s role to ${actionUser.role === 'admin' ? 'User' : 'Admin'}?`
               }
             </p>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={handleRoleConfirm}
-                className="flex-1 bg-[#2C160F] text-white py-3 rounded-xl font-bold hover:bg-[#2C160F]/90 transition-colors"
+                disabled={isProcessing}
+                className="flex-1 bg-[#2C160F] text-white py-3 rounded-xl font-bold hover:bg-[#2C160F]/90 transition-colors disabled:opacity-50 flex items-center justify-center"
               >
-                {isAr ? "تأكيد" : "Confirm"}
+                {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : (isAr ? "تأكيد" : "Confirm")}
               </button>
               <button
                 onClick={() => setShowRoleModal(false)}
-                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-3 rounded-xl font-bold hover:bg-[#f5f1eb]/80 transition-colors"
+                disabled={isProcessing}
+                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-3 rounded-xl font-bold hover:bg-[#f5f1eb]/80 transition-colors disabled:opacity-50"
               >
                 {isAr ? "إلغاء" : "Cancel"}
               </button>
@@ -593,21 +598,23 @@ export default function DatabasePage({
 
             <p className="text-[#2C160F]/60 font-medium mb-6 leading-relaxed">
               {isAr
-                ? `هل أنت متأكد من رغبتك في حذف المستخدم "${actionUser.name}"؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع بياناته.`
-                : `Are you sure you want to delete user "${actionUser.name}"? This action cannot be undone and all data will be lost.`
+                ? `هل أنت متأكد من رغبتك في حذف المستخدم "${actionUser.name || actionUser.username}"؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع بياناته.`
+                : `Are you sure you want to delete user "${actionUser.name || actionUser.username}"? This action cannot be undone and all data will be lost.`
               }
             </p>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={handleDeleteConfirm}
-                className="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition-colors"
+                disabled={isProcessing}
+                className="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
               >
-                {isAr ? "حذف نهائي" : "Delete Permanently"}
+                {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : (isAr ? "حذف نهائي" : "Delete Permanently")}
               </button>
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-3 rounded-xl font-bold hover:bg-[#f5f1eb]/80 transition-colors"
+                disabled={isProcessing}
+                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-3 rounded-xl font-bold hover:bg-[#f5f1eb]/80 transition-colors disabled:opacity-50"
               >
                 {isAr ? "إلغاء" : "Cancel"}
               </button>

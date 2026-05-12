@@ -1,5 +1,12 @@
 import { api } from './api';
-import { Law, Category, Comparison, ComparisonDetail, Bookmark, SearchResult } from '@/types/law';
+import { 
+  Law, 
+  Category, 
+  Comparison, 
+  ComparisonDetail, 
+  Bookmark, 
+  SearchResult
+} from '@/types/law';
 
 export const lawService = {
   getCategories: () => api.get<Category[]>('/laws/categories'),

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, use } from "react";
+import React, { useState, use, useEffect } from "react";
 import {
   Gavel,
   ArrowRight,
@@ -12,11 +12,15 @@ import {
   Tag,
   BookOpen,
   LayoutGrid,
-  Loader2
+  Loader2,
+  FileText
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { adminService } from "@/services/adminService";
+import { Law } from "@/types/law";
+import { lawService } from "@/services/lawService";
 
 export default function AddLawPage({
   params,
@@ -27,81 +31,84 @@ export default function AddLawPage({
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
 
-  // Form State
+  // Form State matching Law Interface
   const [formData, setFormData] = useState({
-    saudiLaw: "",
-    otherLaw: "",
-    comparativeAnalysis: "",
-    category: "",
+    title: "",
+    simplified_text: "",
+    simplified_description: "",
+    text: "",
+    country: "Saudi Arabia",
+    category_id: "",
+    source_url: "",
+    article_number: "",
+    saudi_reference_id: "",
     keywords: "",
   });
 
+  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const categories = [
-    { id: "traffic", name: isAr ? "المرور" : "Traffic" },
-    { id: "labor", name: isAr ? "العمل" : "Labor" },
-    { id: "public_decency", name: isAr ? "الذوق العام" : "Public Decency" },
-    { id: "visa_residency", name: isAr ? "التأشيرات والإقامة" : "Visa & Residency" },
-    { id: "food", name: isAr ? "الأغذية" : "Food" },
+    { id: 1, name: isAr ? "المرور" : "Traffic" },
+    { id: 2, name: isAr ? "العمل" : "Labor" },
+    { id: 3, name: isAr ? "الذوق العام" : "Public Decency" },
+    { id: 4, name: isAr ? "التأشيرات والإقامة" : "Visa & Residency" },
+    { id: 5, name: isAr ? "الأغذية" : "Food" },
   ];
 
   const router = useRouter();
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.saudiLaw) newErrors.saudiLaw = isAr ? "هذا الحقل مطلوب" : "Required field";
-    if (!formData.otherLaw) newErrors.otherLaw = isAr ? "هذا الحقل مطلوب" : "Required field";
-    if (!formData.comparativeAnalysis) newErrors.comparativeAnalysis = isAr ? "هذا الحقل مطلوب" : "Required field";
-    if (!formData.category) newErrors.category = isAr ? "يرجى اختيار تصنيف" : "Please select a category";
+    if (!formData.title) newErrors.title = isAr ? "العنوان مطلوب" : "Title is required";
+    if (!formData.simplified_text) newErrors.simplified_text = isAr ? "النص المبسط مطلوب" : "Simplified text is required";
+    if (!formData.category_id) newErrors.category_id = isAr ? "يرجى اختيار تصنيف" : "Please select a category";
+    if (!formData.country) newErrors.country = isAr ? "الدولة مطلوبة" : "Country is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const saveLaw = (status: 'active' | 'draft') => {
-    if (!validate()) return;
-    setLoading(true);
-
-    setTimeout(() => {
-      // Create a law object matching the structure in laws/page.tsx
-      const cat = categories.find(c => c.id === formData.category);
-      const newLaw = {
-        id: Date.now(),
-        // Just use a snippet of the text as title for the mock
-        titleAr: formData.saudiLaw.substring(0, 30) + (formData.saudiLaw.length > 30 ? '...' : ''),
-        titleEn: formData.saudiLaw.substring(0, 30) + (formData.saudiLaw.length > 30 ? '...' : ''),
-        categoryAr: cat ? (isAr ? cat.name : "Category") : "",
-        categoryEn: cat ? (!isAr ? cat.name : formData.category) : "",
-        date: new Date().toISOString().split('T')[0],
-        status: status
-      };
-
-      const saved = localStorage.getItem('tabayun_laws');
-      const existingLaws = saved ? JSON.parse(saved) : [];
-
-      localStorage.setItem('tabayun_laws', JSON.stringify([newLaw, ...existingLaws]));
-
-      setLoading(false);
-      setSuccess(true);
-
-      // Redirect after showing success modal
-      setTimeout(() => {
-        router.push(`/${locale}/admin/laws`);
-      }, 1500);
-    }, 1000);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    saveLaw('active');
+    if (!validate()) return;
+
+    try {
+      setLoading(true);
+      const payload: Partial<Law> = {
+        ...formData,
+        category_id: Number(formData.category_id),
+        saudi_reference_id: formData.saudi_reference_id ? Number(formData.saudi_reference_id) : undefined,
+      };
+      await adminService.addLaw(payload);
+      setSuccess(true);
+      setTimeout(() => router.push(`/${locale}/admin/laws`), 2000);
+    } catch (err: any) {
+      alert(isAr ? "فشل حفظ القانون" : "Failed to save law");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDraft = () => {
-    saveLaw('draft');
-  };
+  // Fetch available countries on mount
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true);
+        const data = await lawService.getAvailableCountries();
+        setAvailableCountries(data || []);
+      } catch {
+        setAvailableCountries([]);
+      } finally {
+        setLoadingCountries(false);
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
@@ -121,7 +128,7 @@ export default function AddLawPage({
                 {isAr ? "العودة لإدارة القوانين" : "Back to Laws Management"}
               </Link>
               <h1 className="text-3xl font-black text-[#2C160F]">
-                {isAr ? "إضافة محتوى قانوني جديد" : "Add New Legal Content"}
+                {isAr ? "إضافة قانون جديد" : "Add New Law"}
               </h1>
             </div>
             <div className="bg-[#2C160F] p-4 rounded-2xl text-white shadow-lg">
@@ -162,80 +169,165 @@ export default function AddLawPage({
                     {isAr ? "تصنيف القانون" : "Law Category"}
                   </label>
                   <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.category ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all appearance-none cursor-pointer`}
+                    value={formData.category_id}
+                    onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.category_id ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all appearance-none cursor-pointer`}
                   >
                     <option value="">{isAr ? "اختر التصنيف..." : "Select Category..."}</option>
                     {categories.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
-                  {errors.category && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.category}</p>}
+                  {errors.category_id && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.category_id}</p>}
                 </div>
 
-                {/* Keywords */}
+                {/* Country */}
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
-                    <Tag className="w-4 h-4 opacity-40" />
-                    {isAr ? "الكلمات المفتاحية" : "Keywords"}
+                    <Globe className="w-4 h-4 opacity-40" />
+                    {isAr ? "الدولة" : "Country"}
                   </label>
-                  <input
-                    type="text"
-                    placeholder={isAr ? "مثال: سرعة، مخالفة، سياحة..." : "e.g. Speed, Violation, Tourism..."}
-                    value={formData.keywords}
-                    onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all"
-                  />
+                  <select
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.country ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all appearance-none cursor-pointer`}
+                  >
+                    <option value={"sa"}>{"sa"}</option>
+                    {availableCountries.map(country => (
+                      <option key={country} value={country}>{country}</option>
+                    ))}
+                    </select>
+                  {errors.country && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.country}</p>}
                 </div>
               </div>
 
-              {/* Saudi Law Text */}
+              {/* Title */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
+                  <Tag className="w-4 h-4 opacity-40" />
+                  {isAr ? "عنوان القانون" : "Law Title"}
+                </label>
+                <input
+                  type="text"
+                  placeholder={isAr ? "مثال: نظام المرور - المادة العاشرة..." : "e.g. Traffic Law - Article 10..."}
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.title ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all`}
+                />
+                {errors.title && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.title}</p>}
+              </div>
+
+              {/* Simplified Description */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
+                  <FileText className="w-4 h-4 opacity-40" />
+                  {isAr ? "وصف مختصر (نبذة)" : "Short Description (Summary)"}
+                </label>
+                <input
+                  type="text"
+                  value={formData.simplified_description}
+                  onChange={(e) => setFormData({ ...formData, simplified_description: e.target.value })}
+                  className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all"
+                  placeholder={isAr ? "نبذة قصيرة تظهر في نتائج البحث..." : "A short summary for search results..."}
+                />
+              </div>
+
+              {/* Keywords */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
+                  <Tag className="w-4 h-4 opacity-40" />
+                  {isAr ? "الكلمات المفتاحية" : "Keywords"}
+                </label>
+                <input
+                  type="text"
+                  value={formData.keywords}
+                  onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
+                  className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all"
+                  placeholder={isAr ? "مثال: مرور، مخالفات، سرعة..." : "e.g. traffic, violations, speed..."}
+                />
+              </div>
+
+              {/* Simplified Text */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
                   <BookOpen className="w-4 h-4 opacity-40" />
-                  {isAr ? "نص القانون السعودي" : "Saudi Law Text"}
+                  {isAr ? "النص المبسط (للمستخدم)" : "Simplified Text (for users)"}
                 </label>
                 <textarea
-                  rows={4}
-                  value={formData.saudiLaw}
-                  onChange={(e) => setFormData({ ...formData, saudiLaw: e.target.value })}
-                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.saudiLaw ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none`}
-                  placeholder={isAr ? "اكتب نص القانون هنا..." : "Write the law text here..."}
+                  rows={3}
+                  value={formData.simplified_text}
+                  onChange={(e) => setFormData({ ...formData, simplified_text: e.target.value })}
+                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.simplified_text ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none`}
+                  placeholder={isAr ? "اكتب شرحاً مبسطاً للقانون هنا..." : "Write a simplified explanation here..."}
                 />
-                {errors.saudiLaw && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.saudiLaw}</p>}
+                {errors.simplified_text && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.simplified_text}</p>}
               </div>
 
-              {/* Other Country Law Text */}
+              {/* Full Original Text */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
-                  <Globe className="w-4 h-4 opacity-40" />
-                  {isAr ? "نص قانون الدولة الأخرى (اختياري)" : "Other Country Law Text (Optional)"}
+                  <FileText className="w-4 h-4 opacity-40" />
+                  {isAr ? "نص القانون الأصلي" : "Original Law Text"}
                 </label>
                 <textarea
-                  rows={4}
-                  value={formData.otherLaw}
-                  onChange={(e) => setFormData({ ...formData, otherLaw: e.target.value })}
-                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.otherLaw ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none`}
-                  placeholder={isAr ? "اكتب نص القانون المقارن هنا..." : "Write the comparative law text here..."}
+                  rows={5}
+                  value={formData.text}
+                  onChange={(e) => setFormData({ ...formData, text: e.target.value })}
+                  className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none"
+                  placeholder={isAr ? "نص المادة القانونية كما ورد في المصدر..." : "The original law text as it appears in the source..."}
                 />
-                {errors.otherLaw && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.otherLaw}</p>}
               </div>
 
-              {/* Comparative Analysis */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
-                  <CheckCircle2 className="w-4 h-4 opacity-40" />
-                  {isAr ? "التحليل المقارن" : "Comparative Analysis"}
-                </label>
-                <textarea
-                  rows={6}
-                  value={formData.comparativeAnalysis}
-                  onChange={(e) => setFormData({ ...formData, comparativeAnalysis: e.target.value })}
-                  className={`w-full bg-[#f5f1eb]/50 border-2 ${errors.comparativeAnalysis ? 'border-red-300' : 'border-transparent'} focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all resize-none`}
-                  placeholder={isAr ? "اشرح الفروقات والتحليلات القانونية هنا..." : "Explain differences and legal analysis here..."}
-                />
-                {errors.comparativeAnalysis && <p className="text-red-500 text-xs font-bold mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.comparativeAnalysis}</p>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Article Number */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
+                    <FileText className="w-4 h-4 opacity-40" />
+                    {isAr ? "رقم المادة" : "Article Number"}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 12, 45-A..."
+                    value={formData.article_number}
+                    onChange={(e) => setFormData({ ...formData, article_number: e.target.value })}
+                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all"
+                  />
+                </div>
+
+                {/* Source URL */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
+                    <Globe className="w-4 h-4 opacity-40" />
+                    {isAr ? "رابط المصدر" : "Source URL"}
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={formData.source_url}
+                    onChange={(e) => setFormData({ ...formData, source_url: e.target.value })}
+                    className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all"
+                  />
+                </div>
+
+                {/* Saudi Reference (For Foreign Laws) */}
+                {formData.country.toLowerCase() !== "saudi arabia" && formData.country !== "السعودية" && (
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-[#2C160F] font-black text-sm mb-2">
+                      <Gavel className="w-4 h-4 opacity-40" />
+                      {isAr ? "معرف المرجع السعودي (ID)" : "Saudi Reference Law (ID)"}
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 123"
+                      value={formData.saudi_reference_id}
+                      onChange={(e) => setFormData({ ...formData, saudi_reference_id: e.target.value })}
+                      className="w-full bg-[#f5f1eb]/50 border-2 border-transparent focus:border-[#2C160F]/20 rounded-2xl p-4 text-[#2C160F] font-bold outline-none transition-all"
+                    />
+                    <p className="text-[10px] text-[#2C160F]/40 font-medium">
+                      {isAr ? "* يستخدم لربط هذا القانون الأجنبي بالقانون السعودي المقابل له." : "* This is used to link this foreign law with its corresponding Saudi law ID."}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -250,18 +342,9 @@ export default function AddLawPage({
                   ) : (
                     <>
                       <Save className="w-5 h-5" />
-                      {isAr ? "حفظ المحتوى" : "Save Content"}
+                      {isAr ? "حفظ القانون" : "Save Law"}
                     </>
                   )}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDraft}
-                  disabled={loading}
-                  className="px-8 py-4 rounded-2xl font-black text-[#2C160F]/60 border-2 border-[#2C160F]/10 hover:text-[#2C160F] hover:border-[#2C160F]/30 hover:bg-[#f5f1eb] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  <Save className="w-5 h-5 opacity-60" />
-                  {isAr ? "حفظ كمسودة" : "Save as Draft"}
                 </button>
               </div>
 

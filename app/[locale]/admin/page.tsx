@@ -22,10 +22,14 @@ import {
   ArrowUpRight,
   Gavel,
   CheckCircle2,
-  Activity
+  Activity,
+  Loader2,
+  AlertTriangle
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { adminService } from "@/services/adminService";
+import { AdminStats, AdminActivityLog } from "@/types/admin";
 
 export default function AdminDashboardPage({
   params,
@@ -36,19 +40,31 @@ export default function AdminDashboardPage({
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
 
-  const sidebarLinks = [
-    { title: isAr ? "حذف مستخدم" : "Delete User", icon: UserMinus, href: `/${locale}/admin/users/delete`, color: "text-red-600" },
-    { title: isAr ? "تعديل صلاحية مستخدم" : "Edit User Permission", icon: UserCog, href: `/${locale}/admin/users/permissions`, color: "text-orange-600" },
-    { title: isAr ? "إرسال إشعارات" : "Send Notifications", icon: Send, href: `/${locale}/admin/notifications`, color: "text-purple-600" },
-  ];
+  const [stats, setStats] = React.useState<AdminStats | null>(null);
+  const [logs, setLogs] = React.useState<AdminActivityLog[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const recentLogs = [
-    { action: isAr ? "تعديل قانون المرور" : "Edit Traffic Law", admin: "Faisal", time: "2m", icon: Edit3 },
-    { action: isAr ? "إضافة قانون جديد" : "Add New Law", admin: "Ahmed", time: "15m", icon: PlusCircle },
-    { action: isAr ? "حذف مستخدم" : "Delete User", admin: "Sara", time: "1h", icon: UserMinus },
-    { action: isAr ? "إرسال إشعار عام" : "Send Broadcast", admin: "System", time: "3h", icon: Send },
-    { action: isAr ? "تحديث الصلاحيات" : "Update Permissions", admin: "Faisal", time: "5h", icon: UserCog },
-  ];
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [statsData, logsData] = await Promise.all([
+          adminService.getStats(),
+          adminService.getActivityLogs(0, 5)
+        ]);
+        setStats(statsData);
+        setLogs(logsData);
+      } catch (err: any) {
+        console.error("Failed to fetch admin dashboard data", err);
+        setError(err.message || "Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const mainTools = [
     {
@@ -56,34 +72,41 @@ export default function AdminDashboardPage({
       desc: isAr ? "التحكم في جميع القوانين والتصنيفات" : "Control all laws and categories",
       icon: Gavel,
       color: "bg-[#2C160F]",
-      stats: "452 Laws",
+      stats: stats ? `${stats.total_laws} Laws` : "...",
       href: `/${locale}/admin/laws`
     },
     {
-      title: isAr ? "إدارة الإشعارات" : "Notifications",
-      desc: isAr ? "إرسال الإشعارات وعرض السجل" : "Send notifications and view log",
-      icon: Bell,
-      color: "bg-orange-500",
-      stats: "Send Alerts",
-      href: `/${locale}/admin/notifications`
+      title: isAr ? "إدارة المستخدمين" : "User Management",
+      desc: isAr ? "إدارة وتدقيق بيانات المستخدمين" : "Manage and audit user data",
+      icon: Database,
+      color: "bg-green-600",
+      stats: stats ? `${stats.total_users} Users` : "...",
+      href: `/${locale}/admin/users`
     },
     {
       title: isAr ? "المساعد الذكي" : "AI Assistant",
       desc: isAr ? "تحديث القاعدة المعرفية للذكاء الاصطناعي" : "Update AI knowledge base",
       icon: MessageSquare,
       color: "bg-purple-600",
-      stats: "98% Accuracy",
+      stats: stats ? `${stats.total_categories} Categories` : "...",
       href: `/${locale}/admin/ai-settings`
     },
     {
-      title: isAr ? "قاعدة البيانات" : "Database Admin",
-      desc: isAr ? "إدارة وتدقيق بيانات المستخدمين" : "Manage and audit user data",
-      icon: Database,
-      color: "bg-green-600",
-      stats: "1.2GB Size",
-      href: `/${locale}/admin/database`
+      title: isAr ? "إدارة الإشعارات" : "Notifications",
+      desc: isAr ? "إرسال الإشعارات وعرض السجل" : "Send notifications and view log",
+      icon: Bell,
+      color: "bg-orange-500",
+      stats: isAr ? "إرسال تنبيهات" : "Send Alerts",
+      href: `/${locale}/admin/notifications`
     }
   ];
+
+  const getLogIcon = (action: string) => {
+    if (action.includes("law")) return Edit3;
+    if (action.includes("user")) return UserCog;
+    if (action.includes("notification")) return Send;
+    return Activity;
+  };
 
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
@@ -150,35 +173,54 @@ export default function AdminDashboardPage({
               </div>
 
               <div className="grid grid-cols-1 gap-4">
-                {recentLogs.map((log, i) => (
-                  <div key={i} className="group flex items-center gap-4 p-4 rounded-2xl hover:bg-[#f5f1eb]/50 transition-all border border-transparent hover:border-[#2C160F]/5">
-                    <div className="w-12 h-12 rounded-xl bg-[#f5f1eb] text-[#2C160F]/40 flex items-center justify-center group-hover:bg-[#2C160F] group-hover:text-white transition-all shadow-sm">
-                      <log.icon className="w-5 h-5" />
-                    </div>
+              {loading ? (
+                <div className="flex justify-center py-10">
+                  <Loader2 className="w-8 h-8 animate-spin text-[#2C160F]/20" />
+                </div>
+              ) : error ? (
+                <div className="py-10 text-center text-red-500 font-bold bg-red-50 rounded-2xl border border-red-100 p-4">
+                  <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  {isAr ? "عذراً، فشل تحميل البيانات. تأكد من اتصالك بالخادم." : "Sorry, failed to load data. Please check your connection."}
+                  <p className="text-[10px] mt-1 opacity-60 font-mono">{error}</p>
+                </div>
+              ) : logs.length > 0 ? (
+                logs.map((log, i) => {
+                    const Icon = getLogIcon(log.action);
+                    return (
+                      <div key={i} className="group flex items-center gap-4 p-4 rounded-2xl hover:bg-[#f5f1eb]/50 transition-all border border-transparent hover:border-[#2C160F]/5">
+                        <div className="w-12 h-12 rounded-xl bg-[#f5f1eb] text-[#2C160F]/40 flex items-center justify-center group-hover:bg-[#2C160F] group-hover:text-white transition-all shadow-sm">
+                          <Icon className="w-5 h-5" />
+                        </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <h4 className="text-sm font-bold text-[#2C160F] truncate">{log.action}</h4>
-                        <span className="text-[10px] font-black text-[#2C160F]/20 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {log.time}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                        <p className="text-[11px] font-medium text-[#2C160F]/40 italic">
-                          {isAr ? "بواسطة" : "By"} <span className="text-[#2C160F]/60 font-bold not-italic">@{log.admin}</span>
-                        </p>
-                      </div>
-                    </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="text-sm font-bold text-[#2C160F] truncate">{log.action}</h4>
+                            <span className="text-[10px] font-black text-[#2C160F]/20 flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {new Date(log.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <p className="text-[11px] font-medium text-[#2C160F]/40 italic">
+                              {isAr ? "بواسطة" : "By"} <span className="text-[#2C160F]/60 font-bold not-italic">Admin #{log.admin_id}</span>
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="hidden sm:block">
-                      <div className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                        {isAr ? "مكتمل" : "Success"}
+                        <div className="hidden sm:block">
+                          <div className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                            {log.action}
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    );
+                  })
+                ) : (
+                  <div className="py-10 text-center text-[#2C160F]/20 font-bold uppercase tracking-widest text-xs">
+                    {isAr ? "لا يوجد سجلات حالياً" : "No logs available"}
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>
