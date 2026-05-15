@@ -381,7 +381,7 @@ export default function Navbar() {
           className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 md:hidden"
           dir={dir}
         >
-          <div className="mx-auto grid max-w-md grid-cols-5 gap-1 rounded-[24px] border border-white/80 bg-[#F7F2EC]/92 p-1.5 shadow-[0_-14px_40px_rgba(44,22,15,0.14)] backdrop-blur-xl">
+          <div className="mx-auto grid max-w-md grid-cols-5 gap-1 rounded-[24px] border border-white/40 bg-white/45 p-1.5 shadow-[0_-14px_40px_rgba(44,22,15,0.08)] backdrop-blur-[18px]">
             {bottomLinks.map((item) => {
               const Icon = item.icon;
               const active = isActive(item);
@@ -390,7 +390,7 @@ export default function Navbar() {
                   key={`${item.href}-${item.label}`}
                   href={item.href}
                   className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-[18px] px-1 py-2 text-[10px] font-black transition ${
-                    active ? "bg-[#2C160F] text-[#F7F2EC] shadow-lg shadow-[#2C160F]/16" : "text-[#2C160F]/62 active:bg-[#E6D7C8]/60"
+                    active ? "bg-[#2C160F] text-[#F7F2EC] shadow-lg shadow-[#2C160F]/16" : "text-[#2C160F]/72 active:bg-[#2C160F]/8"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
