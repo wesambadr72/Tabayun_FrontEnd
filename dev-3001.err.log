@@ -1,0 +1,371 @@
+ ⨯ [Error: Cannot find module './vendor-chunks/next.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: Cannot find module './vendor-chunks/next.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\chat\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/chat'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json',
+  page: '/favicon.ico'
+}
+ ⨯ Failed to generate static paths for /[locale]:
+[Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json',
+  page: '/ar/contact'
+}
+ ⨯ Failed to generate static paths for /[locale]/contact:
+[Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\contact\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json',
+  page: '/ar/contact'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/favicon.ico'
+}
+ ⨯ [Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\contact\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/contact'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\contact\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/ar/contact'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\routes-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\SULTAN1\\OneDrive - Umm Al-Qura University\\سطح المكتب\\تباين\\Tabayun_FrontEnd\\.next\\routes-manifest.json'
+}
+ ⨯ [Error: Cannot find module './vendor-chunks/tailwind-merge.js'
+Require stack:
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\webpack-runtime.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\.next\server\app\[locale]\page.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\require.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\load-components.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\build\utils.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\server\dev\static-paths-worker.js
+- C:\Users\SULTAN1\OneDrive - Umm Al-Qura University\سطح المكتب\تباين\Tabayun_FrontEnd\node_modules\next\dist\compiled\jest-worker\processChild.js] {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/favicon.ico'
+}
