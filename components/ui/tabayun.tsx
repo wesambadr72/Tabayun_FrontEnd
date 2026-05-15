@@ -104,7 +104,7 @@ export function SectionHeader({
           {eyebrow}
         </div>
       )}
-      <h1 className="tabayun-display text-balance text-4xl font-black leading-tight text-tabayun-coffee md:text-6xl">
+      <h1 className="tabayun-display text-balance text-4xl font-black leading-[1.5] text-tabayun-coffee md:text-6xl">
         {typeof title === "string" ? kashidaTitle(title) : title}
       </h1>
       {description && (

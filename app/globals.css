@@ -94,7 +94,7 @@ h1,
 .tabayun-display,
 .tabayun-hero-word {
   font-family: var(--font-thmanyah-display), serif;
-  letter-spacing: 0 !important;
+  line-height: 1.5 !important;
 }
 
 h2,
