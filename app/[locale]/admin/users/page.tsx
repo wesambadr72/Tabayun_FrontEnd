@@ -21,6 +21,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
 import { UserAdmin } from "@/types/admin";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function AdminUsersPage({
   params,
@@ -34,6 +35,7 @@ export default function AdminUsersPage({
   const [users, setUsers] = useState<UserAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [skip, setSkip] = useState(0);
   const limit = 10;
   const [totalCount, setTotalCount] = useState(0);
@@ -47,7 +49,7 @@ export default function AdminUsersPage({
     try {
       setLoading(true);
       const [usersData, statsData] = await Promise.all([
-        adminService.getUsers(skip, limit, searchTerm),
+        adminService.getUsers(skip, limit, debouncedSearchTerm),
         adminService.getStats()
       ]);
       setUsers(usersData);
@@ -61,11 +63,11 @@ export default function AdminUsersPage({
 
   useEffect(() => {
     setSkip(0);
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   useEffect(() => {
     fetchUsers();
-  }, [skip, searchTerm]);
+  }, [skip, debouncedSearchTerm]);
 
   const totalPages = Math.ceil(totalCount / limit);
   const currentPage = Math.floor(skip / limit) + 1;

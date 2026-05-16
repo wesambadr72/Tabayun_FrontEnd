@@ -32,25 +32,27 @@ function LawsListContent() {
   const [userCountry, setUserCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    const user = authService.getUser();
-    if (user?.country) setUserCountry(user.country);
-  }, []);
-
-  useEffect(() => {
-    const fetchComparisons = async () => {
+    const fetchData = async () => {
       if (!categoryId) {
         setLoading(false);
         return;
       }
+
       try {
         setLoading(true);
+        
+        // Get user country from cache
+        const user = authService.getUser();
+        const country = user?.country || null;
+        setUserCountry(country);
+
         const data = await lawService.getLawsByCategory(Number(categoryId));
         
-        // Filter by user country if available
+        // Filter by user country
         let filteredData = data;
-        if (userCountry) {
+        if (country) {
           filteredData = data.filter(comp =>
-            comp.foreign_law?.country.toLowerCase() === userCountry.toLowerCase() ||
+            comp.foreign_law?.country.toLowerCase() === country.toLowerCase() ||
             !comp.foreign_law
           );
         }
@@ -62,8 +64,8 @@ function LawsListContent() {
       }
     };
 
-    fetchComparisons();
-  }, [categoryId, userCountry]);
+    fetchData();
+  }, [categoryId]); // Only dependency is categoryId
 
   return (
     <PageShell dir={dir}>

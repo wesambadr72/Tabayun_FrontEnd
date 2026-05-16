@@ -18,6 +18,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
 import { Law } from "@/types/law";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function AdminLawsPage({
   params,
@@ -33,6 +34,7 @@ export default function AdminLawsPage({
   const [error, setError] = useState<string | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [filterCategory, setFilterCategory] = useState("all");
   const [skip, setSkip] = useState(0);
   const limit = 25; // Updated to 25 per page as requested
@@ -52,7 +54,7 @@ export default function AdminLawsPage({
     try {
       setLoading(true);
       const [lawsData, statsData] = await Promise.all([
-        adminService.getLaws(skip, limit, searchTerm),
+        adminService.getLaws(skip, limit, debouncedSearchTerm),
         adminService.getStats()
       ]);
       setLaws(lawsData);
@@ -73,11 +75,11 @@ export default function AdminLawsPage({
 
   useEffect(() => {
     setSkip(0); // Reset pagination when searching
-  }, [searchTerm, filterCategory]);
+  }, [debouncedSearchTerm, filterCategory]);
 
   useEffect(() => {
     fetchLaws();
-  }, [skip, searchTerm]);
+  }, [skip, debouncedSearchTerm]);
 
   const confirmDelete = async () => {
     if (!lawToDelete) return;

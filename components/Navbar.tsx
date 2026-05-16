@@ -99,8 +99,7 @@ export default function Navbar() {
         setUser(freshUser);
       } catch (error: any) {
         console.error("Navbar: failed to refresh user", error);
-        // If credentials failed, update the UI state immediately
-        if (error.message === 'Could not validate credentials') {
+        if (error.message === "Could not validate credentials") {
           setIsLoggedIn(false);
           setUser(null);
         }
@@ -108,6 +107,9 @@ export default function Navbar() {
     };
 
     loadUser();
+  }, []);
+
+  useEffect(() => {
     setIsMenuOpen(false);
     setIsLangOpen(false);
     setIsProfileOpen(false);
@@ -140,11 +142,17 @@ export default function Navbar() {
     sampleSurface();
     window.addEventListener("scroll", sampleSurface, { passive: true });
     window.addEventListener("resize", sampleSurface);
+    
+    // Also sample when pathname changes
+    const observer = new MutationObserver(sampleSurface);
+    observer.observe(document.body, { childList: true, subtree: true });
+
     return () => {
       window.removeEventListener("scroll", sampleSurface);
       window.removeEventListener("resize", sampleSurface);
+      observer.disconnect();
     };
-  }, [pathname]);
+  }, []);
 
   const primaryHome = isLoggedIn ? `/${locale}/dashboard` : `/${locale}`;
   const profileHref = isLoggedIn ? `/${locale}/profile` : `/${locale}/auth/login`;
