@@ -94,9 +94,9 @@ export default function Hero() {
             {isAr ? "دليل قانوني ذكي للسائح في السعودية" : "Smart legal guide for visitors in Saudi Arabia"}
           </div>
 
-          <div className="relative mx-auto mt-5 w-fit">
-            <div className="tabayun-hero-glow absolute left-1/2 top-1/2 -z-10 h-[58%] w-[110%] rounded-full bg-[#C49A6C]/18 blur-3xl" />
-            <p className="tabayun-hero-word text-[clamp(4.75rem,12vw,13.5rem)] font-black leading-[0.78] text-[#F7F2EC]">
+          <div className="relative mx-auto mt-5 w-full max-w-full overflow-visible">
+            <div className="tabayun-hero-glow absolute left-1/2 top-1/2 -z-10 h-[58%] w-[110%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C49A6C]/18 blur-3xl" />
+            <p className="tabayun-hero-word break-words text-[clamp(3.5rem,15vw,13.5rem)] font-black leading-[0.9] text-[#F7F2EC] sm:leading-[0.78]">
               {isAr ? "تبايــــن" : "TABAYUN"}
             </p>
           </div>

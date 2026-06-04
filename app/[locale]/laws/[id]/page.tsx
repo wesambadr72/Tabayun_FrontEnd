@@ -48,7 +48,7 @@ export default function ComparisonDetailPage() {
     };
 
     fetchComparison();
-  }, [comparisonId]);
+  }, [comparisonId, locale]);
 
   const handleBookmark = async () => {
     if (!comparison) return;
@@ -82,7 +82,7 @@ export default function ComparisonDetailPage() {
     return (
       <PageShell dir={dir}>
         <Navbar />
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-[60vh] items-center justify-center">
           <Loader2 className="h-12 w-12 animate-spin text-tabayun-coffee" />
         </div>
       </PageShell>
@@ -93,7 +93,7 @@ export default function ComparisonDetailPage() {
     return (
       <PageShell dir={dir}>
         <Navbar />
-        <section className="tabayun-page-offset tabayun-container pb-20">
+        <section className="tabayun-page-offset tabayun-container pb-20 pt-24">
           <StatePanel
             type="error"
             title={isAr ? "تعذر تحميل المقارنة" : "Could not load comparison"}
@@ -120,7 +120,7 @@ export default function ComparisonDetailPage() {
     <PageShell dir={dir}>
       <Navbar />
 
-      <section className="tabayun-page-offset pb-16">
+      <section className="tabayun-page-offset pb-16 pt-28 sm:pt-32">
         <div className="tabayun-container">
           <button
             onClick={() => router.back()}
@@ -130,7 +130,7 @@ export default function ComparisonDetailPage() {
             {isAr ? "العودة" : "Back"}
           </button>
 
-          <div className="grid items-end gap-6 lg:grid-cols-[1fr_320px]">
+          <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
             <SectionHeader
               align="start"
               eyebrow={isAr ? "مقارنة قانونية" : "Legal comparison"}
@@ -142,9 +142,9 @@ export default function ComparisonDetailPage() {
               }
             />
 
-            <SurfaceCard className="p-5">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-tabayun-danger/10 text-tabayun-danger">
+            <SurfaceCard className="h-fit p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-tabayun-danger/10 text-tabayun-danger">
                   <AlertTriangle className="h-5 w-5" />
                 </span>
                 <div>
@@ -157,8 +157,8 @@ export default function ComparisonDetailPage() {
             </SurfaceCard>
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-[34px] border border-tabayun-sand bg-tabayun-pearl shadow-[0_24px_70px_rgba(44,22,15,0.12)]">
-            <div className="grid md:grid-cols-2">
+          <div className="mt-8 rounded-[34px] border border-tabayun-sand bg-tabayun-pearl shadow-[0_24px_70px_rgba(44,22,15,0.12)]">
+            <div className="grid h-auto overflow-visible md:grid-cols-2">
               <ComparisonSide
                 title={comparison.foreign_law.title}
                 country={comparison.foreign_law.country}
@@ -183,8 +183,8 @@ export default function ComparisonDetailPage() {
                 <StatusBadge tone="info" className="mb-4">
                   {isAr ? "الخلاصة العملية" : "Practical summary"}
                 </StatusBadge>
-                <h2 className="text-3xl font-black text-tabayun-coffee">{isAr ? "ما الذي يجب أن تتذكره؟" : "What should you remember?"}</h2>
-                <p className="mt-4 text-lg font-bold leading-relaxed text-tabayun-coffee/70">
+                <h2 className="text-2xl font-black text-tabayun-coffee sm:text-3xl">{isAr ? "ما الذي يجب أن تتذكره؟" : "What should you remember?"}</h2>
+                <p className="mt-4 text-base font-bold leading-relaxed text-tabayun-coffee/70 sm:text-lg">
                   {comparison.comparison_text || comparison.summary || (isAr ? "لا يوجد خلاصة حالياً" : "No summary available")}
                 </p>
               </div>
@@ -235,36 +235,40 @@ function ComparisonSide({
   dark?: boolean;
 }) {
   return (
-    <article className={`${dark ? "bg-tabayun-coffee text-tabayun-paper" : "bg-tabayun-pearl text-tabayun-coffee"} p-6 md:p-9`}>
-      <div className="mb-7 flex items-start justify-between gap-4">
-        <div>
+    <article className={`${dark ? "bg-tabayun-coffee text-tabayun-paper" : "bg-tabayun-pearl text-tabayun-coffee"} flex h-full flex-col overflow-visible p-6 md:p-9`}>
+      <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 flex-[2]">
           <StatusBadge tone={dark ? "warning" : "neutral"} className={dark ? "border-white/14 bg-white/10 text-tabayun-paper" : ""}>
             {country}
           </StatusBadge>
-          <h3 className="mt-4 text-2xl font-black leading-tight">{title}</h3>
+          <h3 className="mt-4 break-all text-2xl font-black leading-tight [hyphens:auto] sm:text-3xl" style={{ wordBreak: 'break-word' }}>{title}</h3>
         </div>
-        <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/18 bg-white">
-          <Image src={flag} alt={country} fill className="object-cover" sizes="48px" />
+        <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/18 bg-white shadow-sm sm:h-14 sm:w-14">
+          <Image src={flag} alt={country} fill className="object-cover" sizes="(max-width: 640px) 48px, 56px" />
         </span>
       </div>
 
-      <p className={`text-base font-semibold leading-relaxed md:text-lg ${dark ? "text-tabayun-paper/68" : "text-tabayun-coffee/64"}`}>
-        {text}
-      </p>
+      <div className="flex-1">
+        <p className={`text-base font-semibold leading-relaxed sm:text-lg ${dark ? "text-tabayun-paper/68" : "text-tabayun-coffee/64"}`}>
+          {text}
+        </p>
+      </div>
 
       {source && (
-        <a
-          href={source}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`mt-8 inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-black transition ${
-            dark ? "bg-white/8 text-tabayun-paper/62 hover:text-tabayun-paper" : "bg-tabayun-sand/42 text-tabayun-coffee/62 hover:text-tabayun-coffee"
-          }`}
-        >
-          <span>{isAr ? "المصدر الأصلي" : "Original source"}</span>
-          {isAr ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-          <ExternalLink className="h-4 w-4" />
-        </a>
+        <div className="mt-8">
+          <a
+            href={source}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-black transition ${
+              dark ? "bg-white/8 text-tabayun-paper/62 hover:text-tabayun-paper" : "bg-tabayun-sand/42 text-tabayun-coffee/62 hover:text-tabayun-coffee"
+            }`}
+          >
+            <span>{isAr ? "المصدر الأصلي" : "Original source"}</span>
+            {isAr ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </div>
       )}
     </article>
   );
