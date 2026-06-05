@@ -265,7 +265,7 @@ export default function AdminLawsPage({
                             </div>
                             <div>
                               <p className="font-bold text-[#2C160F]">{law.title}</p>
-                              <p className="text-xs text-[#2C160F]/40 font-medium">ID: #{law.id}</p>
+                              <p className="text-xs text-[#2C160F]/40 font-medium">ID: {law.id}</p>
                             </div>
                           </div>
                         </td>

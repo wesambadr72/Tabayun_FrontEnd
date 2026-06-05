@@ -55,6 +55,9 @@ export const adminService = {
   deleteNotification: (id: number) => 
     api.delete<{ message: string }>(`/admin/notifications/${id}`),
 
+  bulkDeleteNotifications: (ids: number[]) => 
+    api.post<{ message: string }>('/admin/notifications/bulk-delete', ids),
+
   sendNotification: (notification: { title: string, content: string, target_user_ids?: number[] | null }) => 
     api.post<{ message: string }>('/admin/notifications', notification),
 

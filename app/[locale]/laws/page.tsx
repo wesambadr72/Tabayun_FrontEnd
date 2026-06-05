@@ -46,7 +46,7 @@ function LawsListContent() {
         const country = user?.country || null;
         setUserCountry(country);
 
-        const data = await lawService.getLawsByCategory(Number(categoryId));
+        const data = await lawService.getLawsByCategory(Number(categoryId), locale);
         
         // Filter by user country
         let filteredData = data;

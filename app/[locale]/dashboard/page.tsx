@@ -20,7 +20,7 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
-  Utensils,
+  UtensilsCrossed,
 } from "lucide-react";
 import { PageShell, PrimaryButton, SectionHeader, SkeletonCard, StatePanel, StatusBadge, SurfaceCard } from "@/components/ui/tabayun";
 
@@ -68,10 +68,10 @@ export default function DashboardPage() {
   }, []);
 
   const quickCategories = [
-    { key: "traffic", icon: Car, tone: "warning" as const },
-    { key: "residency", icon: FileCheck, tone: "info" as const },
-    { key: "publicDecency", icon: ShieldCheck, tone: "danger" as const },
-    { key: "food", icon: Utensils, tone: "success" as const },
+    { key: "traffic", icon: Car, tone: "neutral" as const },
+    { key: "residency", icon: FileCheck, tone: "neutral" as const },
+    { key: "publicDecency", icon: ShieldCheck, tone: "neutral" as const },
+    { key: "food", icon: UtensilsCrossed, tone: "neutral" as const },
   ];
 
   return (
@@ -180,14 +180,25 @@ export default function DashboardPage() {
                         key={category.key}
                         type="button"
                         onClick={() => router.push(`/${locale}/categories`)}
-                        className="group rounded-[28px] border border-tabayun-sand bg-tabayun-pearl p-5 text-start shadow-[0_14px_36px_rgba(44,22,15,0.06)] transition hover:-translate-y-1 hover:border-tabayun-gold/55"
+                        className="group flex flex-col rounded-[32px] border border-tabayun-sand/60 bg-white p-6 text-start shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-tabayun-gold/40 hover:shadow-xl hover:shadow-tabayun-coffee/5"
                       >
-                        <span className="mb-5 flex h-13 w-13 items-center justify-center rounded-2xl bg-tabayun-sand/50 text-tabayun-coffee transition group-hover:bg-tabayun-coffee group-hover:text-tabayun-paper">
-                          <Icon className="h-6 w-6" />
-                        </span>
-                        <StatusBadge tone={category.tone} className="mb-3">{isAr ? "فئة" : "Category"}</StatusBadge>
-                        <h3 className="text-xl font-black text-tabayun-coffee">{title}</h3>
-                        <p className="mt-2 line-clamp-2 text-sm font-semibold leading-relaxed text-tabayun-coffee/55">{desc}</p>
+                        <div className="mb-6 flex items-center justify-between">
+                          <span className="flex h-14 w-14 items-center justify-center rounded-[22px] bg-tabayun-sand/40 text-tabayun-coffee transition-all duration-300 group-hover:bg-tabayun-coffee group-hover:text-white group-hover:shadow-lg group-hover:shadow-tabayun-coffee/20">
+                            <Icon className="h-7 w-7" strokeWidth={1.5} />
+                          </span>
+                          <StatusBadge tone={category.tone} className="opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                            {isAr ? "استكشف" : "Explore"}
+                          </StatusBadge>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <h3 className="text-lg font-black leading-tight text-tabayun-coffee group-hover:text-tabayun-gold transition-colors">
+                            {title}
+                          </h3>
+                          <p className="line-clamp-2 text-xs font-bold leading-relaxed text-tabayun-coffee/50">
+                            {desc}
+                          </p>
+                        </div>
                       </button>
                     );
                   })}

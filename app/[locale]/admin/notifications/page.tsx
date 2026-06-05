@@ -55,6 +55,8 @@ export default function NotificationsAdminPage({
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [selectedNotification, setSelectedNotification] = useState<any | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedLogIds, setSelectedLogIds] = useState<number[]>([]);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -153,6 +155,38 @@ export default function NotificationsAdminPage({
       setSelectedNotification(null);
     } catch (err) {
       alert(isAr ? "فشل حذف الإشعار" : "Failed to delete notification");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const toggleSelectLog = (logId: number) => {
+    setSelectedLogIds(prev => 
+      prev.includes(logId) ? prev.filter(id => id !== logId) : [...prev, logId]
+    );
+  };
+
+  const toggleSelectAllLogs = () => {
+    if (selectedLogIds.length === logs.length) {
+      setSelectedLogIds([]);
+    } else {
+      setSelectedLogIds(logs.map(log => log.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      setIsSubmitting(true);
+      await adminService.bulkDeleteNotifications(selectedLogIds);
+      
+      // Notify other components
+      window.dispatchEvent(new CustomEvent('notificationsUpdated'));
+
+      setLogs(prev => prev.filter(n => !selectedLogIds.includes(n.id)));
+      setSelectedLogIds([]);
+      setShowBulkDeleteModal(false);
+    } catch (err) {
+      alert(isAr ? "فشل الحذف الجماعي" : "Bulk delete failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -287,12 +321,47 @@ export default function NotificationsAdminPage({
 
             {/* Logs Section */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-[2rem] border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 overflow-hidden">
+              <div className="bg-white rounded-[2rem] border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 overflow-hidden relative">
+                
+                {/* Bulk Action Bar */}
+                {selectedLogIds.length > 0 && (
+                  <div className="absolute top-0 inset-x-0 bg-[#2C160F] text-white p-4 flex items-center justify-between z-20 animate-in slide-in-from-top duration-300">
+                    <p className="text-sm font-bold">
+                      {isAr ? `تم تحديد ${selectedLogIds.length} إشعار` : `${selectedLogIds.length} notifications selected`}
+                    </p>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => setShowBulkDeleteModal(true)}
+                        className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-xs font-black transition-colors flex items-center gap-2"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {isAr ? "حذف المحددين" : "Delete Selected"}
+                      </button>
+                      <button 
+                        onClick={() => setSelectedLogIds([])}
+                        className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-xs font-black transition-colors"
+                      >
+                        {isAr ? "إلغاء" : "Cancel"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="p-6 border-b border-[#2C160F]/5 bg-[#f5f1eb]/30 flex items-center justify-between">
-                  <h2 className="text-xl font-black text-[#2C160F] flex items-center gap-2">
-                    <History className="w-5 h-5 text-[#2C160F]/40" />
-                    {isAr ? "سجل الإشعارات المرسلة" : "Sent Notifications Log"}
-                  </h2>
+                  <div className="flex items-center gap-3">
+                    {logs.length > 0 && (
+                      <input 
+                        type="checkbox" 
+                        checked={selectedLogIds.length === logs.length && logs.length > 0}
+                        onChange={toggleSelectAllLogs}
+                        className="w-4 h-4 rounded border-[#2C160F]/20 accent-[#2C160F]"
+                      />
+                    )}
+                    <h2 className="text-xl font-black text-[#2C160F] flex items-center gap-2">
+                      <History className="w-5 h-5 text-[#2C160F]/40" />
+                      {isAr ? "سجل الإشعارات المرسلة" : "Sent Notifications Log"}
+                    </h2>
+                  </div>
                   {loadingLogs && <Loader2 className="w-5 h-5 animate-spin text-[#2C160F]/20" />}
                 </div>
 
@@ -300,9 +369,17 @@ export default function NotificationsAdminPage({
                   {logs.length > 0 ? (
                     <div className="space-y-4">
                       {logs.map((log) => (
-                        <div key={log.id} className="flex flex-col sm:flex-row gap-4 p-5 rounded-2xl border border-[#2C160F]/5 hover:bg-[#f5f1eb]/20 transition-all group">
-                          <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500 shrink-0 group-hover:scale-110 transition-transform">
-                            <Bell className="w-6 h-6" />
+                        <div key={log.id} className={`flex flex-col sm:flex-row gap-4 p-5 rounded-2xl border transition-all group ${selectedLogIds.includes(log.id) ? 'bg-[#f5f1eb]/40 border-[#2C160F]/20' : 'border-[#2C160F]/5 hover:bg-[#f5f1eb]/20'}`}>
+                          <div className="flex items-start gap-4">
+                            <input 
+                              type="checkbox" 
+                              checked={selectedLogIds.includes(log.id)}
+                              onChange={() => toggleSelectLog(log.id)}
+                              className="w-4 h-4 mt-4 rounded border-[#2C160F]/20 accent-[#2C160F] shrink-0"
+                            />
+                            <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500 shrink-0 group-hover:scale-110 transition-transform">
+                              <Bell className="w-6 h-6" />
+                            </div>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2 mb-1">
@@ -339,7 +416,10 @@ export default function NotificationsAdminPage({
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold text-[#2C160F]/50">
                               <span className="flex items-center gap-1.5 bg-[#f5f1eb] px-2 py-1 rounded-lg">
                                 <Users className="w-3.5 h-3.5" />
-                                {log.is_broadcast ? (isAr ? "الجميع" : "All") : (isAr ? `مستخدم #${log.target_user_id}` : `User #${log.target_user_id}`)}
+                                {log.is_broadcast 
+                                  ? (isAr ? "الجميع" : "All") 
+                                  : `${log.target_user_name || (isAr ? "مستخدم" : "User")} ID: ${log.target_user_id}`
+                                }
                               </span>
                               <span className="flex items-center gap-1.5">
                                 <Clock className="w-3.5 h-3.5" />
@@ -516,6 +596,42 @@ export default function NotificationsAdminPage({
               </button>
               <button
                 onClick={() => { setShowDeleteModal(false); setSelectedNotification(null); }}
+                disabled={isSubmitting}
+                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-4 rounded-xl font-black hover:bg-[#f5f1eb]/80 transition-colors"
+              >
+                {isAr ? "إلغاء" : "Cancel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Notification Modal */}
+      {showBulkDeleteModal && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-[#2C160F]/40 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
+            <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mb-6 text-red-500 mx-auto">
+              <Trash2 className="w-10 h-10" />
+            </div>
+            <h3 className="text-2xl font-black text-[#2C160F] mb-2 text-center">
+              {isAr ? "حذف جماعي" : "Bulk Delete"}
+            </h3>
+            <p className="text-[#2C160F]/60 font-bold mb-8 text-center leading-relaxed">
+              {isAr 
+                ? `هل أنت متأكد من حذف ${selectedLogIds.length} إشعار من السجل؟ لا يمكن التراجع عن هذا الإجراء.` 
+                : `Are you sure you want to delete ${selectedLogIds.length} notifications from log? This action cannot be undone.`
+              }
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleBulkDelete}
+                disabled={isSubmitting}
+                className="flex-1 bg-red-600 text-white py-4 rounded-xl font-black hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (isAr ? "حذف المحددين" : "Delete Selected")}
+              </button>
+              <button
+                onClick={() => setShowBulkDeleteModal(false)}
                 disabled={isSubmitting}
                 className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-4 rounded-xl font-black hover:bg-[#f5f1eb]/80 transition-colors"
               >

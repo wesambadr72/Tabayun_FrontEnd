@@ -36,7 +36,7 @@ export const lawService = {
    * @returns قائمة بالمقارنات (Comparison[])
    */
   getLawsByCategory: (categoryId: number, lang?: string) => 
-    api.get<Comparison[]>(`/laws/by-category/${categoryId}${lang ? `?lang=${lang}` : ''}`),
+    api.get<Comparison[]>(`/laws/by-category/${categoryId}?lang=${lang || 'ar'}`),
 
   /**
    * جلب تفاصيل مقارنة قانونية معينة باستخدام معرفها
@@ -88,4 +88,11 @@ export const lawService = {
    */
   getMyNotifications: () => 
     api.get<any[]>('/laws/my-notifications'),
+
+  /**
+   * تحديث حالة الإشعار إلى مقروء
+   * @param notifId معرف الإشعار
+   */
+  markAsRead: (notifId: number) =>
+    api.post<{ message: string }>(`/laws/notifications/${notifId}/read`, {}),
 };

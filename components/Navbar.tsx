@@ -6,6 +6,7 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import {
   Bell,
   BookOpen,
+  Check,
   Globe2,
   Heart,
   Home,
@@ -44,7 +45,7 @@ const labels = {
   en: {
     brand: "Tabayun",
     home: "Home",
-    browse: "Browse",
+    browse: "Categories",
     search: "Search",
     assistant: "Assistant",
     contact: "Contact",
@@ -71,6 +72,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const locale = params.locale === "en" ? "en" : "ar";
   const dir = locale === "ar" ? "rtl" : "ltr";
+  const isAr = locale === "ar";
   const t = labels[locale];
   const isAuthPage = pathname.includes("/auth/");
 
@@ -88,10 +90,26 @@ export default function Navbar() {
     if (!authService.getToken()) return;
     try {
       const data = await lawService.getMyNotifications();
-      setNotifications(data.slice(0, 5)); // Show only latest 5
-      setUnreadCount(data.filter((n: any) => n.is_read === 0).length);
+      // عرض آخر إشعارين غير مقروءين فقط كما طلب المستخدم
+      const unread = data.filter((n: any) => n.is_read === 0);
+      setNotifications(unread.slice(0, 2)); 
+      setUnreadCount(unread.length);
     } catch (err) {
       console.error("Failed to fetch notifications:", err);
+    }
+  };
+
+  const handleMarkAsRead = async (notifId: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await lawService.markAsRead(notifId);
+      // تحديث القائمة محلياً وفورياً
+      fetchNotifications();
+      // إرسال حدث لتحديث صفحة الإشعارات إذا كانت مفتوحة
+      window.dispatchEvent(new CustomEvent('notificationsUpdated'));
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
     }
   };
 
@@ -241,8 +259,8 @@ export default function Navbar() {
   const navShellClass = isLightSurface
     ? "border-white/40 bg-white/45 text-[#2C160F] shadow-[0_8px_32px_rgba(44,22,15,0.08)] backdrop-blur-[18px]"
     : "border-white/10 bg-[rgba(32,11,5,0.45)] text-[#F7F2EC] shadow-[0_12px_40px_rgba(0,0,0,0.25)] backdrop-blur-[18px]";
-  const navMutedClass = isLightSurface ? "text-[#2C160F]/72 hover:bg-[#2C160F]/8 hover:text-[#2C160F]" : "text-[#F7F2EC]/86 hover:bg-white/10 hover:text-white";
-  const navActiveClass = isLightSurface ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-[#F7F2EC] text-[#2C160F]";
+  const navMutedClass = isLightSurface ? "text-[#2C160F]/72 hover:bg-[#2C160F] hover:text-[#F7F2EC] hover:scale-105" : "text-[#F7F2EC]/86 hover:bg-[#F7F2EC] hover:text-[#2C160F] hover:scale-105";
+  const navActiveClass = isLightSurface ? "bg-[#2C160F] text-[#F7F2EC] shadow-md shadow-[#2C160F]/10" : "bg-[#F7F2EC] text-[#2C160F] shadow-lg shadow-black/10";
   const iconPillClass = isLightSurface ? "bg-[#2C160F] text-[#F7F2EC]" : "bg-[#F7F2EC] text-[#2C160F]";
 
   return (
@@ -310,8 +328,8 @@ export default function Navbar() {
                   setIsProfileOpen(false);
                   setIsNotificationsOpen(false);
                 }}
-                className={`flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-bold transition ${
-                  isLightSurface ? "border-[#2C160F]/12 bg-[#2C160F]/6 hover:bg-[#2C160F]/10" : "border-white/15 bg-white/8 hover:bg-white/14"
+                className={`flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-bold transition hover:scale-105 ${
+                  isLightSurface ? "border-[#2C160F]/12 bg-[#2C160F]/6 hover:bg-[#2C160F] hover:text-[#F7F2EC]" : "border-white/15 bg-white/8 hover:bg-white/14"
                 }`}
               >
                 <Globe2 className="h-4 w-4" />
@@ -345,7 +363,11 @@ export default function Navbar() {
                     setIsLangOpen(false);
                     setIsProfileOpen(false);
                   }}
-                  className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/8 transition hover:bg-white/14"
+                  className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition hover:scale-110 active:scale-95 ${
+                    isLightSurface 
+                    ? "border-[#2C160F]/12 bg-[#2C160F]/6 hover:bg-[#2C160F] hover:text-[#F7F2EC] shadow-sm" 
+                    : "border-white/15 bg-white/8 hover:bg-white/18"
+                  }`}
                   aria-label={t.notifications}
                 >
                   <Bell className="h-4 w-4" />
@@ -353,27 +375,52 @@ export default function Navbar() {
                 </button>
 
                 {isNotificationsOpen && (
-                  <div className="absolute end-0 top-full mt-3 w-72 rounded-2xl border border-[#E6D7C8] bg-[#F7F2EC] p-4 text-[#2C160F] shadow-2xl">
+                  <div className="absolute end-0 top-full mt-3 w-80 rounded-2xl border border-[#E6D7C8] bg-[#F7F2EC] p-4 text-[#2C160F] shadow-2xl z-[100]">
+                    <div className="flex items-center justify-between mb-4 px-1">
+                      <h3 className="font-black text-sm">{t.notifications}</h3>
+                      {unreadCount > 0 && (
+                        <span className="text-[10px] bg-[#2C160F] text-white px-2 py-0.5 rounded-full font-bold">
+                          {unreadCount} {isAr ? "جديد" : "New"}
+                        </span>
+                      )}
+                    </div>
+
                     {notifications.length > 0 ? (
-                      <div className="mb-3 space-y-2">
+                      <div className="mb-4 space-y-2">
                         {notifications.map((notif) => (
-                          <div key={notif.id} className="rounded-xl bg-[#E6D7C8]/30 p-3 transition hover:bg-[#E6D7C8]/50">
-                            <p className="text-xs font-black line-clamp-1">{notif.title}</p>
-                            <p className="mt-1 text-[10px] font-bold text-[#2C160F]/60 line-clamp-1">{notif.message}</p>
+                          <div key={notif.id} className="relative group rounded-xl bg-white border border-[#E6D7C8]/50 p-3 transition hover:border-[#2C160F]/20 shadow-sm">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-black line-clamp-1 text-[#2C160F]">{notif.title}</p>
+                                <p className="mt-1 text-[10px] font-bold text-[#2C160F]/60 line-clamp-2 leading-relaxed">{notif.message}</p>
+                              </div>
+                              <button
+                                onClick={(e) => handleMarkAsRead(notif.id, e)}
+                                className="shrink-0 flex h-7 w-7 items-center justify-center rounded-lg bg-[#2C160F]/5 text-[#2C160F]/40 hover:bg-[#2C160F] hover:text-white transition-all shadow-sm active:scale-95"
+                                title={isAr ? "تحديد كمقروء" : "Mark as read"}
+                              >
+                                <Check className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="rounded-xl bg-[#E6D7C8]/45 px-4 py-5 text-center text-sm font-bold text-[#2C160F]/70">
-                        {t.noNotifications}
-                      </p>
+                      <div className="py-8 text-center">
+                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 text-[#2C160F]/20">
+                          <Bell className="w-6 h-6" />
+                        </div>
+                        <p className="text-xs font-bold text-[#2C160F]/40 max-w-[180px] mx-auto leading-relaxed">
+                          {t.noNotifications}
+                        </p>
+                      </div>
                     )}
                     <Link
                       href={`/${locale}/notifications`}
-                      className="block rounded-xl bg-[#2C160F] px-4 py-3 text-center text-sm font-black text-[#F7F2EC]"
+                      className="block w-full rounded-xl bg-[#2C160F] px-4 py-3 text-center text-sm font-black text-[#F7F2EC] hover:bg-[#2C160F]/90 transition-all shadow-lg active:scale-[0.98]"
                       onClick={() => setIsNotificationsOpen(false)}
                     >
-                      {t.notifications}
+                      {isAr ? "عرض كل التنبيهات" : "View all alerts"}
                     </Link>
                   </div>
                 )}
@@ -392,8 +439,8 @@ export default function Navbar() {
                   setIsLangOpen(false);
                   setIsNotificationsOpen(false);
                 }}
-                className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
-                  isLightSurface ? "border-[#2C160F]/12 bg-[#2C160F]/6 hover:bg-[#2C160F]/10" : "border-white/25 bg-white/8 hover:bg-white/14"
+                className={`flex h-10 w-10 items-center justify-center rounded-full border transition hover:scale-110 ${
+                  isLightSurface ? "border-[#2C160F]/12 bg-[#2C160F]/6 hover:bg-[#2C160F] hover:text-[#F7F2EC]" : "border-white/25 bg-white/8 hover:bg-white/14"
                 }`}
                 aria-label={isLoggedIn ? t.profile : t.login}
               >

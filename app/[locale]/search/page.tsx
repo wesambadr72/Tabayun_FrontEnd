@@ -42,7 +42,7 @@ function SearchResultsContent() {
       }
       try {
         setLoading(true);
-        const data = await lawService.search(query);
+        const data = await lawService.search(query, locale);
         
         // Deduplicate results based on type and id
         const uniqueResults = data.filter((item, index, self) =>

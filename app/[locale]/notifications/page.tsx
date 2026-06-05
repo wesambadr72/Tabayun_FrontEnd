@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AlertTriangle, ArrowLeft, ArrowRight, Bell, CheckCircle2, ShieldAlert, Loader2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Bell, CheckCircle2, ShieldAlert, Loader2, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { PageShell, PrimaryButton, SectionHeader, StatePanel, StatusBadge, SurfaceCard } from "@/components/ui/tabayun";
@@ -18,20 +18,37 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const data = await lawService.getMyNotifications();
+      setNotifications(data);
+    } catch (err) {
+      console.error("Failed to fetch notifications", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        setLoading(true);
-        const data = await lawService.getMyNotifications();
-        setNotifications(data);
-      } catch (err) {
-        console.error("Failed to fetch notifications", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchNotifications();
+
+    // الاستماع لحدث تحديث الإشعارات (للتزامن مع الناف بار)
+    window.addEventListener('notificationsUpdated', fetchNotifications);
+    return () => window.removeEventListener('notificationsUpdated', fetchNotifications);
   }, []);
+
+  const handleMarkAsRead = async (notifId: number) => {
+    try {
+      await lawService.markAsRead(notifId);
+      // تحديث الحالة محلياً
+      setNotifications(prev => prev.map(n => n.id === notifId ? { ...n, is_read: 1 } : n));
+      // إرسال حدث لتحديث الناف بار
+      window.dispatchEvent(new CustomEvent('notificationsUpdated'));
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
+    }
+  };
 
   const sampleAlertTypes = [
     {
@@ -84,22 +101,39 @@ export default function NotificationsPage() {
                 </div>
               ) : notifications.length > 0 ? (
                 notifications.map((notif) => (
-                  <SurfaceCard key={notif.id} className="p-6 transition-all hover:shadow-2xl hover:shadow-tabayun-coffee/10">
+                  <SurfaceCard 
+                    key={notif.id} 
+                    className={`p-6 transition-all hover:shadow-2xl hover:shadow-tabayun-coffee/10 border-2 ${notif.is_read === 0 ? 'border-tabayun-coffee/20 bg-white' : 'border-transparent bg-tabayun-sand/10 opacity-75'}`}
+                  >
                     <div className="flex gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-tabayun-sand/40 text-tabayun-coffee">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${notif.is_read === 0 ? 'bg-tabayun-sand/40 text-tabayun-coffee' : 'bg-tabayun-sand/20 text-tabayun-coffee/40'}`}>
                         <Bell className="h-6 w-6" />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="mb-2 flex items-center justify-between gap-2">
-                          <h3 className="text-lg font-black text-tabayun-coffee">{notif.title}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className={`text-lg font-black ${notif.is_read === 0 ? 'text-tabayun-coffee' : 'text-tabayun-coffee/60'}`}>{notif.title}</h3>
+                            {notif.is_read === 0 && (
+                              <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                            )}
+                          </div>
                           <span className="text-[10px] font-bold text-tabayun-coffee/40">
                             {new Date(notif.created_at).toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US')}
                           </span>
                         </div>
-                        <p className="text-sm font-medium leading-relaxed text-tabayun-coffee/70">
+                        <p className={`text-sm font-medium leading-relaxed ${notif.is_read === 0 ? 'text-tabayun-coffee/70' : 'text-tabayun-coffee/40'}`}>
                           {notif.message}
                         </p>
                       </div>
+                      {notif.is_read === 0 && (
+                        <button
+                          onClick={() => handleMarkAsRead(notif.id)}
+                          className="shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-tabayun-coffee text-white hover:bg-tabayun-coffee/90 transition-all shadow-lg active:scale-95"
+                          title={isAr ? "تحديد كمقروء" : "Mark as read"}
+                        >
+                          <Check className="h-5 w-5" />
+                        </button>
+                      )}
                     </div>
                   </SurfaceCard>
                 ))
