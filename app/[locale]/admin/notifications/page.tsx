@@ -116,6 +116,9 @@ export default function NotificationsAdminPage({
 
       await adminService.sendNotification(payload);
 
+      // Notify other components (like Navbar) to refresh
+      window.dispatchEvent(new CustomEvent('notificationsUpdated'));
+
       // Refresh logs
       const notificationsData = await adminService.getNotifications(0, 50);
       setLogs(notificationsData);
@@ -141,6 +144,10 @@ export default function NotificationsAdminPage({
     try {
       setIsSubmitting(true);
       await adminService.deleteNotification(selectedNotification.id);
+      
+      // Notify other components (like Navbar) to refresh
+      window.dispatchEvent(new CustomEvent('notificationsUpdated'));
+
       setLogs(prev => prev.filter(n => n.id !== selectedNotification.id));
       setShowDeleteModal(false);
       setSelectedNotification(null);

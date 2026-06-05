@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { authService } from "@/services/authService";
+import { lawService } from "@/services/lawService";
 import AccessibilityControls from "@/components/AccessibilityControls";
 
 const labels = {
@@ -79,11 +80,28 @@ export default function Navbar() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [navSurface, setNavSurface] = useState<"light" | "dark">("dark");
+
+  const fetchNotifications = async () => {
+    if (!authService.getToken()) return;
+    try {
+      const data = await lawService.getMyNotifications();
+      setNotifications(data.slice(0, 5)); // Show only latest 5
+      setUnreadCount(data.filter((n: any) => n.is_read === 0).length);
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
+    }
+  };
 
   useEffect(() => {
     const token = authService.getToken();
     setIsLoggedIn(!!token);
+
+    if (token) {
+      fetchNotifications();
+    }
 
     const loadUser = async () => {
       if (!token) {
@@ -111,14 +129,17 @@ export default function Navbar() {
     const handleUpdate = () => {
       const updatedUser = authService.getUser();
       if (updatedUser) setUser({ ...updatedUser });
+      fetchNotifications();
     };
 
     window.addEventListener('userUpdated', handleUpdate);
     window.addEventListener('storage', handleUpdate);
+    window.addEventListener('notificationsUpdated', fetchNotifications);
 
     return () => {
       window.removeEventListener('userUpdated', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('notificationsUpdated', fetchNotifications);
     };
   }, [pathname]);
 
@@ -252,7 +273,7 @@ export default function Navbar() {
             aria-label={isLoggedIn ? t.notifications : t.login}
           >
             {isLoggedIn ? <Bell className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
-            {isLoggedIn && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#8E2C1D]" />}
+            {isLoggedIn && unreadCount > 0 && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#8E2C1D]" />}
           </Link>
         </div>
       </header>
@@ -328,17 +349,29 @@ export default function Navbar() {
                   aria-label={t.notifications}
                 >
                   <Bell className="h-4 w-4" />
-                  <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#E56B55]" />
+                  {unreadCount > 0 && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#E56B55]" />}
                 </button>
 
                 {isNotificationsOpen && (
                   <div className="absolute end-0 top-full mt-3 w-72 rounded-2xl border border-[#E6D7C8] bg-[#F7F2EC] p-4 text-[#2C160F] shadow-2xl">
-                    <p className="rounded-xl bg-[#E6D7C8]/45 px-4 py-5 text-center text-sm font-bold text-[#2C160F]/70">
-                      {t.noNotifications}
-                    </p>
+                    {notifications.length > 0 ? (
+                      <div className="mb-3 space-y-2">
+                        {notifications.map((notif) => (
+                          <div key={notif.id} className="rounded-xl bg-[#E6D7C8]/30 p-3 transition hover:bg-[#E6D7C8]/50">
+                            <p className="text-xs font-black line-clamp-1">{notif.title}</p>
+                            <p className="mt-1 text-[10px] font-bold text-[#2C160F]/60 line-clamp-1">{notif.message}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="rounded-xl bg-[#E6D7C8]/45 px-4 py-5 text-center text-sm font-bold text-[#2C160F]/70">
+                        {t.noNotifications}
+                      </p>
+                    )}
                     <Link
                       href={`/${locale}/notifications`}
-                      className="mt-3 block rounded-xl bg-[#2C160F] px-4 py-3 text-center text-sm font-black text-[#F7F2EC]"
+                      className="block rounded-xl bg-[#2C160F] px-4 py-3 text-center text-sm font-black text-[#F7F2EC]"
+                      onClick={() => setIsNotificationsOpen(false)}
                     >
                       {t.notifications}
                     </Link>
@@ -466,19 +499,24 @@ export default function Navbar() {
               ? [
                   { href: `/${locale}/search`, label: t.search, icon: Search },
                   { href: `/${locale}/contact`, label: t.contact, icon: MessageSquare },
-                  { href: `/${locale}/notifications`, label: t.notifications, icon: Bell },
+                  { href: `/${locale}/notifications`, label: t.notifications, icon: Bell, badge: unreadCount > 0 },
                   ...(user?.is_admin ? [{ href: `/${locale}/admin`, label: t.admin, icon: LayoutDashboard }] : []),
                 ]
               : [{ href: `/${locale}/contact`, label: t.contact, icon: MessageSquare }]
-            ).map((item) => (
+            ).map((item: any) => (
               <Link
                 key={`${item.href}-${item.label}`}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 text-sm font-black shadow-sm"
+                className="flex items-center justify-between rounded-2xl bg-white/70 px-4 py-3 text-sm font-black shadow-sm"
               >
-                <item.icon className="h-4 w-4 text-[#2C160F]" />
-                {item.label}
+                <div className="flex items-center gap-3">
+                  <item.icon className="h-4 w-4 text-[#2C160F]" />
+                  {item.label}
+                </div>
+                {item.badge && (
+                  <span className="h-2 w-2 rounded-full bg-[#8E2C1D]" />
+                )}
               </Link>
             ))}
           </div>

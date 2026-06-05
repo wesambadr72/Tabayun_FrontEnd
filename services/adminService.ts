@@ -22,6 +22,9 @@ export const adminService = {
   deleteLaw: (id: number) => 
     api.delete<{ message: string }>(`/admin/laws/${id}`),
 
+  bulkDeleteLaws: (ids: number[]) => 
+    api.post<{ message: string }>('/admin/laws/bulk-delete', ids),
+
   // Users Management
   getUsers: (skip = 0, limit = 10, search?: string) => 
     api.get<UserAdmin[]>(`/admin/users?skip=${skip}&limit=${limit}${search ? `&search=${search}` : ''}`),
@@ -31,6 +34,9 @@ export const adminService = {
 
   deleteUser: (userId: number) => 
     api.delete<{ message: string }>(`/admin/users/${userId}`),
+
+  bulkDeleteUsers: (userIds: number[]) => 
+    api.post<{ message: string }>('/admin/users/bulk-delete', userIds),
 
   // System Configuration (AI Prompts)
   getConfigs: () => 

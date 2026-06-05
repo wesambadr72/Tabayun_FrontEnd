@@ -43,7 +43,9 @@ export default function AdminUsersPage({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserAdmin | null>(null);
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -98,12 +100,43 @@ export default function AdminUsersPage({
       setIsProcessing(true);
       await adminService.deleteUser(selectedUser.id);
       setUsers(users.filter(u => u.id !== selectedUser.id));
+      setSelectedUserIds(prev => prev.filter(id => id !== selectedUser.id));
       setShowDeleteModal(false);
     } catch (err) {
       alert("Failed to delete user");
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedUserIds.length === 0) return;
+    try {
+      setIsProcessing(true);
+      await adminService.bulkDeleteUsers(selectedUserIds);
+      setUsers(users.filter(u => !selectedUserIds.includes(u.id)));
+      setSelectedUserIds([]);
+      setShowBulkDeleteModal(false);
+    } catch (err) {
+      console.error("Failed to delete users", err);
+      alert(isAr ? "فشل حذف المستخدمين" : "Failed to delete users");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedUserIds.length === users.length) {
+      setSelectedUserIds([]);
+    } else {
+      setSelectedUserIds(users.map(u => u.id));
+    }
+  };
+
+  const toggleSelectUser = (id: number) => {
+    setSelectedUserIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -139,10 +172,40 @@ export default function AdminUsersPage({
           </div>
 
           {/* Users Table */}
-          <div className="bg-white rounded-3xl border border-[#2C160F]/5 shadow-xl overflow-hidden">
+          <div className="bg-white rounded-3xl border border-[#2C160F]/5 shadow-xl overflow-hidden relative">
+            {selectedUserIds.length > 0 && (
+              <div className="absolute top-0 inset-x-0 bg-[#2C160F] text-white p-4 flex items-center justify-between z-20 animate-in slide-in-from-top duration-300">
+                <p className="text-sm font-bold">
+                  {isAr ? `تم تحديد ${selectedUserIds.length} مستخدم` : `${selectedUserIds.length} users selected`}
+                </p>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setShowBulkDeleteModal(true)}
+                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-xs font-black transition-colors flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {isAr ? "حذف المحددين" : "Delete Selected"}
+                  </button>
+                  <button 
+                    onClick={() => setSelectedUserIds([])}
+                    className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-xs font-black transition-colors"
+                  >
+                    {isAr ? "إلغاء" : "Cancel"}
+                  </button>
+                </div>
+              </div>
+            )}
             <table className="w-full text-start border-collapse">
               <thead>
                 <tr className="bg-[#f5f1eb]/50 border-b border-[#2C160F]/5 text-[#2C160F]/60 text-xs uppercase tracking-widest font-black">
+                  <th className="p-6 text-start w-12">
+                    <input 
+                      type="checkbox" 
+                      checked={users.length > 0 && selectedUserIds.length === users.length}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 rounded border-[#2C160F]/20 accent-[#2C160F]"
+                    />
+                  </th>
                   <th className="p-6 text-start">ID</th>
                   <th className="p-6 text-start">{isAr ? "المستخدم" : "User"}</th>
                   <th className="p-6 text-start">{isAr ? "الدولة" : "Country"}</th>
@@ -153,9 +216,17 @@ export default function AdminUsersPage({
               </thead>
               <tbody className="divide-y divide-[#2C160F]/5">
                 {loading ? (
-                  <tr><td colSpan={6} className="p-12 text-center"><Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" /></td></tr>
+                  <tr><td colSpan={7} className="p-12 text-center"><Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" /></td></tr>
                 ) : users.map(user => (
-                  <tr key={user.id} className="hover:bg-[#f5f1eb]/10 transition-colors">
+                  <tr key={user.id} className={`hover:bg-[#f5f1eb]/10 transition-colors ${selectedUserIds.includes(user.id) ? 'bg-[#f5f1eb]/40' : ''}`}>
+                    <td className="p-6">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedUserIds.includes(user.id)}
+                        onChange={() => toggleSelectUser(user.id)}
+                        className="w-4 h-4 rounded border-[#2C160F]/20 accent-[#2C160F]"
+                      />
+                    </td>
                     <td className="p-6">
                       <span className="font-mono font-bold text-[#2C160F]/60">{user.id}</span>
                     </td>
@@ -294,6 +365,43 @@ export default function AdminUsersPage({
               <button onClick={() => setShowDeleteModal(false)} className="flex-1 py-3 rounded-xl font-bold bg-[#f5f1eb]">{isAr ? 'إلغاء' : 'Cancel'}</button>
               <button onClick={handleDeleteUser} disabled={isProcessing} className="flex-1 py-3 rounded-xl font-bold bg-red-600 text-white disabled:opacity-50">
                 {isProcessing ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (isAr ? 'حذف نهائي' : 'Delete Now')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Modal */}
+      {showBulkDeleteModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#2C160F]/40 backdrop-blur-sm" onClick={() => !isProcessing && setShowBulkDeleteModal(false)}></div>
+          <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full relative z-10 shadow-2xl border border-[#2C160F]/5">
+            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mb-6">
+              <AlertTriangle className="w-8 h-8 text-red-600" />
+            </div>
+            <h3 className="text-2xl font-black text-[#2C160F] mb-2">
+              {isAr ? "حذف جماعي؟" : "Bulk Delete?"}
+            </h3>
+            <p className="text-[#2C160F]/60 font-medium mb-8">
+              {isAr 
+                ? `هل أنت متأكد من حذف ${selectedUserIds.length} مستخدم؟ هذا الإجراء لا يمكن التراجع عنه وسيتم مسح كافة بياناتهم.` 
+                : `Are you sure you want to delete ${selectedUserIds.length} users? This action cannot be undone.`}
+            </p>
+            <div className="flex gap-3">
+              <button
+                disabled={isProcessing}
+                onClick={handleBulkDelete}
+                className="flex-1 bg-red-600 text-white py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {isAr ? "تأكيد الحذف الجماعي" : "Confirm Bulk Delete"}
+              </button>
+              <button
+                disabled={isProcessing}
+                onClick={() => setShowBulkDeleteModal(false)}
+                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-4 rounded-2xl font-black text-sm hover:bg-[#e6d7c8] transition-all"
+              >
+                {isAr ? "إلغاء" : "Cancel"}
               </button>
             </div>
           </div>

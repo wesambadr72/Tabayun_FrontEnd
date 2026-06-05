@@ -51,6 +51,8 @@ export default function AdminLawsPage({
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [lawToDelete, setLawToDelete] = useState<Law | null>(null);
+  const [selectedLawIds, setSelectedLawIds] = useState<number[]>([]);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteClick = (law: Law) => {
@@ -95,6 +97,7 @@ export default function AdminLawsPage({
       setIsDeleting(true);
       await adminService.deleteLaw(lawToDelete.id);
       setLaws(laws.filter(l => l.id !== lawToDelete.id));
+      setSelectedLawIds(prev => prev.filter(id => id !== lawToDelete.id));
       setShowDeleteModal(false);
       setLawToDelete(null);
     } catch (err: any) {
@@ -102,6 +105,36 @@ export default function AdminLawsPage({
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedLawIds.length === 0) return;
+    try {
+      setIsDeleting(true);
+      await adminService.bulkDeleteLaws(selectedLawIds);
+      setLaws(laws.filter(l => !selectedLawIds.includes(l.id)));
+      setSelectedLawIds([]);
+      setShowBulkDeleteModal(false);
+    } catch (err: any) {
+      console.error("Failed to delete laws", err);
+      alert(isAr ? "فشل حذف القوانين" : "Failed to delete laws");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedLawIds.length === laws.length) {
+      setSelectedLawIds([]);
+    } else {
+      setSelectedLawIds(laws.map(l => l.id));
+    }
+  };
+
+  const toggleSelectLaw = (id: number) => {
+    setSelectedLawIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -165,11 +198,41 @@ export default function AdminLawsPage({
           </div>
 
           {/* Laws Table / List */}
-          <div className="bg-white rounded-3xl border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 overflow-hidden">
+          <div className="bg-white rounded-3xl border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 overflow-hidden relative">
+            {selectedLawIds.length > 0 && (
+              <div className="absolute top-0 inset-x-0 bg-[#2C160F] text-white p-4 flex items-center justify-between z-20 animate-in slide-in-from-top duration-300">
+                <p className="text-sm font-bold">
+                  {isAr ? `تم تحديد ${selectedLawIds.length} قانون` : `${selectedLawIds.length} laws selected`}
+                </p>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setShowBulkDeleteModal(true)}
+                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-xs font-black transition-colors flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {isAr ? "حذف المحددين" : "Delete Selected"}
+                  </button>
+                  <button 
+                    onClick={() => setSelectedLawIds([])}
+                    className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-xs font-black transition-colors"
+                  >
+                    {isAr ? "إلغاء" : "Cancel"}
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse" dir={dir}>
                 <thead>
                   <tr className="bg-[#f5f1eb]/50 border-b border-[#2C160F]/5 text-[#2C160F]/60 text-xs uppercase tracking-widest font-black">
+                    <th className="p-4 sm:p-6 text-start w-12">
+                      <input 
+                        type="checkbox" 
+                        checked={laws.length > 0 && selectedLawIds.length === laws.length}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 rounded border-[#2C160F]/20 accent-[#2C160F]"
+                      />
+                    </th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "العنوان" : "Title"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "التصنيف" : "Category"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "تاريخ الإضافة" : "Date Added"}</th>
@@ -180,13 +243,21 @@ export default function AdminLawsPage({
                 <tbody className="divide-y divide-[#2C160F]/5">
                   {loading ? (
                     <tr>
-                      <td colSpan={5} className="p-12 text-center">
+                      <td colSpan={6} className="p-12 text-center">
                         <Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" />
                       </td>
                     </tr>
                   ) : laws.length > 0 ? (
                     laws.map((law) => (
-                      <tr key={law.id} className="hover:bg-[#f5f1eb]/20 transition-colors group">
+                      <tr key={law.id} className={`hover:bg-[#f5f1eb]/20 transition-colors group ${selectedLawIds.includes(law.id) ? 'bg-[#f5f1eb]/40' : ''}`}>
+                        <td className="p-4 sm:p-6">
+                          <input 
+                            type="checkbox" 
+                            checked={selectedLawIds.includes(law.id)}
+                            onChange={() => toggleSelectLaw(law.id)}
+                            className="w-4 h-4 rounded border-[#2C160F]/20 accent-[#2C160F]"
+                          />
+                        </td>
                         <td className="p-4 sm:p-6">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-[#f5f1eb] flex items-center justify-center text-[#2C160F]/40 group-hover:bg-[#2C160F] group-hover:text-white transition-colors">
@@ -345,6 +416,43 @@ export default function AdminLawsPage({
               <button 
                 onClick={() => setShowDeleteModal(false)}
                 className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-3 rounded-xl font-bold hover:bg-[#f5f1eb]/80 transition-colors"
+              >
+                {isAr ? "إلغاء" : "Cancel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Modal */}
+      {showBulkDeleteModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#2C160F]/40 backdrop-blur-sm" onClick={() => !isDeleting && setShowBulkDeleteModal(false)}></div>
+          <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full relative z-10 shadow-2xl border border-[#2C160F]/5">
+            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mb-6">
+              <AlertTriangle className="w-8 h-8 text-red-600" />
+            </div>
+            <h3 className="text-2xl font-black text-[#2C160F] mb-2">
+              {isAr ? "حذف جماعي؟" : "Bulk Delete?"}
+            </h3>
+            <p className="text-[#2C160F]/60 font-medium mb-8">
+              {isAr 
+                ? `هل أنت متأكد من حذف ${selectedLawIds.length} قانون؟ هذا الإجراء لا يمكن التراجع عنه وسيتم مسح كافة البيانات المرتبطة بها.` 
+                : `Are you sure you want to delete ${selectedLawIds.length} laws? This action cannot be undone.`}
+            </p>
+            <div className="flex gap-3">
+              <button
+                disabled={isDeleting}
+                onClick={handleBulkDelete}
+                className="flex-1 bg-red-600 text-white py-4 rounded-2xl font-black text-sm hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {isAr ? "تأكيد الحذف الجماعي" : "Confirm Bulk Delete"}
+              </button>
+              <button
+                disabled={isDeleting}
+                onClick={() => setShowBulkDeleteModal(false)}
+                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-4 rounded-2xl font-black text-sm hover:bg-[#e6d7c8] transition-all"
               >
                 {isAr ? "إلغاء" : "Cancel"}
               </button>
