@@ -54,10 +54,10 @@ export default function EditLawPage({
 
   const categories = [
     { id: 1, name: isAr ? "المرور" : "Traffic" },
-    { id: 2, name: isAr ? "العمل" : "Labor" },
-    { id: 3, name: isAr ? "الذوق العام" : "Public Decency" },
-    { id: 4, name: isAr ? "التأشيرات والإقامة" : "Visa & Residency" },
-    { id: 5, name: isAr ? "الأغذية" : "Food" },
+    { id: 2, name: isAr ? "العمل والعقود" : "Work & Contracts" },
+    { id: 3, name: isAr ? "الآداب العامة" : "Public Decency" },
+    { id: 4, name: isAr ? "الإقامة والتأشيرات" : "Residency & Visas" },
+    { id: 5, name: isAr ? "المأكولات" : "Food" },
   ];
 
   // Fetch data on load

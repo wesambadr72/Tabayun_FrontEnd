@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState, useEffect } from "react";
+import React, { use, useState, useEffect, useMemo } from "react";
 import {
   Bell,
   ArrowLeft,
@@ -12,10 +12,17 @@ import {
   X,
   Mail,
   Clock,
+  Search,
+  Check,
+  Trash2,
+  Edit2,
+  Loader2,
+  ChevronDown
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
+import { UserAdmin } from "@/types/admin";
 
 export default function NotificationsAdminPage({
   params,
@@ -26,28 +33,70 @@ export default function NotificationsAdminPage({
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
 
+  // Data States
+  const [users, setUsers] = useState<UserAdmin[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+
   // Form State
   const [formData, setFormData] = useState({
     title: "",
     message: "",
     target: "all",
-    target_user_id: ""
+    target_user_ids: [] as number[]
   });
-
-  const [logs, setLogs] = useState<any[]>([]);
-  const [loadingLogs, setLoadingLogs] = useState(true);
 
   // UI States
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showUserSelector, setShowUserSelector] = useState(false);
+  const [userSearchTerm, setUserSearchTerm] = useState("");
+  const [selectedNotification, setSelectedNotification] = useState<any | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
-    // We can fetch recent admin logs or notifications here if backend supports it
-    setLoadingLogs(false);
+    const fetchData = async () => {
+      try {
+        setLoadingUsers(true);
+        setLoadingLogs(true);
+        const [usersData, notificationsData] = await Promise.all([
+          adminService.getUsers(0, 1000),
+          adminService.getNotifications(0, 50)
+        ]);
+        setUsers(usersData);
+        setLogs(notificationsData);
+      } catch (err) {
+        console.error("Failed to fetch data", err);
+      } finally {
+        setLoadingUsers(false);
+        setLoadingLogs(false);
+      }
+    };
+    fetchData();
   }, []);
 
-  const isFormValid = formData.title.trim() !== "" && formData.message.trim() !== "";
+  const filteredUsers = useMemo(() => {
+    return users.filter(u => 
+      (u.full_name || u.name || u.username || "").toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+      u.id.toString().includes(userSearchTerm)
+    );
+  }, [users, userSearchTerm]);
+
+  const isFormValid = formData.title.trim() !== "" && 
+                     formData.message.trim() !== "" && 
+                     (formData.target === "all" || formData.target_user_ids.length > 0);
+
+  const toggleUserSelection = (userId: number) => {
+    setFormData(prev => ({
+      ...prev,
+      target_user_ids: prev.target_user_ids.includes(userId)
+        ? prev.target_user_ids.filter(id => id !== userId)
+        : [...prev.target_user_ids, userId]
+    }));
+  };
 
   const handleSendClick = () => {
     if (isFormValid) {
@@ -62,17 +111,21 @@ export default function NotificationsAdminPage({
       const payload = {
         title: formData.title,
         content: formData.message,
-        target_user_id: formData.target === "all" ? null : Number(formData.target_user_id)
+        target_user_ids: formData.target === "all" ? null : formData.target_user_ids
       };
 
       await adminService.sendNotification(payload);
+
+      // Refresh logs
+      const notificationsData = await adminService.getNotifications(0, 50);
+      setLogs(notificationsData);
 
       setIsSubmitting(false);
       setShowConfirmModal(false);
       setShowSuccessToast(true);
 
       // Reset form
-      setFormData({ title: "", message: "", target: "all", target_user_id: "" });
+      setFormData({ title: "", message: "", target: "all", target_user_ids: [] });
 
       // Hide toast after 3s
       setTimeout(() => setShowSuccessToast(false), 3000);
@@ -83,12 +136,27 @@ export default function NotificationsAdminPage({
     }
   };
 
+  const handleDeleteNotification = async () => {
+    if (!selectedNotification) return;
+    try {
+      setIsSubmitting(true);
+      await adminService.deleteNotification(selectedNotification.id);
+      setLogs(prev => prev.filter(n => n.id !== selectedNotification.id));
+      setShowDeleteModal(false);
+      setSelectedNotification(null);
+    } catch (err) {
+      alert(isAr ? "فشل حذف الإشعار" : "Failed to delete notification");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
       <Navbar />
 
       <div className="flex-1 pt-32 pb-20 px-4 md:px-8">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
 
           {/* Header */}
           <div className="mb-8">
@@ -144,19 +212,43 @@ export default function NotificationsAdminPage({
                         className={`w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#2C160F]/20 rounded-xl py-3 ${isAr ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-sm text-[#2C160F] outline-none appearance-none cursor-pointer font-bold`}
                       >
                         <option value="all">{isAr ? "جميع المستخدمين" : "All Users"}</option>
-                        <option value="specific">{isAr ? "مستخدم محدد (User ID)" : "Specific User (ID)"}</option>
+                        <option value="specific">{isAr ? "مستخدم محدد (Multi-Select)" : "Specific Users (Multi-Select)"}</option>
                       </select>
                     </div>
 
                     {formData.target === "specific" && (
                       <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                        <input
-                          type="number"
-                          placeholder={isAr ? "أدخل ID المستخدم..." : "Enter User ID..."}
-                          value={formData.target_user_id}
-                          onChange={(e) => setFormData({ ...formData, target_user_id: e.target.value })}
-                          className="w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#2C160F]/20 rounded-xl py-3 px-4 text-sm text-[#2C160F] outline-none transition-all font-bold"
-                        />
+                        <button
+                          onClick={() => setShowUserSelector(true)}
+                          className="w-full bg-[#f5f1eb]/50 border border-[#2C160F]/5 rounded-xl py-3 px-4 text-sm text-[#2C160F] font-bold flex items-center justify-between hover:bg-[#f5f1eb] transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Users className="w-4 h-4 opacity-40" />
+                            {formData.target_user_ids.length > 0 
+                              ? (isAr ? `تم اختيار ${formData.target_user_ids.length} مستخدم` : `${formData.target_user_ids.length} users selected`)
+                              : (isAr ? "اختر المستخدمين..." : "Select users...")
+                            }
+                          </span>
+                          <ChevronDown className="w-4 h-4 opacity-40" />
+                        </button>
+                        
+                        {formData.target_user_ids.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {formData.target_user_ids.slice(0, 5).map(id => {
+                              const user = users.find(u => u.id === id);
+                              return (
+                                <span key={id} className="text-[10px] bg-[#2C160F] text-white px-2 py-0.5 rounded-full font-bold">
+                                  {user?.full_name || user?.name || `#${id}`}
+                                </span>
+                              );
+                            })}
+                            {formData.target_user_ids.length > 5 && (
+                              <span className="text-[10px] bg-[#2C160F]/10 text-[#2C160F] px-2 py-0.5 rounded-full font-bold">
+                                +{formData.target_user_ids.length - 5}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -189,11 +281,12 @@ export default function NotificationsAdminPage({
             {/* Logs Section */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-[2rem] border border-[#2C160F]/5 shadow-xl shadow-[#2C160F]/5 overflow-hidden">
-                <div className="p-6 border-b border-[#2C160F]/5 bg-[#f5f1eb]/30">
+                <div className="p-6 border-b border-[#2C160F]/5 bg-[#f5f1eb]/30 flex items-center justify-between">
                   <h2 className="text-xl font-black text-[#2C160F] flex items-center gap-2">
                     <History className="w-5 h-5 text-[#2C160F]/40" />
                     {isAr ? "سجل الإشعارات المرسلة" : "Sent Notifications Log"}
                   </h2>
+                  {loadingLogs && <Loader2 className="w-5 h-5 animate-spin text-[#2C160F]/20" />}
                 </div>
 
                 <div className="p-6">
@@ -204,30 +297,48 @@ export default function NotificationsAdminPage({
                           <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500 shrink-0 group-hover:scale-110 transition-transform">
                             <Bell className="w-6 h-6" />
                           </div>
-                          <div className="flex-1">
-                            <h3 className="font-black text-[#2C160F] text-lg mb-1">{isAr ? log.titleAr : log.titleEn}</h3>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <h3 className="font-black text-[#2C160F] text-lg truncate">{log.title}</h3>
+                              <div className="flex items-center gap-1">
+                                <button 
+                                  onClick={() => {
+                                    setFormData({
+                                      title: log.title,
+                                      message: log.message,
+                                      target: log.is_broadcast ? "all" : "specific",
+                                      target_user_ids: log.target_user_id ? [log.target_user_id] : []
+                                    });
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  }}
+                                  className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                  title={isAr ? "إعادة استخدام" : "Reuse"}
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    setSelectedNotification(log);
+                                    setShowDeleteModal(true);
+                                  }}
+                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                  title={isAr ? "حذف" : "Delete"}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                            <p className="text-sm text-[#2C160F]/60 mb-3 line-clamp-2">{log.message}</p>
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold text-[#2C160F]/50">
-                              <span className="flex items-center gap-1.5">
+                              <span className="flex items-center gap-1.5 bg-[#f5f1eb] px-2 py-1 rounded-lg">
                                 <Users className="w-3.5 h-3.5" />
-                                {log.target === 'all' && (isAr ? "الجميع" : "All")}
-                                {log.target === 'users' && (isAr ? "المستخدمين" : "Users")}
-                                {log.target === 'admins' && (isAr ? "المشرفين" : "Admins")}
+                                {log.is_broadcast ? (isAr ? "الجميع" : "All") : (isAr ? `مستخدم #${log.target_user_id}` : `User #${log.target_user_id}`)}
                               </span>
                               <span className="flex items-center gap-1.5">
                                 <Clock className="w-3.5 h-3.5" />
-                                {log.date}
-                              </span>
-                              <span className="flex items-center gap-1.5">
-                                <Mail className="w-3.5 h-3.5" />
-                                {isAr ? "بواسطة:" : "By:"} {log.sentBy}
+                                {new Date(log.created_at).toLocaleString(isAr ? 'ar-SA' : 'en-US')}
                               </span>
                             </div>
-                          </div>
-                          <div className="flex items-start sm:justify-end shrink-0">
-                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
-                              <CheckCircle2 className="w-3 h-3" />
-                              {isAr ? "تم الإرسال" : "Sent"}
-                            </span>
                           </div>
                         </div>
                       ))}
@@ -246,10 +357,85 @@ export default function NotificationsAdminPage({
         </div>
       </div>
 
+      {/* User Selection Modal */}
+      {showUserSelector && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#2C160F]/40 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl flex flex-col max-h-[80vh] overflow-hidden">
+            <div className="p-8 border-b border-[#2C160F]/5 flex items-center justify-between shrink-0">
+              <div>
+                <h3 className="text-2xl font-black text-[#2C160F]">{isAr ? "اختيار المستخدمين" : "Select Users"}</h3>
+                <p className="text-[#2C160F]/50 text-sm font-bold">{isAr ? `تم اختيار ${formData.target_user_ids.length} مستخدم` : `${formData.target_user_ids.length} users selected`}</p>
+              </div>
+              <button onClick={() => setShowUserSelector(false)} className="p-3 bg-[#f5f1eb] rounded-2xl hover:bg-[#f5f1eb]/80 transition-colors">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 shrink-0">
+              <div className="relative">
+                <Search className={`w-5 h-5 text-[#2C160F]/30 absolute top-1/2 -translate-y-1/2 ${isAr ? 'right-4' : 'left-4'}`} />
+                <input 
+                  type="text"
+                  placeholder={isAr ? "ابحث بالاسم، الإيميل أو الـ ID..." : "Search by name, email or ID..."}
+                  value={userSearchTerm}
+                  onChange={(e) => setUserSearchTerm(e.target.value)}
+                  className={`w-full bg-[#f5f1eb]/50 border-transparent focus:border-[#2C160F]/20 rounded-2xl py-4 ${isAr ? 'pr-12 pl-4' : 'pl-12 pr-4'} text-[#2C160F] outline-none font-bold`}
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-2 custom-scrollbar">
+              {loadingUsers ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                  <Loader2 className="w-10 h-10 animate-spin text-[#2C160F]/20" />
+                  <p className="text-[#2C160F]/40 font-bold">{isAr ? "جاري تحميل المستخدمين..." : "Loading users..."}</p>
+                </div>
+              ) : filteredUsers.length > 0 ? (
+                filteredUsers.map(user => (
+                  <button
+                    key={user.id}
+                    onClick={() => toggleUserSelection(user.id)}
+                    className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border ${
+                      formData.target_user_ids.includes(user.id)
+                        ? "bg-[#2C160F] border-[#2C160F] text-white shadow-lg translate-x-1"
+                        : "bg-[#f5f1eb]/30 border-transparent hover:border-[#2C160F]/10 hover:bg-[#f5f1eb]/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 text-start">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black ${formData.target_user_ids.includes(user.id) ? 'bg-white/20' : 'bg-[#2C160F]/5 text-[#2C160F]'}`}>
+                        {user.id}
+                      </div>
+                      <div>
+                        <p className="font-black text-sm">{user.full_name || user.name || user.username}</p>
+                        <p className={`text-[10px] font-bold ${formData.target_user_ids.includes(user.id) ? 'text-white/60' : 'text-[#2C160F]/40'}`}>{user.email}</p>
+                      </div>
+                    </div>
+                    {formData.target_user_ids.includes(user.id) && <Check className="w-5 h-5" />}
+                  </button>
+                ))
+              ) : (
+                <div className="py-20 text-center text-[#2C160F]/30 font-bold">
+                  {isAr ? "لا يوجد مستخدمين بهذا الاسم" : "No users found"}
+                </div>
+              )}
+            </div>
+
+            <div className="p-8 border-t border-[#2C160F]/5 bg-[#f5f1eb]/30 shrink-0">
+              <button
+                onClick={() => setShowUserSelector(false)}
+                className="w-full bg-[#2C160F] text-white py-4 rounded-2xl font-black shadow-xl hover:bg-[#2C160F]/90 transition-all"
+              >
+                {isAr ? "تم، حفظ الاختيار" : "Done, Save Selection"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2C160F]/40 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl relative">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-[#2C160F]/40 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
             <button
               onClick={() => !isSubmitting && setShowConfirmModal(false)}
               className="absolute top-6 right-6 p-2 text-[#2C160F]/40 hover:text-[#2C160F] transition-colors rounded-full hover:bg-[#f5f1eb]"
@@ -268,8 +454,8 @@ export default function NotificationsAdminPage({
 
             <p className="text-[#2C160F]/60 font-bold mb-8 text-center leading-relaxed">
               {isAr
-                ? `هل أنت متأكد أنك تريد إرسال هذا الإشعار إلى ${formData.target === 'all' ? 'جميع المستخدمين' : formData.target === 'admins' ? 'المشرفين فقط' : 'المستخدمين العاديين'}؟`
-                : `Are you sure you want to send this notification to ${formData.target === 'all' ? 'all users' : formData.target === 'admins' ? 'admins only' : 'regular users'}?`
+                ? `هل أنت متأكد أنك تريد إرسال هذا الإشعار إلى ${formData.target === 'all' ? 'جميع المستخدمين' : `عدد ${formData.target_user_ids.length} مستخدم`}؟`
+                : `Are you sure you want to send this notification to ${formData.target === 'all' ? 'all users' : `${formData.target_user_ids.length} users`}?`
               }
             </p>
 
@@ -300,16 +486,64 @@ export default function NotificationsAdminPage({
         </div>
       )}
 
-      {/* Success Toast */}
-      {showSuccessToast && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
-          <div className="bg-green-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 font-bold">
-            <CheckCircle2 className="w-6 h-6" />
-            {isAr ? "تم إرسال الإشعار بنجاح!" : "Notification sent successfully!"}
+      {/* Delete Notification Modal */}
+      {showDeleteModal && selectedNotification && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-[#2C160F]/40 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
+            <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mb-6 text-red-500 mx-auto">
+              <Trash2 className="w-10 h-10" />
+            </div>
+            <h3 className="text-2xl font-black text-[#2C160F] mb-2 text-center">
+              {isAr ? "حذف الإشعار" : "Delete Notification"}
+            </h3>
+            <p className="text-[#2C160F]/60 font-bold mb-8 text-center leading-relaxed">
+              {isAr ? "هل أنت متأكد من حذف هذا الإشعار من السجل؟ لا يمكن التراجع عن هذا الإجراء." : "Are you sure you want to delete this notification from log? This action cannot be undone."}
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleDeleteNotification}
+                disabled={isSubmitting}
+                className="flex-1 bg-red-600 text-white py-4 rounded-xl font-black hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (isAr ? "حذف نهائي" : "Delete Now")}
+              </button>
+              <button
+                onClick={() => { setShowDeleteModal(false); setSelectedNotification(null); }}
+                disabled={isSubmitting}
+                className="flex-1 bg-[#f5f1eb] text-[#2C160F] py-4 rounded-xl font-black hover:bg-[#f5f1eb]/80 transition-colors"
+              >
+                {isAr ? "إلغاء" : "Cancel"}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Success Toast */}
+      {showSuccessToast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="bg-green-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 font-bold">
+            <CheckCircle2 className="w-6 h-6" />
+            {isAr ? "تم تنفيذ العملية بنجاح!" : "Operation successful!"}
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(44, 22, 15, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(44, 22, 15, 0.2);
+        }
+      `}</style>
     </main>
   );
 }

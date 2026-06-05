@@ -98,8 +98,7 @@ export default function Navbar() {
         const freshUser = await authService.getMe();
         setUser(freshUser);
       } catch (error: any) {
-        console.error("Navbar: failed to refresh user", error);
-        if (error.message === "Could not validate credentials") {
+        if (error.message === 'Could not validate credentials' || error.message.includes('unauthorized')) {
           setIsLoggedIn(false);
           setUser(null);
         }
@@ -107,7 +106,21 @@ export default function Navbar() {
     };
 
     loadUser();
-  }, []);
+
+    // Listen for profile updates
+    const handleUpdate = () => {
+      const updatedUser = authService.getUser();
+      if (updatedUser) setUser({ ...updatedUser });
+    };
+
+    window.addEventListener('userUpdated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    return () => {
+      window.removeEventListener('userUpdated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -351,7 +364,15 @@ export default function Navbar() {
                 }`}
                 aria-label={isLoggedIn ? t.profile : t.login}
               >
-                {isLoggedIn ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+                {isLoggedIn ? (
+                  user?.avatar ? (
+                    <img src={user.avatar} alt="Profile" className="h-full w-full rounded-full object-cover" />
+                  ) : (
+                    <User className="h-4 w-4" />
+                  )
+                ) : (
+                  <LogIn className="h-4 w-4" />
+                )}
               </button>
 
               {isLoggedIn && isProfileOpen && (

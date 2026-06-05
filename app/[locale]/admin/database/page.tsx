@@ -79,14 +79,14 @@ export default function DatabasePage({
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedNationalities, setSelectedNationalities] = useState<string[]>([]);
-  const [minYear, setMinYear] = useState<number>(2026);
+  const [minYear, setMinYear] = useState<number>(2020);
   const [maxYear, setMaxYear] = useState<number>(2100);
 
   // Applied Filter States (After clicking Apply)
   const [appliedRoles, setAppliedRoles] = useState<string[]>([]);
   const [appliedStatuses, setAppliedStatuses] = useState<string[]>([]);
   const [appliedNationalities, setAppliedNationalities] = useState<string[]>([]);
-  const [appliedMinYear, setAppliedMinYear] = useState<number>(2026);
+  const [appliedMinYear, setAppliedMinYear] = useState<number>(2020);
   const [appliedMaxYear, setAppliedMaxYear] = useState<number>(2100);
 
   // Unique lists for dynamic filters
@@ -125,27 +125,32 @@ export default function DatabasePage({
     setSelectedRoles([]);
     setSelectedStatuses([]);
     setSelectedNationalities([]);
-    setMinYear(2026);
+    setMinYear(2020);
     setMaxYear(2100);
     // Also clear applied immediately
     setAppliedRoles([]);
     setAppliedStatuses([]);
     setAppliedNationalities([]);
-    setAppliedMinYear(2026);
+    setAppliedMinYear(2020);
     setAppliedMaxYear(2100);
   };
 
   const filteredUsers = users.filter(u => {
-    const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.country.toLowerCase().includes(searchTerm.toLowerCase());
+    const userName = (u.full_name || u.name || u.username || "").toLowerCase();
+    const userEmail = (u.email || "").toLowerCase();
+    const userCountry = (u.country || "").toLowerCase();
+    const search = searchTerm.toLowerCase();
 
-    const matchesRole = appliedRoles.length === 0 || appliedRoles.includes(u.role);
+    const matchesSearch = userName.includes(search) ||
+      userEmail.includes(search) ||
+      userCountry.includes(search);
+
+    const matchesRole = appliedRoles.length === 0 || appliedRoles.includes(u.role || "");
     const matchesStatus = appliedStatuses.length === 0 || appliedStatuses.includes(u.is_active ? 'active' : 'inactive');
 
-    const matchesNationality = appliedNationalities.length === 0 || appliedNationalities.includes(u.country);
+    const matchesNationality = appliedNationalities.length === 0 || appliedNationalities.includes(u.country || "");
 
-    const uYear = Number(new Date(u.created_at).getFullYear());
+    const uYear = u.created_at ? Number(new Date(u.created_at).getFullYear()) : 0;
     const matchesYear = uYear >= appliedMinYear && uYear <= appliedMaxYear;
 
     return matchesSearch && matchesRole && matchesStatus && matchesNationality && matchesYear;
@@ -448,6 +453,7 @@ export default function DatabasePage({
               <table className="w-full text-left border-collapse" dir={dir}>
                 <thead>
                   <tr className="bg-[#f5f1eb]/30 text-[#2C160F]/60 text-xs uppercase tracking-widest font-black">
+                    <th className="p-4 sm:p-6 text-start">ID</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "المستخدم" : "User"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "الجنسية" : "Nationality"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "الصلاحية" : "Role"}</th>
@@ -456,19 +462,28 @@ export default function DatabasePage({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2C160F]/5">
-                  {filteredUsers.length > 0 ? (
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="p-12 text-center">
+                        <Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" />
+                      </td>
+                    </tr>
+                  ) : filteredUsers.length > 0 ? (
                     filteredUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-[#f5f1eb]/20 transition-colors group">
+                        <td className="p-4 sm:p-6">
+                          <span className="font-mono font-bold text-[#2C160F]/60">{user.id}</span>
+                        </td>
                         <td className="p-4 sm:p-6">
                           <div className="flex items-center gap-3">
                             <div className="relative">
                               <div className="w-10 h-10 rounded-full bg-[#f5f1eb] border-2 border-white shadow-sm flex items-center justify-center text-[#2C160F] font-black text-sm">
-                                {(user.name || user.username || "?").charAt(0)}
+                                {(user.full_name || user.name || user.username || "?").charAt(0)}
                               </div>
                               <span className={`absolute bottom-0 ${isAr ? 'left-0' : 'right-0'} w-3 h-3 rounded-full border-2 border-white ${user.is_active ? 'bg-green-500' : 'bg-red-500'}`}></span>
                             </div>
                             <div>
-                              <p className="font-bold text-[#2C160F]">{user.name || user.username}</p>
+                              <p className="font-bold text-[#2C160F]">{user.full_name || user.name || user.username}</p>
                               <p className="text-xs text-[#2C160F]/50 font-medium flex items-center gap-1">
                                 <Mail className="w-3 h-3" /> {user.email}
                               </p>
@@ -524,7 +539,7 @@ export default function DatabasePage({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="p-12 text-center text-[#2C160F]/40">
+                      <td colSpan={6} className="p-12 text-center text-[#2C160F]/40">
                         <Users className="w-12 h-12 mx-auto mb-4 opacity-20" />
                         <p className="text-lg font-bold">{isAr ? "لا يوجد مستخدمين مطابقين للبحث" : "No users found matching your filters"}</p>
                       </td>
@@ -555,9 +570,8 @@ export default function DatabasePage({
 
             <p className="text-[#2C160F]/60 font-medium mb-6 leading-relaxed">
               {isAr
-                ? `هل أنت متأكد من تحويل ${actionUser.name || actionUser.username} إلى ${actionUser.role === 'admin' ? 'مستخدم عادي' : 'مشرف (Admin)'}؟`
-                : `Are you sure you want to change ${actionUser.name || actionUser.username}'s role to ${actionUser.role === 'admin' ? 'User' : 'Admin'}?`
-              }
+                ? `هل أنت متأكد من تغيير صلاحية المستخدم "${actionUser.full_name || actionUser.name || actionUser.username}"؟`
+                : `Are you sure you want to change the role for "${actionUser.full_name || actionUser.name || actionUser.username}"?`}
             </p>
 
             <div className="flex items-center gap-3">
@@ -598,8 +612,8 @@ export default function DatabasePage({
 
             <p className="text-[#2C160F]/60 font-medium mb-6 leading-relaxed">
               {isAr
-                ? `هل أنت متأكد من رغبتك في حذف المستخدم "${actionUser.name || actionUser.username}"؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع بياناته.`
-                : `Are you sure you want to delete user "${actionUser.name || actionUser.username}"? This action cannot be undone and all data will be lost.`
+                ? `هل أنت متأكد من رغبتك في حذف المستخدم "${actionUser.full_name || actionUser.name || actionUser.username}"؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع بياناته.`
+                : `Are you sure you want to delete user "${actionUser.full_name || actionUser.name || actionUser.username}"? This action cannot be undone and all data will be lost.`
               }
             </p>
 

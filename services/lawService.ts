@@ -81,4 +81,11 @@ export const lawService = {
    */
   getAvailableCountries: () => 
     api.get<string[]>('/laws/countries'),
+
+  /**
+   * جلب إشعارات المستخدم الحالي
+   * @returns قائمة بالإشعارات
+   */
+  getMyNotifications: () => 
+    api.get<any[]>('/laws/my-notifications'),
 };

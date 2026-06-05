@@ -210,10 +210,13 @@ export default function SystemLogsPage({
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-[#2C160F] text-white flex items-center justify-center text-[10px] font-bold">
-                              A
+                              {(log.admin_name || log.admin_id?.toString() || log.user_id?.toString() || "A")[0]}
                             </div>
                             <div>
-                              <span className="font-bold text-[#2C160F]/80">Admin #{log.admin_id}</span>
+                              <span className="font-bold text-[#2C160F]/80">
+                                {log.admin_name && log.admin_name !== "Unknown" ? log.admin_name : (isAr ? "مسؤول" : "Admin")} 
+                                {(log.admin_id || log.user_id) ? ` (ID: ${log.admin_id || log.user_id})` : ""}
+                              </span>
                             </div>
                           </div>
 

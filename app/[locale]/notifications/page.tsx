@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AlertTriangle, ArrowLeft, ArrowRight, Bell, CheckCircle2, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Bell, CheckCircle2, ShieldAlert, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { PageShell, PrimaryButton, SectionHeader, StatePanel, StatusBadge, SurfaceCard } from "@/components/ui/tabayun";
+import { lawService } from "@/services/lawService";
 
 export default function NotificationsPage() {
   const params = useParams();
@@ -13,6 +14,24 @@ export default function NotificationsPage() {
   const locale = (params.locale as string) || "ar";
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
+
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const data = await lawService.getMyNotifications();
+        setNotifications(data);
+      } catch (err) {
+        console.error("Failed to fetch notifications", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   const sampleAlertTypes = [
     {
@@ -58,13 +77,42 @@ export default function NotificationsPage() {
           />
 
           <div className="grid gap-5 lg:grid-cols-[1fr_380px]">
-            <StatePanel
-              title={isAr ? "لا توجد إشعارات حالياً" : "No notifications yet"}
-              description={isAr ? "عند وجود تحديثات أو تحذيرات مهمة ستظهر هنا بوضوح مع مستوى الأهمية." : "When important updates or warnings exist, they will appear here with clear priority."}
-              action={isAr ? "تصفح الفئات" : "Browse categories"}
-              onAction={() => router.push(`/${locale}/categories`)}
-              locale={locale}
-            />
+            <div className="space-y-4">
+              {loading ? (
+                <div className="flex h-64 items-center justify-center rounded-[2.5rem] bg-white shadow-xl shadow-tabayun-coffee/5">
+                  <Loader2 className="h-10 w-10 animate-spin text-tabayun-coffee/20" />
+                </div>
+              ) : notifications.length > 0 ? (
+                notifications.map((notif) => (
+                  <SurfaceCard key={notif.id} className="p-6 transition-all hover:shadow-2xl hover:shadow-tabayun-coffee/10">
+                    <div className="flex gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-tabayun-sand/40 text-tabayun-coffee">
+                        <Bell className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                          <h3 className="text-lg font-black text-tabayun-coffee">{notif.title}</h3>
+                          <span className="text-[10px] font-bold text-tabayun-coffee/40">
+                            {new Date(notif.created_at).toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US')}
+                          </span>
+                        </div>
+                        <p className="text-sm font-medium leading-relaxed text-tabayun-coffee/70">
+                          {notif.message}
+                        </p>
+                      </div>
+                    </div>
+                  </SurfaceCard>
+                ))
+              ) : (
+                <StatePanel
+                  title={isAr ? "لا توجد إشعارات حالياً" : "No notifications yet"}
+                  description={isAr ? "عند وجود تحديثات أو تحذيرات مهمة ستظهر هنا بوضوح مع مستوى الأهمية." : "When important updates or warnings exist, they will appear here with clear priority."}
+                  action={isAr ? "تصفح الفئات" : "Browse categories"}
+                  onAction={() => router.push(`/${locale}/categories`)}
+                  locale={locale}
+                />
+              )}
+            </div>
 
             <SurfaceCard className="p-6">
               <div className="mb-5 flex items-center gap-3">

@@ -4,6 +4,7 @@ export interface User {
   full_name: string;
   country: string;
   language: string;
+  avatar?: string;
   is_admin?: boolean;
 }
 

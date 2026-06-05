@@ -143,6 +143,7 @@ export default function AdminUsersPage({
             <table className="w-full text-start border-collapse">
               <thead>
                 <tr className="bg-[#f5f1eb]/50 border-b border-[#2C160F]/5 text-[#2C160F]/60 text-xs uppercase tracking-widest font-black">
+                  <th className="p-6 text-start">ID</th>
                   <th className="p-6 text-start">{isAr ? "المستخدم" : "User"}</th>
                   <th className="p-6 text-start">{isAr ? "الدولة" : "Country"}</th>
                   <th className="p-6 text-start">{isAr ? "الصلاحية" : "Role"}</th>
@@ -152,16 +153,19 @@ export default function AdminUsersPage({
               </thead>
               <tbody className="divide-y divide-[#2C160F]/5">
                 {loading ? (
-                  <tr><td colSpan={5} className="p-12 text-center"><Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" /></td></tr>
+                  <tr><td colSpan={6} className="p-12 text-center"><Loader2 className="w-10 h-10 animate-spin mx-auto text-[#2C160F]/20" /></td></tr>
                 ) : users.map(user => (
                   <tr key={user.id} className="hover:bg-[#f5f1eb]/10 transition-colors">
                     <td className="p-6">
+                      <span className="font-mono font-bold text-[#2C160F]/60">{user.id}</span>
+                    </td>
+                    <td className="p-6">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-[#2C160F] text-white flex items-center justify-center font-bold">
-                          {(user.name || user.username || "?")[0]}
+                          {(user.full_name || user.name || user.username || "?")[0]}
                         </div>
                         <div>
-                          <p className="font-bold text-[#2C160F]">{user.name || user.username}</p>
+                          <p className="font-bold text-[#2C160F]">{user.full_name || user.name || user.username}</p>
                           <p className="text-xs text-[#2C160F]/40">{user.email}</p>
                         </div>
                       </div>
@@ -262,8 +266,8 @@ export default function AdminUsersPage({
             <h2 className="text-2xl font-black text-[#2C160F] mb-2">{isAr ? 'تغيير الصلاحية' : 'Change Role'}</h2>
             <p className="text-[#2C160F]/60 mb-8">
               {isAr 
-                ? `هل أنت متأكد من تغيير صلاحية ${selectedUser.name || selectedUser.username}؟` 
-                : `Are you sure you want to change the role for ${selectedUser.name || selectedUser.username}?`}
+                ? `هل أنت متأكد من تغيير صلاحية ${selectedUser.full_name || selectedUser.name || selectedUser.username}؟` 
+                : `Are you sure you want to change the role for ${selectedUser.full_name || selectedUser.name || selectedUser.username}?`}
             </p>
             <div className="flex gap-4">
               <button onClick={() => setShowRoleModal(false)} className="flex-1 py-3 rounded-xl font-bold bg-[#f5f1eb]">{isAr ? 'إلغاء' : 'Cancel'}</button>
@@ -283,8 +287,8 @@ export default function AdminUsersPage({
             <h2 className="text-2xl font-black text-[#2C160F] mb-2">{isAr ? 'حذف المستخدم' : 'Delete User'}</h2>
             <p className="text-[#2C160F]/60 mb-8">
               {isAr 
-                ? `لا يمكن التراجع عن حذف ${selectedUser.name || selectedUser.username}.` 
-                : `Deleting ${selectedUser.name || selectedUser.username} cannot be undone.`}
+                ? `لا يمكن التراجع عن حذف ${selectedUser.full_name || selectedUser.name || selectedUser.username}.` 
+                : `Deleting ${selectedUser.full_name || selectedUser.name || selectedUser.username} cannot be undone.`}
             </p>
             <div className="flex gap-4">
               <button onClick={() => setShowDeleteModal(false)} className="flex-1 py-3 rounded-xl font-bold bg-[#f5f1eb]">{isAr ? 'إلغاء' : 'Cancel'}</button>

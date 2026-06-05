@@ -41,6 +41,14 @@ export default function AdminLawsPage({
 
   const [totalCount, setTotalCount] = useState(0); // For pagination UI
 
+  const categoryNames: Record<number, string> = {
+    1: isAr ? "المرور" : "Traffic",
+    2: isAr ? "العمل والعقود" : "Work & Contracts",
+    3: isAr ? "الآداب العامة" : "Public Decency",
+    4: isAr ? "الإقامة والتأشيرات" : "Residency & Visas",
+    5: isAr ? "المأكولات" : "Food",
+  };
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [lawToDelete, setLawToDelete] = useState<Law | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -147,11 +155,11 @@ export default function AdminLawsPage({
                 className={`w-full bg-[#f5f1eb]/50 border border-transparent focus:border-[#2C160F]/20 rounded-2xl py-3 px-12 text-[#2C160F] outline-none transition-all font-bold appearance-none cursor-pointer`}
               >
                 <option value="all">{isAr ? "جميع التصنيفات" : "All Categories"}</option>
-                <option value="labor">{isAr ? "عمالي" : "Labor"}</option>
-                <option value="traffic">{isAr ? "مروري" : "Traffic"}</option>
-                <option value="commercial">{isAr ? "تجاري" : "Commercial"}</option>
-                <option value="civil">{isAr ? "مدني" : "Civil"}</option>
-                <option value="technology">{isAr ? "تقني" : "Technology"}</option>
+                <option value="1">{isAr ? "المرور" : "Traffic"}</option>
+                <option value="2">{isAr ? "العمل والعقود" : "Work & Contracts"}</option>
+                <option value="3">{isAr ? "الآداب العامة" : "Public Decency"}</option>
+                <option value="4">{isAr ? "الإقامة والتأشيرات" : "Residency & Visas"}</option>
+                <option value="5">{isAr ? "المأكولات" : "Food"}</option>
               </select>
             </div>
           </div>
@@ -191,10 +199,15 @@ export default function AdminLawsPage({
                           </div>
                         </td>
                         <td className="p-4 sm:p-6">
-                          <span className="inline-flex items-center gap-2 bg-[#f5f1eb] text-[#2C160F]/60 px-3 py-1 rounded-full text-xs font-bold">
-                            <Globe className="w-3 h-3" />
-                            {law.country}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-flex items-center gap-2 bg-[#2C160F]/5 text-[#2C160F] px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider w-fit">
+                              {categoryNames[law.category_id] || (isAr ? "عام" : "General")}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 text-[#2C160F]/40 text-[10px] font-bold px-1">
+                              <Globe className="w-2.5 h-2.5" />
+                              {law.country}
+                            </span>
+                          </div>
                         </td>
                         <td className="p-4 sm:p-6 text-[#2C160F]/60 font-medium text-sm">
                           {law.article_number || "-"}

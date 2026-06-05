@@ -43,7 +43,13 @@ export const adminService = {
     api.post<{ message: string }>('/admin/seed-configs', {}),
 
   // Notifications
-  sendNotification: (notification: { title: string, content: string, target_user_id?: number | null }) => 
+  getNotifications: (skip = 0, limit = 50) => 
+    api.get<any[]>(`/admin/notifications?skip=${skip}&limit=${limit}`),
+
+  deleteNotification: (id: number) => 
+    api.delete<{ message: string }>(`/admin/notifications/${id}`),
+
+  sendNotification: (notification: { title: string, content: string, target_user_ids?: number[] | null }) => 
     api.post<{ message: string }>('/admin/notifications', notification),
 
   // Activity Logs

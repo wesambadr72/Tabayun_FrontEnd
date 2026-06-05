@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const params = useParams();
   const router = useRouter();
   const locale = (params.locale as string) || "ar";
+  const isAr = locale === "ar";
   const commonDict = dictionaries[locale as keyof typeof dictionaries] || ar;
   const profileDict = commonDict.auth?.profile || {};
   const dir = locale === "ar" ? "rtl" : "ltr";
@@ -35,7 +36,42 @@ export default function ProfilePage() {
     confirmPassword: ""
   });
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const avatars = [
+    { id: 1, url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" },
+    { id: 2, url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" },
+    { id: 3, url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Milo" },
+    { id: 4, url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna" },
+    { id: 5, url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Oscar" },
+    { id: 6, url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe" },
+  ];
+
+  const handleAvatarSelect = async (avatarUrl: string) => {
+    try {
+      setErrors({});
+      setIsUpdating(true);
+      const updatedUser = await authService.updateProfile({ avatar: avatarUrl });
+      
+      // Force update both states to ensure UI refresh
+      setUser({ ...updatedUser });
+      authService.setUser(updatedUser);
+      
+      setShowAvatarSelector(false);
+      setSuccessMessage(locale === 'ar' ? 'تم تحديث الصورة الشخصية بنجاح' : 'Avatar updated successfully');
+      
+      // Trigger a custom event to notify Navbar
+      window.dispatchEvent(new Event('userUpdated'));
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      console.error("Failed to update avatar", err);
+      setErrors({ general: locale === 'ar' ? 'فشل تحديث الصورة الشخصية' : 'Failed to update avatar' });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showForgotDialog, setShowForgotDialog] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -48,25 +84,17 @@ export default function ProfilePage() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Try getting from localStorage first for instant display
-        const cachedUser = authService.getUser();
-        if (cachedUser) {
-          setUser(cachedUser);
-        }
-        
         // Refresh with fresh data from server
-        const [freshUser, countries] = await Promise.all([
-          authService.getMe(),
-          lawService.getAvailableCountries().catch(() => [] as string[])
-        ]);
-        
+        const freshUser = await authService.getMe();
+        console.log("Fresh user data from API:", freshUser); // التحقق من البيانات القادمة من السيرفر
         setUser(freshUser);
+        
+        const countries = await lawService.getAvailableCountries().catch(() => [] as string[]);
         if (countries) {
           setAvailableCountries(countries.includes('sa') ? countries : ['sa', ...countries]);
         }
       } catch (err) {
         console.error("Failed to fetch data", err);
-        // If it fails and we have no cached user, redirect to login
         if (!authService.getUser()) {
           router.push(`/${locale}/auth/login`);
         }
@@ -201,9 +229,9 @@ export default function ProfilePage() {
     {
       id: 'language',
       label: profileDict.language || (locale === 'ar' ? 'اللغة' : 'Language'),
-      value: user?.language || (locale === 'ar' ? 'عربي' : 'Arabic'),
+      value: locale === 'ar' ? 'العربية' : 'English',
       icon: Languages,
-      onClick: () => handleEditToggle('language', user?.language || locale)
+      onClick: () => handleEditToggle('language', locale)
     },
     {
       id: 'favorites',
@@ -255,24 +283,65 @@ export default function ProfilePage() {
         <div className="w-full max-w-2xl bg-white rounded-[2rem] shadow-xl shadow-[#2C160F]/5 border border-[#2C160F]/10 overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-700 delay-150 fill-mode-backwards p-8 md:p-12">
 
           {/* Profile Image Section */}
-          <div className="flex flex-col items-center mb-12 relative group cursor-pointer">
-            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-[#f5f1eb] shadow-lg overflow-hidden bg-[#f5f1eb] flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-105">
-              <Image
-                src="/image/profile.svg" // Fallback or placeholder
-                alt="Profile"
-                width={160}
-                height={160}
-                className="object-cover p-2 opacity-80"
-              />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="flex flex-col items-center mb-12 relative group">
+            <div 
+              onClick={() => setShowAvatarSelector(!showAvatarSelector)}
+              className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-[#f5f1eb] shadow-lg overflow-hidden bg-[#f5f1eb] flex items-center justify-center mb-4 transition-transform duration-300 hover:scale-105 cursor-pointer"
+            >
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <UserIcon className="w-16 h-16 text-[#2C160F]/20" />
+              )}
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                 <Camera className="w-8 h-8 text-white" />
               </div>
             </div>
 
-            <button className="flex items-center gap-2 text-[#2C160F] font-bold text-sm md:text-base hover:text-[#2C160F]/70 transition-colors bg-[#f5f1eb] px-4 py-2 rounded-full">
+            <button 
+              onClick={() => setShowAvatarSelector(!showAvatarSelector)}
+              className="flex items-center gap-2 text-[#2C160F] font-bold text-sm md:text-base hover:text-[#2C160F]/70 transition-colors bg-[#f5f1eb] px-4 py-2 rounded-full"
+            >
               <Camera className="w-4 h-4" />
               {profileDict.changePhoto || "تغيير الصورة"}
             </button>
+
+            {/* Avatar Selector Dropdown/Modal */}
+            {showAvatarSelector && (
+              <div className="absolute top-full mt-4 bg-white rounded-3xl shadow-2xl border border-[#2C160F]/10 p-6 z-50 w-full max-w-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-black text-[#2C160F]">{isAr ? "اختر صورة شخصية" : "Choose Avatar"}</h3>
+                  <button onClick={() => setShowAvatarSelector(false)} className="text-[#2C160F]/30 hover:text-[#2C160F]">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  {avatars.map((avatar) => (
+                    <button
+                      key={avatar.id}
+                      onClick={() => handleAvatarSelect(avatar.url)}
+                      disabled={isUpdating}
+                      className="relative aspect-square rounded-2xl overflow-hidden border-2 border-transparent hover:border-[#2C160F] transition-all hover:scale-105 disabled:opacity-50 bg-[#f5f1eb]"
+                    >
+                      <img
+                        src={avatar.url}
+                        alt="Avatar Option"
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+                {isUpdating && (
+                  <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded-3xl">
+                    <Loader2 className="w-8 h-8 text-[#2C160F] animate-spin" />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Info List */}

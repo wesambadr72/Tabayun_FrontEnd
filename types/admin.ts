@@ -13,6 +13,7 @@ export interface BroadcastNotification {
 export interface AdminActivityLog {
   id: number;
   admin_id: number;
+  admin_name?: string;
   action: string;
   target_type: string;
   target_id: number;
@@ -29,7 +30,8 @@ export interface UserAdmin {
   id: number;
   username: string;
   email: string;
-  name: string;
+  name?: string;
+  full_name?: string;
   role: 'admin' | 'user';
   is_active: boolean;
   is_verified: boolean;

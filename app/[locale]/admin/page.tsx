@@ -203,7 +203,10 @@ export default function AdminDashboardPage({
                           <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                             <p className="text-[11px] font-medium text-[#2C160F]/40 italic">
-                              {isAr ? "بواسطة" : "By"} <span className="text-[#2C160F]/60 font-bold not-italic">Admin #{log.admin_id}</span>
+                              {isAr ? "بواسطة" : "By"} <span className="text-[#2C160F]/60 font-bold not-italic">
+                                {log.admin_name && log.admin_name !== "Unknown" ? log.admin_name : (isAr ? "مسؤول" : "Admin")} 
+                                {(log.admin_id || log.id) ? ` (ID: ${log.admin_id || (log as any).user_id || ""})` : ""}
+                              </span>
                             </p>
                           </div>
                         </div>
