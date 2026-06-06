@@ -12,11 +12,13 @@ export interface BroadcastNotification {
 
 export interface AdminActivityLog {
   id: number;
-  admin_id: number;
+  admin_id?: number;
+  user_id?: number;
   admin_name?: string;
   action: string;
   target_type: string;
-  target_id: number;
+  table_name?: string;
+  record_id?: number;
   created_at: string;
 }
 
