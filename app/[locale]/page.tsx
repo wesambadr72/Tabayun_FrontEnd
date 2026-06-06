@@ -1,11 +1,45 @@
-export default function HomePage({ params: { locale } }: { params: { locale: string } }) {
+// --- استيراد المكونات الأساسية ---
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { PageShell } from "@/components/ui/tabayun";
+
+// --- استيراد أقسام الصفحة الرئيسية (Features) ---
+import Hero from "@/components/features/Hero";
+import AboutSection from "@/components/features/AboutSection";
+import FeaturesSection from "@/components/features/FeaturesSection";
+import BotCTASection from "@/components/features/BotCTASection";
+
+/**
+ * مكون الصفحة الرئيسية (Home Page):
+ * الصفحة التعريفية للمنصة، تعرض رؤية المشروع، المميزات، ورابط الانتقال للدردشة مع الذكاء الاصطناعي.
+ */
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // جلب اللغة الحالية من الرابط (ar/en)
+  const { locale } = await params;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Welcome to Tabayun ({locale})
-        </p>
-      </div>
-    </main>
+    <PageShell className="flex flex-col">
+      {/* شريط التنقل العلوي */}
+      <Navbar />
+
+      {/* قسم الترحيب الرئيسي */}
+      <Hero />
+
+      {/* قسم "عن تبين" */}
+      <AboutSection />
+
+      {/* قسم مميزات المنصة */}
+      <FeaturesSection />
+
+      {/* قسم دعوة لتجربة المساعد الذكي */}
+      <BotCTASection />
+
+      {/* تذييل الصفحة */}
+      <Footer />
+    </PageShell>
   );
 }

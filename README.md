@@ -17,27 +17,26 @@
 
 ---
 
-## Technology Stack
-
-| Layer | Technology |
-|-------|------------|
-| Framework | Next.js 15+ (React 19) |
-| Language | TypeScript |
-| Styling | Tailwind CSS + shadcn/ui |
-| Internationalization | EN, AR, FR, ES |
-| Deployment | Vercel |
-| Backend | FastAPI |
+### الواجهة الأمامية (Frontend)
+- **الإطار البرمجي:** Next.js 15 (App Router)
+- **اللغة:** TypeScript
+- **التصميم:** Tailwind CSS + Shadcn/ui
+- **إدارة الحالة:** React Hooks (useState, useEffect)
+- **تدويل اللغة (i18n):** English, Arabic (دعم كامل للاتجاهات RTL/LTR)
+- **التواصل مع الباك اند:** Axios (FastAPI Integration)
 
 ---
 
 ## Features
 
-### User-Facing
-- **Secure authentication** — protected account registration and login
-- **Law browser** — categorized browsing of Saudi regulations
-- **Legal comparison** — side-by-side view to understand legal distinctions
-- **AI chatbot** — 24/7 intelligent assistant for legal queries
-- **Bookmarks** — save and revisit important regulations
+### ميزات المستخدمين
+- [x] **تسجيل دخول ذكي:** نظام دخول وتسجيل متعدد الخطوات يربط المستخدم ببلده آلياً.
+- [x] **محرك بحث معنوي:** بحث متطور يفهم نية المستخدم في القوانين والمقارنات.
+- [x] **مقارنة قانونية ثنائية:** عرض Side-by-Side للقوانين السعودية والعالمية مع ملخصات ذكية.
+- [x] **مساعد ذكي (RAG Chat):** شات بوت قانوني مدعوم بالذكاء الاصطناعي للإجابة على الاستفسارات.
+- [x] **تصفية المحتوى:** عرض القوانين المشتركة بناءً على بلد المستخدم لضمان صلة المعلومات.
+- [x] **المصادر الأصلية:** توفير روابط مباشرة للمصادر القانونية الرسمية لضمان الموثوقية.
+- [x] **العلامات المرجعية:** حفظ المقارنات المهمة في الملف الشخصي.
 
 ### Admin Panel
 - **Analytics dashboard** — detailed platform usage statistics
@@ -80,6 +79,11 @@ npm run build
 
 ---
 
-## Mission
+## 🎯 هدف المشروع
+الهدف الأساسي هو مساعدة السياح في فهم القوانين واللوائح السعودية عبر مقارنتها بقوانين بلدانهم الأصلية، مما يعزز الوعي القانوني والامتثال بطريقة ذكية ومبسطة.
 
-Tabayun exists to reduce legal friction for international visitors in Saudi Arabia — promoting compliance, cultural respect, and a smoother overall experience through accessible, AI-assisted legal awareness.
+---
+
+## 🏁 حالة المشروع الحالية
+- **الربط:** متصل بالكامل مع الباك اند (FastAPI).
+- **اللغات:** دعم كامل للعربية والإنجليزية.

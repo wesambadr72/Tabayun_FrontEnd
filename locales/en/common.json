@@ -1,3 +1,116 @@
 {
-  "welcome": "Welcome to Tabayun"
+  "navbar": {
+    "brand": "Tabayun",
+    "home": "Home",
+    "contact": "Contact",
+    "assistant": "AI Assistant",
+    "browse": "Categories",
+    "profile": "Profile",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "categories": "Categories",
+    "sections": {
+      "traffic": "Traffic",
+      "residency": "Residency & Visas",
+      "publicDecency": "Public Decorum",
+      "labor": "Labor & Contracts",
+      "food": "Food"
+    },
+    "descriptions": {
+      "traffic": "Traffic laws and violations",
+      "residency": "Residency regulations and visa requirements",
+      "publicDecency": "Public decorum and behavior regulations",
+      "labor": "Labor laws and employment contracts",
+      "food": "Food and beverage safety regulations"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email Address:",
+      "username": "Username:",
+      "password": "Password:",
+      "forgotPassword": "Forgot password?",
+      "enter": "Login",
+      "createAccount": "Create Account",
+      "google": "Sign in with Google",
+      "rights": "All rights reserved to Tabayun ©"
+    },
+    "profile": {
+      "title": "Profile",
+      "changePhoto": "Change Photo",
+      "country": "Country",
+      "language": "Language",
+      "favorites": "Favorites",
+      "name": "Name",
+      "email": "Email",
+      "logout": "Logout",
+      "germany": "Germany",
+      "arabic": "Arabic",
+      "lawsCount": "7 Laws",
+      "userName": "Faisal",
+      "userEmail": "user@gmail.com"
+    },
+    "register": {
+      "welcome": "Welcome!",
+      "needInfo": "We need some information to create your account",
+      "emailQuestion": "What is your email?",
+      "nameQuestion": "May we have your name:",
+      "passwordQuestion": "Write a strong password",
+      "passwordHint": "Password must contain English letters only + at least one uppercase + at least one lowercase + at least one symbol + at least one number = at least 8 characters",
+      "repeatPasswordQuestion": "Type it again",
+      "compareQuestion": "Choose the country you want to compare Saudi Arabia's laws with",
+      "next": "Next",
+      "back": "Back",
+      "exit": "Exit",
+      "welcomeBtn": "Welcome",
+      "confirm": "Confirm",
+      "emailPlaceholder": "a123@gmail.com",
+      "namePlaceholder": "Faisal",
+      "passwordPlaceholder": "Password must be strong",
+      "repeatPasswordPlaceholder": "Repeat password"
+    }
+  },
+  "hero": {
+    "title": "Explore the laws of Saudi Arabia",
+    "description": "Tabayun.. your guide to understanding the differences between the laws in the Kingdom of Saudi Arabia and those applied in your country, in a simplified and clear style that suits everyone",
+    "cta": "Register and Discover Now"
+  },
+  "about": {
+    "title": "About Tabayun",
+    "description": "Tabayun is your premier destination for understanding laws and regulations in Saudi Arabia. We strive to simplify legal information and present it in a modern, easy-to-understand manner for visitors, residents, and citizens alike."
+  },
+  "features": {
+    "title": "Tabayun Features",
+    "items": {
+      "easy": "Easy Information Access",
+      "easyDesc": "Find exactly what you need in seconds.",
+      "compare": "International Law Comparison",
+      "compareDesc": "See how Saudi law differs globally.",
+      "visual": "Visual Explanations",
+      "visualDesc": "Infographics making complexity simple.",
+      "fast": "Instant Regulation Updates",
+      "fastDesc": "Real-time updates on regulations."
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "desc": "We are always happy to receive your inquiries and suggestions",
+    "email": "Email Address",
+    "name": "Name",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send",
+    "success": "Message sent successfully",
+    "error": "Error sending message"
+  },
+  "footer": {
+    "rights": "All rights reserved to Tabayun © 2026",
+    "links": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Use"
+    }
+  }
 }

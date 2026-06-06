@@ -23,6 +23,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Matcher ignoring `/_next/` and `/api/`
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  // إضافة 'image' و 'public' للمستثنيات
+  matcher: ['/((?!api|_next/static|_next/image|image|favicon.ico).*)'],
 };
