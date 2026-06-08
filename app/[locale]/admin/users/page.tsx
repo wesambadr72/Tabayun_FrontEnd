@@ -22,6 +22,7 @@ import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
 import { UserAdmin } from "@/types/admin";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Toast, useToast } from "@/components/ui/Toast";
 
 export default function AdminUsersPage({
   params,
@@ -46,6 +47,8 @@ export default function AdminUsersPage({
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+
+  const { message, type, isVisible, showToast, hideToast } = useToast();
 
   const fetchUsers = async () => {
     try {
@@ -86,9 +89,10 @@ export default function AdminUsersPage({
       await adminService.updateUserRole(selectedUser.id, newRole);
       setUsers(users.map(u => u.id === selectedUser.id ? { ...u, role: newRole } : u));
       setShowRoleModal(false);
+      showToast(isAr ? "تم تحديث الصلاحية بنجاح" : "Role updated successfully", "success");
     } catch (err) {
       console.error("Failed to update role", err);
-      alert(isAr ? "فشل تحديث الصلاحية" : "Failed to update role");
+      showToast(isAr ? "فشل تحديث الصلاحية" : "Failed to update role", "error");
     } finally {
       setIsProcessing(false);
     }
@@ -102,8 +106,9 @@ export default function AdminUsersPage({
       setUsers(users.filter(u => u.id !== selectedUser.id));
       setSelectedUserIds(prev => prev.filter(id => id !== selectedUser.id));
       setShowDeleteModal(false);
+      showToast(isAr ? "تم حذف المستخدم بنجاح" : "User deleted successfully", "success");
     } catch (err) {
-      alert("Failed to delete user");
+      showToast(isAr ? "فشل حذف المستخدم" : "Failed to delete user", "error");
     } finally {
       setIsProcessing(false);
     }
@@ -117,9 +122,10 @@ export default function AdminUsersPage({
       setUsers(users.filter(u => !selectedUserIds.includes(u.id)));
       setSelectedUserIds([]);
       setShowBulkDeleteModal(false);
+      showToast(isAr ? "تم حذف المستخدمين بنجاح" : "Users deleted successfully", "success");
     } catch (err) {
       console.error("Failed to delete users", err);
-      alert(isAr ? "فشل حذف المستخدمين" : "Failed to delete users");
+      showToast(isAr ? "فشل حذف المستخدمين" : "Failed to delete users", "error");
     } finally {
       setIsProcessing(false);
     }
@@ -142,6 +148,8 @@ export default function AdminUsersPage({
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
       <Navbar />
+
+      <Toast message={message} type={type} isVisible={isVisible} onClose={hideToast} />
 
       <div className="flex-1 pt-32 pb-20 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">

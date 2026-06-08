@@ -95,4 +95,10 @@ export const lawService = {
    */
   markAsRead: (notifId: number) =>
     api.post<{ message: string }>(`/laws/notifications/${notifId}/read`, {}),
+
+  /**
+   * جلب إحصائيات النظام العامة
+   * @returns إحصائيات النظام
+   */
+  getStats: () => api.get<{ total_laws: number }>('/laws/stats'),
 };

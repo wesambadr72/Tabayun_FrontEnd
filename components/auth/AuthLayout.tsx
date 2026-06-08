@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Globe2, Scale, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
 import { CountUp } from "@/components/ui/motion";
 import { cn } from "@/lib/utils";
 import { kashidaTitle } from "@/lib/typography";
+import { lawService } from "@/services/lawService";
 
 type Locale = "ar" | "en" | string;
 
@@ -27,8 +28,25 @@ export function AuthShell({
 }) {
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
+
+  const [totalLaws, setTotalLaws] = useState<number>(100);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const stats = await lawService.getStats();
+        if (stats && stats.total_laws) {
+          setTotalLaws(stats.total_laws);
+        }
+      } catch (error) {
+        console.error("Failed to fetch law stats in AuthShell:", error);
+      }
+    };
+    fetchStats();
+  }, []);
+
   const stats = [
-    { value: 100, prefix: "+", label: isAr ? "نظام وقانون" : "laws and regulations" },
+    { value: totalLaws, prefix: "+", label: isAr ? "نظام وقانون" : "laws and regulations" },
     { value: 24, suffix: "/7", label: isAr ? "مساعد ذكي" : "AI assistant" },
   ];
 

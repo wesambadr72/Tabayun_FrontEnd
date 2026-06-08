@@ -19,6 +19,7 @@ import {
 import { AuthHeader, AuthPrimaryButton, AuthShell, AuthTextField } from "@/components/auth/AuthLayout";
 import { authService } from "@/services/authService";
 import { lawService } from "@/services/lawService";
+import { Toast, useToast } from "@/components/ui/Toast";
 import ar from "../../../../locales/ar/common.json";
 import en from "../../../../locales/en/common.json";
 
@@ -39,6 +40,7 @@ export default function RegisterPage() {
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isValidating, setIsValidating] = useState(false);
+  const { message, type, isVisible, showToast, hideToast } = useToast();
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -205,9 +207,10 @@ export default function RegisterPage() {
       const loginResponse = await authService.login(loginData);
       authService.setToken(loginResponse.access_token);
       await authService.getMe();
-      router.push(`/${locale}/dashboard`);
+      showToast(isAr ? "تم إنشاء الحساب بنجاح" : "Account created successfully", "success");
+      setTimeout(() => router.push(`/${locale}/dashboard`), 1000);
     } catch (error: any) {
-      setErrors({ general: error.message || (isAr ? "حدث خطأ ما" : "Something went wrong") });
+      showToast(error.message || (isAr ? "فشل إنشاء الحساب" : "Registration failed"), "error");
     } finally {
       setLoading(false);
     }
@@ -252,6 +255,8 @@ export default function RegisterPage() {
         </div>
       }
     >
+      <Toast message={message} type={type} isVisible={isVisible} onClose={hideToast} />
+
       <AuthHeader
         eyebrow={isAr ? `الخطوة ${step} من ${TOTAL_STEPS}` : `Step ${step} of ${TOTAL_STEPS}`}
         title={currentMeta.title}

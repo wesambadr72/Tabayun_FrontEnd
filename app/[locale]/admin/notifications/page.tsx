@@ -23,6 +23,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
 import { UserAdmin } from "@/types/admin";
+import { Toast, useToast } from "@/components/ui/Toast";
 
 export default function NotificationsAdminPage({
   params,
@@ -51,6 +52,7 @@ export default function NotificationsAdminPage({
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { message, type, isVisible, showToast, hideToast } = useToast();
   const [showUserSelector, setShowUserSelector] = useState(false);
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [selectedNotification, setSelectedNotification] = useState<any | null>(null);
@@ -127,16 +129,13 @@ export default function NotificationsAdminPage({
 
       setIsSubmitting(false);
       setShowConfirmModal(false);
-      setShowSuccessToast(true);
+      showToast(isAr ? "تم إرسال الإشعار بنجاح" : "Notification sent successfully", "success");
 
       // Reset form
       setFormData({ title: "", message: "", target: "all", target_user_ids: [] });
-
-      // Hide toast after 3s
-      setTimeout(() => setShowSuccessToast(false), 3000);
     } catch (err) {
       console.error("Failed to send notification", err);
-      alert(isAr ? "فشل إرسال الإشعار" : "Failed to send notification");
+      showToast(isAr ? "فشل إرسال الإشعار" : "Failed to send notification", "error");
       setIsSubmitting(false);
     }
   };
@@ -153,8 +152,9 @@ export default function NotificationsAdminPage({
       setLogs(prev => prev.filter(n => n.id !== selectedNotification.id));
       setShowDeleteModal(false);
       setSelectedNotification(null);
+      showToast(isAr ? "تم حذف الإشعار بنجاح" : "Notification deleted successfully", "success");
     } catch (err) {
-      alert(isAr ? "فشل حذف الإشعار" : "Failed to delete notification");
+      showToast(isAr ? "فشل حذف الإشعار" : "Failed to delete notification", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -185,8 +185,9 @@ export default function NotificationsAdminPage({
       setLogs(prev => prev.filter(n => !selectedLogIds.includes(n.id)));
       setSelectedLogIds([]);
       setShowBulkDeleteModal(false);
+      showToast(isAr ? "تم حذف الإشعارات المحددة" : "Selected notifications deleted", "success");
     } catch (err) {
-      alert(isAr ? "فشل الحذف الجماعي" : "Bulk delete failed");
+      showToast(isAr ? "فشل الحذف الجماعي" : "Bulk delete failed", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -195,6 +196,8 @@ export default function NotificationsAdminPage({
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
       <Navbar />
+
+      <Toast message={message} type={type} isVisible={isVisible} onClose={hideToast} />
 
       <div className="flex-1 pt-32 pb-20 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">

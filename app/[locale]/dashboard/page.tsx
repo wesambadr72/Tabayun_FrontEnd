@@ -207,8 +207,12 @@ export default function DashboardPage() {
 
               <div>
                 <div className="mb-4 flex items-center justify-between gap-4">
-                  <h2 className="text-2xl font-black text-tabayun-coffee">{isAr ? "الأكثر أهمية الآن" : "Important now"}</h2>
-                  <StatusBadge tone="warning">{isAr ? "محدّث" : "Updated"}</StatusBadge>
+                  <h2 className="text-2xl font-black text-tabayun-coffee">
+                    {isAr ? "الأكثر أهمية الآن" : "Important now"}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge tone="warning">{isAr ? "محدّث" : "Updated"}</StatusBadge>
+                  </div>
                 </div>
 
                 {loading ? (
@@ -226,13 +230,17 @@ export default function DashboardPage() {
                       >
                         <div className="mb-5 flex items-start justify-between gap-3">
                           <StatusBadge tone="warning">{isAr ? "تحقق" : "Check"}</StatusBadge>
-                          {isAr ? <ArrowLeft className="h-5 w-5 text-tabayun-coffee/30 group-hover:text-tabayun-coffee" /> : <ArrowRight className="h-5 w-5 text-tabayun-coffee/30 group-hover:text-tabayun-coffee" />}
+                          {isAr ? (
+                            <ArrowLeft className="h-5 w-5 text-tabayun-coffee/30 group-hover:text-tabayun-coffee transition-colors" />
+                          ) : (
+                            <ArrowRight className="h-5 w-5 text-tabayun-coffee/30 group-hover:text-tabayun-coffee transition-colors" />
+                          )}
                         </div>
-                        <h3 className="line-clamp-2 text-xl font-black leading-tight text-tabayun-coffee">
-                          {comp.title || comp.foreign_law?.title || (isAr ? "مقارنة قانونية" : "Legal comparison")}
+                        <h3 className="line-clamp-2 text-xl font-black leading-tight text-tabayun-coffee group-hover:text-tabayun-gold transition-colors">
+                          {isAr ? (comp.saudi_law?.title || comp.title) : (comp.foreign_law?.title || comp.title)}
                         </h3>
                         <p className="mt-3 line-clamp-2 text-sm font-semibold leading-relaxed text-tabayun-coffee/55">
-                          {comp.simplified_description || comp.summary || comp.foreign_law?.simplified_text}
+                          {isAr ? (comp.saudi_law?.simplified_text || comp.summary) : (comp.foreign_law?.simplified_text || comp.summary)}
                         </p>
                       </button>
                     ))}

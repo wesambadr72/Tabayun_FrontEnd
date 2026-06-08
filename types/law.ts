@@ -9,6 +9,7 @@ export interface Law {
   source_url: string;
   article_number: string;
   saudi_reference_id?: number;
+  created_at?: string;
 }
 
 export interface Category {

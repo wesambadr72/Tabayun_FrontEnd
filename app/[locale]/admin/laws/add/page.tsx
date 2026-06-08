@@ -21,6 +21,7 @@ import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
 import { Law } from "@/types/law";
 import { lawService } from "@/services/lawService";
+import { Toast, useToast } from "@/components/ui/Toast";
 
 export default function AddLawPage({
   params,
@@ -48,6 +49,7 @@ export default function AddLawPage({
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(true);
   const [loading, setLoading] = useState(false);
+  const { message, type, isVisible, showToast, hideToast } = useToast();
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -85,9 +87,10 @@ export default function AddLawPage({
       };
       await adminService.addLaw(payload);
       setSuccess(true);
+      showToast(isAr ? "تم إضافة القانون بنجاح" : "Law added successfully", "success");
       setTimeout(() => router.push(`/${locale}/admin/laws`), 2000);
     } catch (err: any) {
-      alert(isAr ? "فشل حفظ القانون" : "Failed to save law");
+      showToast(isAr ? "فشل حفظ القانون" : "Failed to save law", "error");
     } finally {
       setLoading(false);
     }
@@ -113,6 +116,8 @@ export default function AddLawPage({
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
       <Navbar />
+
+      <Toast message={message} type={type} isVisible={isVisible} onClose={hideToast} />
 
       <div className="flex-1 pt-32 pb-20 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">

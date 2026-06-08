@@ -22,6 +22,7 @@ import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
 import { Law } from "@/types/law";
 import { lawService } from "@/services/lawService";
+import { Toast, useToast } from "@/components/ui/Toast";
 
 export default function EditLawPage({
   params,
@@ -47,6 +48,7 @@ export default function EditLawPage({
   });
 
   const [loading, setLoading] = useState(true); // Start loading for fetch
+  const { message, type, isVisible, showToast, hideToast } = useToast();
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -151,10 +153,11 @@ useEffect(() => {
       };
       await adminService.updateLaw(Number(id), payload);
       setSuccess(true);
+      showToast(isAr ? "تم تحديث القانون بنجاح" : "Law updated successfully", "success");
       setTimeout(() => router.push(`/${locale}/admin/laws`), 2000);
     } catch (err: any) {
       console.error("Update error:", err);
-      setError(err.message || (isAr ? "فشل تحديث القانون" : "Failed to update law"));
+      showToast(err.message || (isAr ? "فشل تحديث القانون" : "Failed to update law"), "error");
     } finally {
       setSaving(false);
     }
@@ -163,6 +166,8 @@ useEffect(() => {
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
       <Navbar />
+
+      <Toast message={message} type={type} isVisible={isVisible} onClose={hideToast} />
 
       <div className="flex-1 pt-32 pb-20 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">

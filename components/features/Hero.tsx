@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -17,6 +17,7 @@ import {
 import ar from "../../locales/ar/common.json";
 import en from "../../locales/en/common.json";
 import { CountUp } from "@/components/ui/motion";
+import { lawService } from "@/services/lawService";
 
 const dictionaries = { ar, en };
 
@@ -26,6 +27,22 @@ export default function Hero() {
   const dict = (dictionaries[locale as keyof typeof dictionaries] || ar).hero;
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
+
+  const [totalLaws, setTotalLaws] = useState<number>(100);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const stats = await lawService.getStats();
+        if (stats && stats.total_laws) {
+          setTotalLaws(stats.total_laws);
+        }
+      } catch (error) {
+        console.error("Failed to fetch law stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const scrollToAbout = () => {
     document.getElementById("about-section")?.scrollIntoView({ behavior: "smooth" });
@@ -81,7 +98,7 @@ export default function Hero() {
           style={{ animationDelay: "900ms" }}
         >
           <p className="tabayun-display text-4xl font-black leading-none">
-            <CountUp end={100} prefix="+" />
+            <CountUp end={totalLaws} prefix="+" />
           </p>
           <p className="mt-2 text-sm font-black text-[#F7F2EC]/72">{isAr ? "نظام وقانون" : "laws and rules"}</p>
         </div>

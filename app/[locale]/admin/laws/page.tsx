@@ -19,6 +19,7 @@ import Navbar from "@/components/Navbar";
 import { adminService } from "@/services/adminService";
 import { Law } from "@/types/law";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Toast, useToast } from "@/components/ui/Toast";
 
 export default function AdminLawsPage({
   params,
@@ -55,6 +56,8 @@ export default function AdminLawsPage({
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const { message, type, isVisible, showToast, hideToast } = useToast();
+
   const handleDeleteClick = (law: Law) => {
     setLawToDelete(law);
     setShowDeleteModal(true);
@@ -64,7 +67,7 @@ export default function AdminLawsPage({
     try {
       setLoading(true);
       const [lawsData, statsData] = await Promise.all([
-        adminService.getLaws(skip, limit, debouncedSearchTerm),
+        adminService.getLaws(skip, limit, debouncedSearchTerm, filterCategory),
         adminService.getStats()
       ]);
       setLaws(lawsData);
@@ -89,7 +92,7 @@ export default function AdminLawsPage({
 
   useEffect(() => {
     fetchLaws();
-  }, [skip, debouncedSearchTerm]);
+  }, [skip, debouncedSearchTerm, filterCategory]);
 
   const confirmDelete = async () => {
     if (!lawToDelete) return;
@@ -100,8 +103,9 @@ export default function AdminLawsPage({
       setSelectedLawIds(prev => prev.filter(id => id !== lawToDelete.id));
       setShowDeleteModal(false);
       setLawToDelete(null);
+      showToast(isAr ? "تم حذف القانون بنجاح" : "Law deleted successfully", "success");
     } catch (err: any) {
-      alert(isAr ? "فشل حذف القانون" : "Failed to delete law");
+      showToast(isAr ? "فشل حذف القانون" : "Failed to delete law", "error");
     } finally {
       setIsDeleting(false);
     }
@@ -115,9 +119,10 @@ export default function AdminLawsPage({
       setLaws(laws.filter(l => !selectedLawIds.includes(l.id)));
       setSelectedLawIds([]);
       setShowBulkDeleteModal(false);
+      showToast(isAr ? "تم حذف القوانين بنجاح" : "Laws deleted successfully", "success");
     } catch (err: any) {
       console.error("Failed to delete laws", err);
-      alert(isAr ? "فشل حذف القوانين" : "Failed to delete laws");
+      showToast(isAr ? "فشل حذف القوانين" : "Failed to delete laws", "error");
     } finally {
       setIsDeleting(false);
     }
@@ -140,6 +145,8 @@ export default function AdminLawsPage({
   return (
     <main className="min-h-screen bg-[#f5f1eb] flex flex-col" dir={dir}>
       <Navbar />
+
+      <Toast message={message} type={type} isVisible={isVisible} onClose={hideToast} />
       
       <div className="flex-1 pt-32 px-4 pb-4 md:pt-36 md:px-6 lg:pt-40 lg:px-8">
         <div className="max-w-6xl mx-auto">
@@ -235,6 +242,7 @@ export default function AdminLawsPage({
                     </th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "العنوان" : "Title"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "التصنيف" : "Category"}</th>
+                    <th className="p-4 sm:p-6 text-start">{isAr ? "رقم المادة" : "Article Number"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "تاريخ الإضافة" : "Date Added"}</th>
                     <th className="p-4 sm:p-6 text-start">{isAr ? "الحالة" : "Status"}</th>
                     <th className="p-4 sm:p-6 text-end">{isAr ? "الإجراءات" : "Actions"}</th>
@@ -280,8 +288,11 @@ export default function AdminLawsPage({
                             </span>
                           </div>
                         </td>
-                        <td className="p-4 sm:p-6 text-[#2C160F]/60 font-medium text-sm">
+                        <td className="p-4 sm:p-6">
                           {law.article_number || "-"}
+                        </td>
+                        <td className="p-4 sm:p-6 text-[#2C160F]/60 font-medium text-sm">
+                          {law.created_at ? new Date(law.created_at).toLocaleDateString(isAr ? 'ar-SA' : 'en-US') : "-"}
                         </td>
                         <td className="p-4 sm:p-6">
                           <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-600 px-3 py-1.5 rounded-full text-xs font-bold">

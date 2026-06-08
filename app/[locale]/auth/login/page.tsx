@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle2, Eye, EyeOff, Loader2, Lock, Mail, X } from "lucide-react";
 import { AuthHeader, AuthPrimaryButton, AuthShell, AuthTextField } from "@/components/auth/AuthLayout";
 import { authService } from "@/services/authService";
+import { Toast, useToast } from "@/components/ui/Toast";
 import ar from "../../../../locales/ar/common.json";
 import en from "../../../../locales/en/common.json";
 
@@ -26,6 +27,8 @@ export default function LoginPage() {
   const [forgotEmail, setForgotEmail] = useState("");
   const [isSendingReset, setIsSendingReset] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
+
+  const { message, type, isVisible, showToast, hideToast } = useToast();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -52,9 +55,10 @@ export default function LoginPage() {
       const response = await authService.login(data);
       authService.setToken(response.access_token);
       await authService.getMe();
-      router.push(`/${locale}/dashboard`);
+      showToast(isAr ? "تم تسجيل الدخول بنجاح" : "Logged in successfully", "success");
+      setTimeout(() => router.push(`/${locale}/dashboard`), 1000);
     } catch (error: any) {
-      setErrors({ general: error.message });
+      showToast(error.message || (isAr ? "فشل تسجيل الدخول" : "Login failed"), "error");
     } finally {
       setLoading(false);
     }
@@ -67,8 +71,10 @@ export default function LoginPage() {
       setIsSendingReset(true);
       await authService.forgotPassword(forgotEmail);
       setResetSuccess(true);
+      showToast(isAr ? "تم إرسال رابط استعادة كلمة المرور" : "Password reset link sent", "success");
+      setShowForgotDialog(false);
     } catch (error: any) {
-      setErrors({ general: error.message });
+      showToast(error.message || (isAr ? "فشل إرسال الرابط" : "Failed to send link"), "error");
       setShowForgotDialog(false);
     } finally {
       setIsSendingReset(false);
@@ -91,6 +97,8 @@ export default function LoginPage() {
         title={isAr ? "أهلاً بعودتك" : "Welcome back"}
         description={isAr ? "ادخل إلى حسابك لمتابعة المقارنات والتنبيهات القانونية." : "Access your comparisons, alerts, and legal guidance."}
       />
+
+      <Toast message={message} type={type} isVisible={isVisible} onClose={hideToast} />
 
       {errors.general && (
         <div className="mb-5 flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">

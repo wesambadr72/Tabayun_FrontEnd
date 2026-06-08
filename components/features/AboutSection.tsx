@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { CheckCircle2, Globe2, Landmark, Scale } from "lucide-react";
 import ar from "../../locales/ar/common.json";
 import en from "../../locales/en/common.json";
 import { SectionHeader, StatusBadge, SurfaceCard } from "@/components/ui/tabayun";
+import { lawService } from "@/services/lawService";
 
 const dictionaries = { ar, en };
 
@@ -16,6 +17,22 @@ export default function AboutSection() {
   const dict = (dictionaries[locale as keyof typeof dictionaries] || ar);
   const isAr = locale === "ar";
   const dir = isAr ? "rtl" : "ltr";
+
+  const [totalLaws, setTotalLaws] = useState<number | string>("100+");
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const stats = await lawService.getStats();
+        if (stats && stats.total_laws) {
+          setTotalLaws(stats.total_laws);
+        }
+      } catch (error) {
+        console.error("Failed to fetch law stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const points = [
     {
@@ -56,7 +73,7 @@ export default function AboutSection() {
                       <Scale className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="text-xl font-black">100+</p>
+                      <p className="text-xl font-black">{totalLaws}{typeof totalLaws === 'number' ? '' : ''}</p>
                       <p className="text-xs font-bold text-tabayun-paper/58">
                         {isAr ? "قانون ونظام قابل للمقارنة" : "Comparable laws and regulations"}
                       </p>

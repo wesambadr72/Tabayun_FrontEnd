@@ -7,8 +7,15 @@ export const adminService = {
   getStats: () => api.get<AdminStats>('/admin/stats'),
 
   // Laws Management
-  getLaws: (skip = 0, limit = 10, search?: string) => 
-    api.get<Law[]>(`/admin/laws?skip=${skip}&limit=${limit}${search ? `&search=${search}` : ''}`),
+  getLaws: (skip = 0, limit = 10, search?: string, categoryId?: string) => {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    if (search) params.append('search', search);
+    if (categoryId && categoryId !== 'all') params.append('category_id', categoryId);
+    
+    return api.get<Law[]>(`/admin/laws?${params.toString()}`);
+  },
   
   getLawById: (id: number) => 
     api.get<Law>(`/admin/laws/${id}`),
