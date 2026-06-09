@@ -71,11 +71,36 @@ export default function ComparisonDetailPage() {
       "المملكة المتحدة": "/image/flags/uk.png",
       "usa": "/image/flags/usa.png",
       "united states": "/image/flags/usa.png",
-      "sa": "/image/flags/saudi_arabia.png",
-      "saudi arabia": "/image/flags/saudi_arabia.png",
-      "السعودية": "/image/flags/saudi_arabia.png",
+      "sa": "/image/flags/saudi_logo.png",
+      "saudi arabia": "/image/flags/saudi_logo.png",
+      "السعودية": "/image/flags/saudi_logo.png",
     };
-    return mapping[code] || "/image/flags/saudi_arabia.png";
+    return mapping[code] || "/image/flags/saudi_logo.png";
+  };
+
+  const getLocalizedCountry = (country: string) => {
+    const code = country.toLowerCase();
+    const isAr = locale === "ar";
+    
+    const mapping: Record<string, string> = {
+      "germany": isAr ? "ألمانيا" : "Germany",
+      "de": isAr ? "ألمانيا" : "Germany",
+      "uk": isAr ? "المملكة المتحدة" : "UK",
+      "united kingdom": isAr ? "المملكة المتحدة" : "UK",
+      "usa": isAr ? "الولايات المتحدة" : "USA",
+      "us": isAr ? "الولايات المتحدة" : "USA",
+      "saudi arabia": isAr ? "المملكة العربية السعودية" : "Saudi Arabia",
+      "sa": isAr ? "المملكة العربية السعودية" : "Saudi Arabia",
+    };
+
+    const localized = mapping[code] || country;
+    
+    // If English and 2 letters, uppercase it
+    if (!isAr && localized.length === 2) {
+      return localized.toUpperCase();
+    }
+    
+    return localized;
   };
 
   if (loading) {
@@ -160,8 +185,9 @@ export default function ComparisonDetailPage() {
           <div className="mt-8 rounded-[34px] border border-tabayun-sand bg-tabayun-pearl shadow-[0_24px_70px_rgba(44,22,15,0.12)]">
             <div className="grid h-auto overflow-visible md:grid-cols-2">
               <ComparisonSide
+                articleNumber={comparison.foreign_law.article_number}
                 title={comparison.foreign_law.title}
-                country={comparison.foreign_law.country}
+                country={getLocalizedCountry(comparison.foreign_law.country)}
                 text={foreignText}
                 source={comparison.foreign_law.source_url}
                 flag={getFlagPath(comparison.foreign_law.country)}
@@ -169,8 +195,9 @@ export default function ComparisonDetailPage() {
                 dark
               />
               <ComparisonSide
+                articleNumber={comparison.saudi_law.article_number}
                 title={comparison.saudi_law.title}
-                country={isAr ? "المملكة العربية السعودية" : "Saudi Arabia"}
+                country={getLocalizedCountry("saudi arabia")}
                 text={saudiText}
                 source={comparison.saudi_law.source_url}
                 flag={getFlagPath("saudi arabia")}
@@ -218,6 +245,7 @@ export default function ComparisonDetailPage() {
 }
 
 function ComparisonSide({
+  articleNumber,
   title,
   country,
   text,
@@ -226,6 +254,7 @@ function ComparisonSide({
   isAr,
   dark = false,
 }: {
+  articleNumber?: string;
   title: string;
   country: string;
   text?: string;
@@ -238,9 +267,16 @@ function ComparisonSide({
     <article className={`${dark ? "bg-tabayun-coffee text-tabayun-paper" : "bg-tabayun-pearl text-tabayun-coffee"} flex h-full flex-col overflow-visible p-6 md:p-9`}>
       <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-[2]">
-          <StatusBadge tone={dark ? "warning" : "neutral"} className={dark ? "border-white/14 bg-white/10 text-tabayun-paper" : ""}>
-            {country}
-          </StatusBadge>
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge tone={dark ? "warning" : "neutral"} className={dark ? "border-white/14 bg-white/10 text-tabayun-paper" : ""}>
+              {country}
+            </StatusBadge>
+            {articleNumber && (
+              <StatusBadge tone="neutral" className={dark ? "border-white/14 bg-white/10 text-tabayun-paper/60" : "bg-tabayun-sand/30"}>
+                {isAr ? ` المادة : ${articleNumber}` : `Article : ${articleNumber}`}
+              </StatusBadge>
+            )}
+          </div>
           <h3 className="mt-4 break-all text-2xl font-black leading-tight [hyphens:auto] sm:text-3xl" style={{ wordBreak: 'break-word' }}>{title}</h3>
         </div>
         <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/18 bg-white shadow-sm sm:h-14 sm:w-14">

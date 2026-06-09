@@ -24,6 +24,29 @@ interface LawCardProps {
  */
 export const LawCard = ({ comparison, locale, compact = false }: LawCardProps) => {
   const isAr = locale === "ar";
+
+  const getLocalizedCountry = (country: string) => {
+    const code = country.toLowerCase();
+    
+    const mapping: Record<string, string> = {
+      "germany": isAr ? "ألمانيا" : "Germany",
+      "de": isAr ? "ألمانيا" : "Germany",
+      "uk": isAr ? "المملكة المتحدة" : "UK",
+      "united kingdom": isAr ? "المملكة المتحدة" : "UK",
+      "usa": isAr ? "الولايات المتحدة" : "USA",
+      "us": isAr ? "الولايات المتحدة" : "USA",
+      "saudi arabia": isAr ? "المملكة العربية السعودية" : "Saudi Arabia",
+      "sa": isAr ? "المملكة العربية السعودية" : "Saudi Arabia",
+    };
+
+    const localized = mapping[code] || country;
+    
+    if (!isAr && localized.length === 2) {
+      return localized.toUpperCase();
+    }
+    
+    return localized;
+  };
   
   // تجهيز العنوان (يستخدم العنوان الأساسي أو عنوان القانون الأجنبي كبديل)
   const title = comparison.title || comparison.foreign_law?.title || (isAr ? "مقارنة قانونية" : "Legal comparison");
@@ -54,7 +77,7 @@ export const LawCard = ({ comparison, locale, compact = false }: LawCardProps) =
                 {isAr ? "تحقق من التفاصيل" : "Check details"}
               </StatusBadge>
               {comparison.foreign_law?.country && (
-                <StatusBadge tone="neutral">{comparison.foreign_law.country}</StatusBadge>
+                <StatusBadge tone="neutral">{getLocalizedCountry(comparison.foreign_law.country)}</StatusBadge>
               )}
             </div>
           </div>

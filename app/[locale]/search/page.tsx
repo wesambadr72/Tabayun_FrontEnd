@@ -32,16 +32,21 @@ function SearchResultsContent() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [noResultsMessage, setNoResultsMessage] = useState<string | null>(null);
   const [searchInputValue, setSearchQueryValue] = useState(query);
 
   useEffect(() => {
     const fetchResults = async () => {
       if (!query) {
         setLoading(false);
+        setResults([]);
+        setNoResultsMessage(null);
         return;
       }
       try {
         setLoading(true);
+        setError(null);
+        setNoResultsMessage(null);
         const data = await lawService.search(query, locale);
         
         // Deduplicate results based on type and id
@@ -50,14 +55,21 @@ function SearchResultsContent() {
         );
         setResults(uniqueResults);
       } catch (err: any) {
-        setError(err.message);
+        setResults([]); // Clear previous results on error
+        
+        // Check if it's a 404 with detail from backend
+        if (err.status === 404 || (err.message && err.message.includes('404'))) {
+          setNoResultsMessage(err.detail || (isAr ? "لم يتم العثور على نتيجة مقاربة" : "No similar results found"));
+        } else {
+          setError(err.message || (isAr ? "حدث خطأ غير متوقع" : "An unexpected error occurred"));
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchResults();
-  }, [query]);
+  }, [query, locale, isAr]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,12 +84,12 @@ function SearchResultsContent() {
       "المانيا": "/image/flags/germany.png",
       "united kingdom": "/image/flags/uk.png",
       "المملكة المتحدة": "/image/flags/uk.png",
-      "saudi arabia": "/image/flags/saudi_arabia.png",
-      "السعودية": "/image/flags/saudi_arabia.png",
+      "saudi arabia": "/image/flags/saudi_logo.png",
+      "السعودية": "/image/flags/Saudi_logo.png",
       "usa": "/image/flags/usa.png",
       "united states": "/image/flags/usa.png",
     };
-    return mapping[code] || "/image/flags/saudi_arabia.png";
+    return mapping[code] || "/image/flags/saudi_logo.png";
   };
 
   return (
@@ -153,8 +165,16 @@ function SearchResultsContent() {
             ) : error ? (
               <StatePanel
                 type="error"
-                title={isAr ? "حدث خطأ أثناء البحث" : "Search failed"}
+                title={isAr ? "خطأ" : "Error"}
                 description={error}
+                locale={locale}
+              />
+            ) : noResultsMessage ? (
+              <StatePanel
+                title={noResultsMessage}
+                description={isAr ? "جرّب كلمات أخرى أو تصفح الفئات القانونية." : "Try different keywords or browse legal categories."}
+                action={isAr ? "تصفح الفئات" : "Browse categories"}
+                onAction={() => router.push(`/${locale}/categories`)}
                 locale={locale}
               />
             ) : results.length > 0 ? (

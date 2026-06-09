@@ -18,21 +18,18 @@ export default function ContactForm({ locale }: ContactFormProps) {
       icon: Mail,
       title: isAr ? "البريد الإلكتروني" : "Email",
       value: "contact@tabayun.sa",
-      link: "mailto:contact@tabayun.sa",
       desc: isAr ? "للاستفسارات العامة والشراكات" : "For general inquiries and partnerships",
     },
     {
       icon: Phone,
       title: isAr ? "خدمة العملاء" : "Customer service",
       value: "+966 50 000 0000",
-      link: "tel:+966500000000",
       desc: isAr ? "قناة دعم مباشرة للمستخدمين" : "Direct support channel for users",
     },
     {
       icon: Globe2,
       title: isAr ? "وسائل التواصل" : "Social media",
       value: "@TabayunSA",
-      link: "https://twitter.com/TabayunSA",
       desc: isAr ? "آخر التحديثات والإعلانات" : "Latest updates and announcements",
     },
   ];
@@ -57,7 +54,6 @@ export default function ContactForm({ locale }: ContactFormProps) {
           return (
             <a
               key={info.title}
-              href={info.link}
               className="group rounded-[30px] border border-tabayun-sand bg-tabayun-pearl p-6 text-center shadow-[0_14px_36px_rgba(44,22,15,0.07)] transition duration-300 hover:-translate-y-1 hover:border-tabayun-gold/60 hover:shadow-[0_26px_70px_rgba(44,22,15,0.14)]"
             >
               <span className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-[22px] bg-tabayun-sand/52 text-tabayun-coffee transition group-hover:bg-tabayun-coffee group-hover:text-tabayun-paper">

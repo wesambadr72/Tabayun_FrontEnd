@@ -31,6 +31,31 @@ function LawsListContent() {
   const [error, setError] = useState<string | null>(null);
   const [userCountry, setUserCountry] = useState<string | null>(null);
 
+  const getLocalizedCountry = (country: string) => {
+    const code = country.toLowerCase();
+    const isAr = locale === "ar";
+    
+    const mapping: Record<string, string> = {
+      "germany": isAr ? "ألمانيا" : "Germany",
+      "de": isAr ? "ألمانيا" : "Germany",
+      "uk": isAr ? "المملكة المتحدة" : "UK",
+      "united kingdom": isAr ? "المملكة المتحدة" : "UK",
+      "usa": isAr ? "الولايات المتحدة" : "USA",
+      "us": isAr ? "الولايات المتحدة" : "USA",
+      "saudi arabia": isAr ? "المملكة العربية السعودية" : "Saudi Arabia",
+      "sa": isAr ? "المملكة العربية السعودية" : "Saudi Arabia",
+    };
+
+    const localized = mapping[code] || country;
+    
+    // If English and 2 letters, uppercase it
+    if (!isAr && localized.length === 2) {
+      return localized.toUpperCase();
+    }
+    
+    return localized;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!categoryId) {
@@ -104,7 +129,7 @@ function LawsListContent() {
                     <p className="text-xs font-black text-tabayun-clay/65">{isAr ? "فلترة ذكية" : "Smart filter"}</p>
                     <p className="text-sm font-bold text-tabayun-coffee/62">
                       {userCountry
-                        ? (isAr ? `حسب بلدك: ${userCountry}` : `By your country: ${userCountry}`)
+                        ? (isAr ? `حسب بلدك: ${getLocalizedCountry(userCountry)}` : `By your country: ${getLocalizedCountry(userCountry)}`)
                         : (isAr ? "اختر بلدك من الملف الشخصي لتخصيص النتائج" : "Set your country in profile to personalize results")}
                     </p>
                   </div>
