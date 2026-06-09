@@ -46,6 +46,20 @@ export default function ChatPage() {
     setInputText("");
     setLoading(true);
 
+    const greetingReply = getGreetingReply(currentInput, isAr);
+    if (greetingReply) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          content: greetingReply,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await chatService.queryAI(currentInput, locale);
       let finalContent = response.response;
@@ -76,12 +90,13 @@ export default function ChatPage() {
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
-    } catch {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
       setMessages((prev) => [
         ...prev,
         {
           role: "bot",
-          content: isAr ? "عذراً، حدث خطأ أثناء معالجة طلبك. حاول بصياغة أقصر أو أعد المحاولة." : "Sorry, something went wrong. Try a shorter question or retry.",
+          content: getChatErrorMessage(message, isAr),
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -223,6 +238,40 @@ export default function ChatPage() {
       </section>
     </main>
   );
+}
+
+function getGreetingReply(input: string, isAr: boolean): string | null {
+  const normalized = input.trim().toLowerCase().replace(/[.!؟?،,]/g, "");
+  const arabicGreetings = new Set(["اهلا", "أهلا", "هلا", "مرحبا", "السلام عليكم", "سلام"]);
+  const englishGreetings = new Set(["hi", "hello", "hey", "salam"]);
+
+  if (arabicGreetings.has(normalized) || englishGreetings.has(normalized)) {
+    return isAr
+      ? "ياهلا، حيّاك الله. اكتب لي الموقف القانوني أو سؤالك، وبعطيك خلاصة واضحة مع مقارنة بلدك إذا كانت متوفرة."
+      : "Hi, welcome. Send me the legal situation or question, and I will give you a clear summary with a country comparison when available.";
+  }
+
+  return null;
+}
+
+function getChatErrorMessage(message: string, isAr: boolean): string {
+  const lower = message.toLowerCase();
+
+  if (lower.includes("not authenticated") || lower.includes("unauthorized") || lower.includes("could not validate credentials")) {
+    return isAr
+      ? "يبدو أن جلسة تسجيل الدخول انتهت. سجل الدخول مرة ثانية ثم ارجع للمحادثة."
+      : "Your login session seems to have expired. Sign in again, then return to the chat.";
+  }
+
+  if (lower.includes("failed to fetch") || lower.includes("network")) {
+    return isAr
+      ? "الباكند غير متصل الآن. تأكد أن الخادم يعمل ثم أعد المحاولة."
+      : "The backend is not connected right now. Make sure the server is running, then try again.";
+  }
+
+  return isAr
+    ? "صار خلل مؤقت في معالجة الطلب. جرّب مرة ثانية، وإذا استمر الخطأ أعد تسجيل الدخول."
+    : "A temporary issue occurred while processing your request. Try again, and if it continues, sign in again.";
 }
 
 function MessageBubble({ message, isAr }: { message: ChatMessage; isAr: boolean }) {
