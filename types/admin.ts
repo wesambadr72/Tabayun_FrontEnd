@@ -12,11 +12,16 @@ export interface BroadcastNotification {
 
 export interface AdminActivityLog {
   id: number;
-  admin_id: number;
+  user_id?: number | null;
+  admin_id?: number | null;
   admin_name?: string;
   action: string;
-  target_type: string;
-  target_id: number;
+  table_name?: string;
+  record_id?: number | null;
+  target_type?: string;
+  target_id?: number;
+  old_values?: Record<string, unknown> | null;
+  new_values?: Record<string, unknown> | null;
   created_at: string;
 }
 

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AlertTriangle, ArrowLeft, ArrowRight, Bot, Loader2, Send, ShieldCheck, User, X } from "lucide-react";
 import { chatService } from "@/services/chatService";
-import { ChatMessage } from "@/types/chat";
+import { ChatMessage, ChatSource } from "@/types/chat";
 import { BrandMark, StatusBadge } from "@/components/ui/tabayun";
 
 export default function ChatPage() {
@@ -47,9 +47,10 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
-      const response = await chatService.queryAI(currentInput);
+      const response = await chatService.queryAI(currentInput, locale);
       let finalContent = response.response;
-      let finalSource = response.source;
+      let finalSource = response.source || undefined;
+      const finalSources = response.sources || [];
 
       if (typeof finalContent === "string" && finalContent.trim().startsWith("{")) {
         try {
@@ -71,6 +72,7 @@ export default function ChatPage() {
           role: "bot",
           content: finalContent,
           source: finalSource,
+          sources: finalSources,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -251,11 +253,45 @@ function MessageBubble({ message, isAr }: { message: ChatMessage; isAr: boolean 
                 {isAr ? "المصدر: " : "Source: "} {message.source}
               </div>
             )}
+            {message.sources && message.sources.length > 0 && (
+              <SourceList sources={message.sources} isAr={isAr} />
+            )}
           </div>
           <div className={`text-[11px] font-bold text-tabayun-coffee/35 ${isUser ? "text-end" : "text-start"}`}>
             {message.timestamp}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SourceList({ sources, isAr }: { sources: ChatSource[]; isAr: boolean }) {
+  return (
+    <div className="mt-4 border-t border-tabayun-sand pt-3 text-xs font-black text-tabayun-clay">
+      <div className="mb-2">{isAr ? "المصادر:" : "Sources:"}</div>
+      <div className="space-y-2">
+        {sources.slice(0, 3).map((source) => (
+          <div key={source.id} className="leading-relaxed">
+            {source.url ? (
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+                className="underline decoration-tabayun-gold/70 underline-offset-4 transition hover:text-tabayun-coffee"
+              >
+                {source.title}
+              </a>
+            ) : (
+              <span>{source.title}</span>
+            )}
+            {typeof source.similarity === "number" && (
+              <span className="ms-2 text-tabayun-coffee/40">
+                {Math.round(source.similarity)}%
+              </span>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
